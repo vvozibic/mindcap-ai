@@ -5,7 +5,13 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "echo \"Use dev script in each package\"",
-    "build": "echo \"Use build script in each package\""
+    "dev:all": "./dev-all.sh"
+  },
+  "devDependencies": {
+    "@types/http-proxy-middleware": "^1.0.0",
+    "concurrently": "^9.1.2"
+  },
+  "dependencies": {
+    "http-proxy-middleware": "^3.0.5"
   }
 }
