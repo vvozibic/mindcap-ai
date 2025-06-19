@@ -1,0 +1,11 @@
+{
+  "name": "attention-fi",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "echo \"Use dev script in each package\"",
+    "build": "echo \"Use build script in each package\""
+  }
+}

@@ -1,0 +1,45 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime
+dist
+build
+tmp
+temp
+.cache
+.pnpm
+
+# Dependencies
+node_modules/
+*/**/node_modules/
+
+# Environment
+.env
+*/.env
+*/**/.env
+apps/backend/.env
+.env.local
+.env.*.local
+
+# SQLite DB
+*.db
+*.db-journal
+
+# VSCode
+.vscode/
+
+# Fly.io
+fly.toml
+.fly/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Frontend & Admin builds
+apps/frontend/dist/
+apps/admin/dist/
+apps/backend/public/
+apps/backend/admin/
