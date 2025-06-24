@@ -10,6 +10,9 @@
     "build": "yarn workspace @app/frontend build && yarn workspace @app/backend build",
     "start": "yarn workspace @app/backend start"
   },
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "devDependencies": {
     "@types/http-proxy-middleware": "^1.0.0",
     "concurrently": "^9.1.2"
