@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import path from "path";
-import { fileURLToPath } from "url";
+// import { fileURLToPath } from "url";
 import { authRoutes } from "./routes/auth";
 import { influencerRoutes } from "./routes/influencers";
 import { mentionRoutes } from "./routes/mentions";
@@ -12,8 +12,9 @@ import { projectRoutes } from "./routes/projects";
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+const __dirname = path.resolve();
 
 const app = express();
 app.use(cors());
