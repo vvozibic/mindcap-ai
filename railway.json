@@ -1,0 +1,8 @@
+{
+  "services": [
+    {
+      "name": "backend",
+      "port": 3001
+    }
+  ]
+}

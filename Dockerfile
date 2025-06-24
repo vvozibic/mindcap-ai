@@ -31,3 +31,5 @@ RUN pnpm prisma generate
 
 # 9. Запускаем backend
 CMD ["pnpm", "dev"]
+
+EXPOSE 3001
