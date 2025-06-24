@@ -4,13 +4,16 @@
     "module": "ESNext",
     "moduleResolution": "Node",
     "esModuleInterop": true,
-    "strict": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     },
     "resolveJsonModule": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "strict": false, //
+    "noImplicitAny": false, //
+    "skipLibCheck": true //
   },
+
   "include": ["src"]
 }

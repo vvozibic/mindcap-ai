@@ -6,7 +6,9 @@
   ],
   "scripts": {
     "dev:all": "./dev-all.sh",
-    "build": "pnpm run --filter frontend build"
+    "dev": "pnpm --filter @app/backend dev",
+    "build": "pnpm --filter @app/frontend build && pnpm --filter @app/backend build",
+    "start": "pnpm --filter @app/backend start"
   },
   "devDependencies": {
     "@types/http-proxy-middleware": "^1.0.0",

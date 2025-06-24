@@ -1,11 +1,12 @@
 {
-  "name": "backend",
+  "name": "@app/backend",
   "version": "1.0.0",
   "type": "module",
   "main": "src/server.ts",
   "scripts": {
     "dev": "vite-node src/server.ts",
-    "build": "vite build",
+    "build": "pnpm prisma generate",
+    "start": "node dist/server.js",
     "seed": "ts-node --esm prisma/seed.ts",
     "prisma": "prisma"
   },
