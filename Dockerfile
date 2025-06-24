@@ -17,7 +17,7 @@ RUN pnpm install
 
 # 6. Копируем backend-приложение
 COPY apps/backend ./apps/backend
-COPY apps/backend/.env ./apps/backend/.env
+# COPY apps/backend/.env ./apps/backend/.env
 
 # 7. Копируем frontend-приложение и билдим его
 COPY apps/frontend ./apps/frontend

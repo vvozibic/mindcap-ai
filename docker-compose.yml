@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  backend:
+    build: .
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./apps/backend/prisma:/app/apps/backend/prisma
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL="file:./dev.db"
