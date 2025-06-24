@@ -1,5 +1,5 @@
 # 1. Базовый образ
-FROM node:18
+FROM node:20
 
 # 2. Установка pnpm
 RUN npm install -g pnpm

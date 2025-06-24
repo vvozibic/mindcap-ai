@@ -1,15 +1,28 @@
 # Build stage
-FROM node:18 AS builder
+FROM node:20 AS builder
 WORKDIR /app
 
+# Копируем весь проект
 COPY . .
+
+# Переходим во фронтовую папку
 WORKDIR /app/apps/frontend
+
+# Активируем pnpm и задаем переменную окружения ДО установки зависимостей
+ENV rollup_disable_native_check=true
+
+# Подготавливаем pnpm
 RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
-RUN pnpm install --frozen-lockfile
+
+# Удаляем lock-файл на всякий случай (если остаётся от x64)
+RUN rm -f pnpm-lock.yaml
+
+# Ставим зависимости
+RUN pnpm install
+
+# Сборка проекта
 RUN pnpm build
 
 # Serve stage
 FROM nginx:alpine
 COPY --from=builder /app/apps/frontend/dist /usr/share/nginx/html
-
-# Optional: custom nginx.conf (cache headers etc.)
