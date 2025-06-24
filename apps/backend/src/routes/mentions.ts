@@ -1,15 +1,15 @@
-import express from 'express'
+import express from "express";
 import {
-  getAllMentions,
   createMention,
-  updateMention,
   deleteMention,
-} from '../controllers/mentions'
-import { authenticateAdmin } from '../middleware/auth'
+  getAllMentions,
+  updateMention,
+} from "../controllers/mentions";
+import { authenticateToken } from "../middleware/auth";
 
-export const mentionRoutes = express.Router()
+export const mentionRoutes = express.Router();
 
-mentionRoutes.get('/', getAllMentions)
-mentionRoutes.post('/', createMention)
-mentionRoutes.put('/:id', authenticateAdmin, updateMention)
-mentionRoutes.delete('/:id', authenticateAdmin, deleteMention)
+mentionRoutes.get("/", getAllMentions);
+mentionRoutes.post("/", createMention);
+mentionRoutes.put("/:id", authenticateToken, updateMention);
+mentionRoutes.delete("/:id", authenticateToken, deleteMention);

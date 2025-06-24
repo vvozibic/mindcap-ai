@@ -5,7 +5,8 @@
     "apps/*"
   ],
   "scripts": {
-    "dev:all": "./dev-all.sh"
+    "dev:all": "./dev-all.sh",
+    "build": "pnpm run --filter frontend build"
   },
   "devDependencies": {
     "@types/http-proxy-middleware": "^1.0.0",

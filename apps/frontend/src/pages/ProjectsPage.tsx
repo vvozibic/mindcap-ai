@@ -1,16 +1,27 @@
-import React, { useState } from 'react';
-import { Project } from '../types';
-import ProjectDetailOverlay from '../components/ProjectDetailOverlay';
+import React, { useEffect, useState } from "react";
+import ProjectDetailOverlay from "../components/ProjectDetailOverlay";
+import { Project } from "../types";
 
 interface ProjectsPageProps {
-  projects: Project[];
   isAuthenticated: boolean;
   onLogin: () => void;
 }
 
-const ProjectsPage: React.FC<ProjectsPageProps> = ({ projects, isAuthenticated, onLogin }) => {
+const ProjectsPage: React.FC<ProjectsPageProps> = ({
+  isAuthenticated,
+  onLogin,
+}) => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isDetailOverlayOpen, setIsDetailOverlayOpen] = useState(false);
+
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    fetch("/api/projects")
+      .then((res) => res.json())
+      .then(setProjects)
+      .catch(console.error);
+  }, []);
 
   const handleProjectClick = (project: Project) => {
     setSelectedProject(project);
@@ -31,59 +42,65 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ projects, isAuthenticated, 
           Explore top Web3 projects and their attention metrics
         </p>
       </div>
-      
+
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {projects.map((project) => (
-          <div 
+          <div
             key={project.id}
             onClick={() => handleProjectClick(project)}
             className="bg-primary-800 rounded-lg p-4 flex flex-col items-center justify-center hover:bg-primary-700 transition-colors cursor-pointer border border-primary-700 hover:border-accent-500"
           >
-            <img 
-              src={project.logo} 
-              alt={project.name} 
+            <img
+              src={project.avatarUrl}
+              alt={project.name}
               className="w-12 h-12 rounded-full mb-2"
             />
-            <h3 className="text-sm font-medium text-center text-gray-200">{project.name}</h3>
+            <h3 className="text-sm font-medium text-center text-gray-200">
+              {project.name}
+            </h3>
           </div>
         ))}
       </div>
-      
+
       <div className="mt-12 bg-primary-800 rounded-lg shadow-lg p-6 border border-primary-700">
         <h2 className="text-xl font-bold text-gray-100 mb-4">For Projects</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-primary-700 p-4 rounded-lg">
             <h3 className="font-medium text-gray-200">Gain KOL Attention</h3>
             <p className="mt-2 text-sm text-gray-400">
-              Connect with the most influential voices in Web3 and increase your project's visibility.
+              Connect with the most influential voices in Web3 and increase your
+              project's visibility.
             </p>
           </div>
-          
+
           <div className="bg-primary-700 p-4 rounded-lg">
             <h3 className="font-medium text-gray-200">Stimulate Engagement</h3>
             <p className="mt-2 text-sm text-gray-400">
-              Create incentives for consistent, high-quality engagement from the community.
+              Create incentives for consistent, high-quality engagement from the
+              community.
             </p>
           </div>
-          
+
           <div className="bg-primary-700 p-4 rounded-lg">
             <h3 className="font-medium text-gray-200">Performance Analytics</h3>
             <p className="mt-2 text-sm text-gray-400">
-              Access detailed metrics on your project's attention performance and community reach.
+              Access detailed metrics on your project's attention performance
+              and community reach.
             </p>
           </div>
-          
+
           <div className="bg-primary-700 p-4 rounded-lg">
             <h3 className="font-medium text-gray-200">Build Trust</h3>
             <p className="mt-2 text-sm text-gray-400">
-              Establish credibility through transparent leaderboard rankings and verified metrics.
+              Establish credibility through transparent leaderboard rankings and
+              verified metrics.
             </p>
           </div>
         </div>
       </div>
 
       {selectedProject && (
-        <ProjectDetailOverlay 
+        <ProjectDetailOverlay
           isOpen={isDetailOverlayOpen}
           onClose={closeDetailOverlay}
           project={selectedProject}

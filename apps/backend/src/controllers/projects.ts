@@ -1,43 +1,45 @@
 import { PrismaClient } from "@prisma/client";
-import { parseLinks, serializeLinks } from "../utils/links";
+import { Request, Response } from "express";
+// import { parseLinks, serializeLinks } from "../utils/links";
 
 const prisma = new PrismaClient();
 
-export const getAllProjects = async (req, res) => {
-  const data = await prisma.project.findMany();
-  const transformed = data.map((project) => ({
-    ...project,
-    links: parseLinks(project.links),
-  }));
-  res.json(transformed);
+export const getAllProjects = async (_: Request, res: Response) => {
+  const projects = await prisma.project.findMany();
+  res.json(projects);
 };
 
-export const createProject = async (req, res) => {
-  const { links, ...rest } = req.body;
-  const data = await prisma.project.create({
-    data: {
-      ...rest,
-      links: serializeLinks(links),
-    },
-  });
-  res.status(201).json(data);
-};
-
-export const updateProject = async (req, res) => {
+export const getProject = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { links, ...rest } = req.body;
-  const data = await prisma.project.update({
-    where: { id: parseInt(id) },
-    data: {
-      ...rest,
-      links: serializeLinks(links),
-    },
-  });
-  res.json(data);
+  const proj = await prisma.project.findUnique({ where: { id } });
+  if (!proj) return res.status(404).json({ error: "Not found" });
+  res.json(proj);
 };
 
-export const deleteProject = async (req, res) => {
+export const createProject = async (req: Request, res: Response) => {
+  try {
+    const project = await prisma.project.create({ data: req.body });
+    res.status(201).json(project);
+  } catch (e: any) {
+    res.status(400).json({ error: e.message });
+  }
+};
+
+export const updateProject = async (req: Request, res: Response) => {
   const { id } = req.params;
-  await prisma.project.delete({ where: { id: parseInt(id) } });
+  try {
+    const project = await prisma.project.update({
+      where: { id },
+      data: req.body,
+    });
+    res.json(project);
+  } catch (e: any) {
+    res.status(400).json({ error: e.message });
+  }
+};
+
+export const deleteProject = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  await prisma.project.delete({ where: { id } });
   res.status(204).end();
 };

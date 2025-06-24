@@ -1,45 +1,91 @@
+// schema.prisma
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  username String  @unique
+  id       Int    @id @default(autoincrement())
+  username String @unique
   password String
   role     String
 }
 
-model Influencer {
-  id         Int        @id @default(autoincrement())
-  name       String
-  handle     String     @unique
-  avatar     String?
-  followers  Int?
-  engagement Float?
-  mentions   Mention[]
+model Project {
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  description  String?
+  category     String?
+  website      String?
+  launchDate   DateTime?
+  marketCap    String?
+  avatarUrl       String?
+
+  mindshare     String?
+  kolAttention  String?
+  engagement    String?
+  trustScore    String?
+
+  discord      String?
+  twitter      String?
+  telegram     String?
+
+  rewardPoolUsd String?
+  rewardRank    String?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  mentions     Mention[]
 }
 
-model Project {
-  id       Int        @id @default(autoincrement())
-  name     String
-  symbol   String     @unique
-  category String?
-  links    String?     // fixed: was String[]
-  mentions Mention[]
+model Influencer {
+  id              String   @id @default(cuid())
+  name            String
+  username        String   @unique
+  badges          String?
+  bio             String?
+  avatarUrl       String?
+
+  platform        String?
+  businessAccount Boolean @default(false)
+  followers       String?
+  followings      String?
+  expertise       String?
+  profileUrl      String?
+
+  mindshare       String?
+  pow             String?
+  poi             String?
+  poe             String?
+  smartFollowers  String?
+  followersCount  String?
+  moneyScore      String?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  mentions     Mention[]
 }
 
 model Mention {
-  id           Int         @id @default(autoincrement())
-  influencer   Influencer @relation(fields: [influencerId], references: [id])
-  influencerId Int
-  project      Project    @relation(fields: [projectId], references: [id])
-  projectId    Int
-  tweetId      String
-  date         DateTime
-  type         String
+  id             String      @id @default(cuid())
+  project        Project     @relation(fields: [projectId], references: [id])
+  projectId      String
+  influencer     Influencer  @relation(fields: [influencerId], references: [id])
+  influencerId   String
+
+  mindshare      String?
+  pow            String?
+  poi            String?
+  poe            String?
+  smartFollowers String?
+
+  createdAt      DateTime @default(now())
 }

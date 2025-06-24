@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Project } from '../types';
-import { ArrowUp, ArrowDown, Info } from 'lucide-react';
-import ProjectDetailOverlay from './ProjectDetailOverlay';
+import { ArrowDown, ArrowUp, Info } from "lucide-react";
+import React, { useState } from "react";
+import { Project } from "../types";
+import ProjectDetailOverlay from "./ProjectDetailOverlay";
 
 interface ProjectsLeaderboardProps {
   projects: Project[];
@@ -9,33 +9,39 @@ interface ProjectsLeaderboardProps {
   onLogin: () => void;
 }
 
-type SortField = 'rank' | 'mindshare' | 'engagementRate' | 'kolAttention' | 'trustScore' | 'rewardPool';
+type SortField =
+  | "rewardRank"
+  | "mindshare"
+  | "engagement"
+  | "kolAttention"
+  | "trustScore"
+  | "rewardPoolUsd";
 
-const ProjectsLeaderboard: React.FC<ProjectsLeaderboardProps> = ({ 
-  projects, 
-  isAuthenticated, 
-  onLogin 
+const ProjectsLeaderboard: React.FC<ProjectsLeaderboardProps> = ({
+  projects,
+  isAuthenticated,
+  onLogin,
 }) => {
-  const [sortField, setSortField] = useState<SortField>('rank');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortField, setSortField] = useState<SortField>("rewardRank");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [tooltipVisible, setTooltipVisible] = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isDetailOverlayOpen, setIsDetailOverlayOpen] = useState(false);
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
   const sortedProjects = [...projects].sort((a, b) => {
     const aValue = a[sortField];
     const bValue = b[sortField];
-    
-    if (sortDirection === 'asc') {
+
+    if (sortDirection === "asc") {
       return aValue > bValue ? 1 : -1;
     } else {
       return aValue < bValue ? 1 : -1;
@@ -61,10 +67,10 @@ const ProjectsLeaderboard: React.FC<ProjectsLeaderboardProps> = ({
 
   const tooltips = {
     mindshare: "Overall attention score based on multiple factors",
-    engagementRate: "Quality and quantity of engagement with content",
+    engagement: "Quality and quantity of engagement with content",
     kolAttention: "Attention received from key opinion leaders",
     trustScore: "Measure of community trust and reputation",
-    rewardPool: "Total rewards available for KOLs"
+    rewardPoolUsd: "Total rewards available for KOLs",
   };
 
   return (
@@ -75,131 +81,153 @@ const ProjectsLeaderboard: React.FC<ProjectsLeaderboardProps> = ({
           Top Web3 projects ranked by attention metrics and community engagement
         </p>
       </div>
-      
+
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-primary-700">
           <thead className="bg-primary-700">
             <tr>
-              <th 
-                scope="col" 
+              <th
+                scope="col"
                 className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
-                onClick={() => handleSort('rank')}
+                onClick={() => handleSort("rewardRank")}
               >
                 <div className="flex items-center">
                   Rank
-                  {sortField === 'rank' && (
-                    sortDirection === 'asc' ? <ArrowUp className="h-4 w-4 ml-1" /> : <ArrowDown className="h-4 w-4 ml-1" />
-                  )}
+                  {sortField === "rewardRank" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowUp className="h-4 w-4 ml-1" />
+                    ) : (
+                      <ArrowDown className="h-4 w-4 ml-1" />
+                    ))}
                 </div>
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
+              >
                 Project
               </th>
-              <th 
-                scope="col" 
+              <th
+                scope="col"
                 className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
-                onClick={() => handleSort('mindshare')}
+                onClick={() => handleSort("mindshare")}
               >
                 <div className="flex items-center relative">
                   Mindshare
-                  {sortField === 'mindshare' && (
-                    sortDirection === 'asc' ? <ArrowUp className="h-4 w-4 ml-1" /> : <ArrowDown className="h-4 w-4 ml-1" />
-                  )}
-                  <Info 
-                    className="h-4 w-4 ml-1 text-gray-500 cursor-help" 
-                    onMouseEnter={() => showTooltip('mindshare')}
+                  {sortField === "mindshare" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowUp className="h-4 w-4 ml-1" />
+                    ) : (
+                      <ArrowDown className="h-4 w-4 ml-1" />
+                    ))}
+                  <Info
+                    className="h-4 w-4 ml-1 text-gray-500 cursor-help"
+                    onMouseEnter={() => showTooltip("mindshare")}
                     onMouseLeave={hideTooltip}
                   />
-                  {tooltipVisible === 'mindshare' && (
+                  {tooltipVisible === "mindshare" && (
                     <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
                       {tooltips.mindshare}
                     </div>
                   )}
                 </div>
               </th>
-              <th 
-                scope="col" 
+              <th
+                scope="col"
                 className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
-                onClick={() => handleSort('engagementRate')}
+                onClick={() => handleSort("engagement")}
               >
                 <div className="flex items-center relative">
                   Engagement
-                  {sortField === 'engagementRate' && (
-                    sortDirection === 'asc' ? <ArrowUp className="h-4 w-4 ml-1" /> : <ArrowDown className="h-4 w-4 ml-1" />
-                  )}
-                  <Info 
-                    className="h-4 w-4 ml-1 text-gray-500 cursor-help" 
-                    onMouseEnter={() => showTooltip('engagementRate')}
+                  {sortField === "engagement" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowUp className="h-4 w-4 ml-1" />
+                    ) : (
+                      <ArrowDown className="h-4 w-4 ml-1" />
+                    ))}
+                  <Info
+                    className="h-4 w-4 ml-1 text-gray-500 cursor-help"
+                    onMouseEnter={() => showTooltip("engagement")}
                     onMouseLeave={hideTooltip}
                   />
-                  {tooltipVisible === 'engagementRate' && (
+                  {tooltipVisible === "engagement" && (
                     <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
-                      {tooltips.engagementRate}</div>
+                      {tooltips.engagement}
+                    </div>
                   )}
                 </div>
               </th>
-              <th 
-                scope="col" 
+              <th
+                scope="col"
                 className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
-                onClick={() => handleSort('kolAttention')}
+                onClick={() => handleSort("kolAttention")}
               >
                 <div className="flex items-center relative">
                   KOL Attention
-                  {sortField === 'kolAttention' && (
-                    sortDirection === 'asc' ? <ArrowUp className="h-4 w-4 ml-1" /> : <ArrowDown className="h-4 w-4 ml-1" />
-                  )}
-                  <Info 
-                    className="h-4 w-4 ml-1 text-gray-500 cursor-help" 
-                    onMouseEnter={() => showTooltip('kolAttention')}
+                  {sortField === "kolAttention" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowUp className="h-4 w-4 ml-1" />
+                    ) : (
+                      <ArrowDown className="h-4 w-4 ml-1" />
+                    ))}
+                  <Info
+                    className="h-4 w-4 ml-1 text-gray-500 cursor-help"
+                    onMouseEnter={() => showTooltip("kolAttention")}
                     onMouseLeave={hideTooltip}
                   />
-                  {tooltipVisible === 'kolAttention' && (
+                  {tooltipVisible === "kolAttention" && (
                     <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
                       {tooltips.kolAttention}
                     </div>
                   )}
                 </div>
               </th>
-              <th 
-                scope="col" 
+              <th
+                scope="col"
                 className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
-                onClick={() => handleSort('trustScore')}
+                onClick={() => handleSort("trustScore")}
               >
                 <div className="flex items-center relative">
                   Trust Score
-                  {sortField === 'trustScore' && (
-                    sortDirection === 'asc' ? <ArrowUp className="h-4 w-4 ml-1" /> : <ArrowDown className="h-4 w-4 ml-1" />
-                  )}
-                  <Info 
-                    className="h-4 w-4 ml-1 text-gray-500 cursor-help" 
-                    onMouseEnter={() => showTooltip('trustScore')}
+                  {sortField === "trustScore" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowUp className="h-4 w-4 ml-1" />
+                    ) : (
+                      <ArrowDown className="h-4 w-4 ml-1" />
+                    ))}
+                  <Info
+                    className="h-4 w-4 ml-1 text-gray-500 cursor-help"
+                    onMouseEnter={() => showTooltip("trustScore")}
                     onMouseLeave={hideTooltip}
                   />
-                  {tooltipVisible === 'trustScore' && (
+                  {tooltipVisible === "trustScore" && (
                     <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
                       {tooltips.trustScore}
                     </div>
                   )}
                 </div>
               </th>
-              <th 
-                scope="col" 
+              <th
+                scope="col"
                 className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
-                onClick={() => handleSort('rewardPool')}
+                onClick={() => handleSort("rewardPoolUsd")}
               >
                 <div className="flex items-center relative">
                   Reward Pool
-                  {sortField === 'rewardPool' && (
-                    sortDirection === 'asc' ? <ArrowUp className="h-4 w-4 ml-1" /> : <ArrowDown className="h-4 w-4 ml-1" />
-                  )}
-                  <Info 
-                    className="h-4 w-4 ml-1 text-gray-500 cursor-help" 
-                    onMouseEnter={() => showTooltip('rewardPool')}
+                  {sortField === "rewardPoolUsd" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowUp className="h-4 w-4 ml-1" />
+                    ) : (
+                      <ArrowDown className="h-4 w-4 ml-1" />
+                    ))}
+                  <Info
+                    className="h-4 w-4 ml-1 text-gray-500 cursor-help"
+                    onMouseEnter={() => showTooltip("rewardPoolUsd")}
                     onMouseLeave={hideTooltip}
                   />
-                  {tooltipVisible === 'rewardPool' && (
+                  {tooltipVisible === "rewardPoolUsd" && (
                     <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
-                      {tooltips.rewardPool}
+                      {tooltips.rewardPoolUsd}
                     </div>
                   )}
                 </div>
@@ -208,39 +236,61 @@ const ProjectsLeaderboard: React.FC<ProjectsLeaderboardProps> = ({
           </thead>
           <tbody className="bg-primary-800 divide-y divide-primary-700">
             {sortedProjects.map((project, index) => (
-              <tr 
-                key={project.id} 
-                className={`hover:bg-primary-600 cursor-pointer transition-colors duration-150 ${index % 2 === 0 ? 'bg-primary-800' : 'bg-primary-700'}`}
+              <tr
+                key={project.id}
+                className={`hover:bg-primary-600 cursor-pointer transition-colors duration-150 ${
+                  index % 2 === 0 ? "bg-primary-800" : "bg-primary-700"
+                }`}
                 onClick={() => handleProjectClick(project)}
               >
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-200">#{project.rank}</div>
+                  <div className="text-sm font-medium text-gray-200">
+                    #{project.rewardRank}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <div className="flex-shrink-0 h-10 w-10">
-                      <img className="h-10 w-10 rounded-full" src={project.logo} alt={project.name} />
+                      <img
+                        className="h-10 w-10 rounded-full"
+                        src={project.avatarUrl}
+                        alt={project.name}
+                      />
                     </div>
                     <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-200">{project.name}</div>
-                      <div className="text-sm text-gray-400">{project.description}</div>
+                      <div className="text-sm font-medium text-gray-200">
+                        {project.name}
+                      </div>
+                      <div className="text-sm text-gray-400">
+                        {project.description}
+                      </div>
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-200 font-medium">{project.mindshare}</div>
+                  <div className="text-sm text-gray-200 font-medium">
+                    {project.mindshare}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-200">{project.engagementRate}</div>
+                  <div className="text-sm text-gray-200">
+                    {project.engagement}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-200">{project.kolAttention}</div>
+                  <div className="text-sm text-gray-200">
+                    {project.kolAttention}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-200">{project.trustScore}</div>
+                  <div className="text-sm text-gray-200">
+                    {project.trustScore}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-200">${project.rewardPool.toLocaleString()}</div>
+                  <div className="text-sm text-gray-200">
+                    ${project.rewardPoolUsd.toLocaleString()}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -249,7 +299,7 @@ const ProjectsLeaderboard: React.FC<ProjectsLeaderboardProps> = ({
       </div>
 
       {selectedProject && (
-        <ProjectDetailOverlay 
+        <ProjectDetailOverlay
           isOpen={isDetailOverlayOpen}
           onClose={closeDetailOverlay}
           project={selectedProject}

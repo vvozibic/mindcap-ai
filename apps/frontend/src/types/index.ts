@@ -1,42 +1,38 @@
-export interface KOL {
-  id: string;
-  rank: number;
-  name: string;
-  handle: string;
-  avatar: string;
-  mindshare: number;
-  proofOfWork: number;
-  proofOfInsight: number;
-  proofOfExchange: number;
-  smartFollowers: number;
-  followers: number;
-  moneyScore: number;
-  badges: string[];
-}
-
 export interface Project {
   id: string;
-  rank: number;
   name: string;
-  logo: string;
+  slug?: string;
+  avatarUrl: string;
+  category: string;
+  website: string;
   description: string;
-  mindshare: number;
-  engagementRate: number;
-  kolAttention: number;
-  trustScore: number;
-  rewardPool: number;
+  marketCap?: string;
+  launchDate?: string; // ISO string
+  mindshare: string;
+  kolAttention: string;
+  engagement: string;
+  trustScore: string;
+  rewardPoolUsd: string;
+  rewardRank: string;
+  twitter?: string;
 }
-
-export interface User {
+export interface Influencer {
   id: string;
+  rank?: string;
   name: string;
-  handle: string;
-  avatar: string;
-  isAuthenticated: boolean;
-  mindshare: number;
-  rank: number;
-  percentile: string;
-  rewards: number;
-  referrals: number;
-  badges: string[];
+  badges?: string;
+  username: string;
+  avatarUrl: string;
+  platform: string;
+  followers: string;
+  expertise: string;
+  bio: string;
+  profileUrl: string;
+  mindshare: string;
+  pow: string;
+  poi: string;
+  poe: string;
+  smartFollowers: string;
+  followersCount: string;
+  moneyScore: string;
 }

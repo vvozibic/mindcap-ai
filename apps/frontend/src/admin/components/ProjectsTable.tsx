@@ -1,53 +1,54 @@
-import React, { useState } from 'react';
-import { KOL } from '../types';
-import { Edit, Trash2, Plus, User } from 'lucide-react';
-import KOLForm from './KOLForm';
+import { Edit, Plus, Trash2 } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Project } from "../../types";
+import ProjectForm from "./ProjectForm";
 
-interface KOLsTableProps {
-  kols: KOL[];
-  onAddKOL: (kol: KOL) => void;
-  onUpdateKOL: (kol: KOL) => void;
-  onDeleteKOL: (id: string) => void;
-}
+interface ProjectsTableProps {}
 
-const KOLsTable: React.FC<KOLsTableProps> = ({
-  kols,
-  onAddKOL,
-  onUpdateKOL,
-  onDeleteKOL
-}) => {
+const ProjectsTable: React.FC<ProjectsTableProps> = ({}) => {
+  const [projects, setProjects] = useState<Project[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [currentKOL, setCurrentKOL] = useState<KOL | null>(null);
+  const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
 
-  const handleEdit = (kol: KOL) => {
-    setCurrentKOL(kol);
-    setIsFormOpen(true);
-  };
+  useEffect(() => {
+    fetch("/api/projects")
+      .then((res) => res.json())
+      .then(setProjects)
+      .catch(console.error);
+  }, []);
 
   const handleAdd = () => {
-    setCurrentKOL(null);
+    setCurrentProjectId(null);
     setIsFormOpen(true);
   };
 
-  const handleFormSubmit = (kol: KOL) => {
-    if (currentKOL) {
-      onUpdateKOL(kol);
-    } else {
-      onAddKOL(kol);
-    }
-    setIsFormOpen(false);
+  const handleEdit = (projectId: string) => {
+    setCurrentProjectId(projectId);
+    setIsFormOpen(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    await fetch(`/api/projects/${id}`, { method: "DELETE" });
+    setProjects((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const handleSuccess = () => {
+    fetch("/api/projects")
+      .then((res) => res.json())
+      .then(setProjects)
+      .finally(() => setIsFormOpen(false));
   };
 
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
       <div className="flex justify-between items-center p-4 border-b">
-        <h2 className="text-xl font-semibold text-gray-800">Key Opinion Leaders (KOLs)</h2>
+        <h2 className="text-xl font-semibold text-gray-800">Crypto Projects</h2>
         <button
           onClick={handleAdd}
-          className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+          className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
         >
           <Plus className="h-4 w-4 mr-2" />
-          Add KOL
+          Add Project
         </button>
       </div>
 
@@ -56,19 +57,19 @@ const KOLsTable: React.FC<KOLsTableProps> = ({
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Influencer
+                Name
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Platform
+                Category
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Handle
+                Website
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Followers
+                Market Cap
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Expertise
+                Launch Date
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
@@ -76,49 +77,47 @@ const KOLsTable: React.FC<KOLsTableProps> = ({
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {kols.map((kol) => (
-              <tr key={kol.id} className="hover:bg-gray-50">
+            {projects.map((project) => (
+              <tr key={project.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 h-10 w-10">
-                      {kol.profileUrl ? (
-                        <img
-                          className="h-10 w-10 rounded-full object-cover"
-                          src={kol.profileUrl}
-                          alt={kol.name}
-                        />
-                      ) : (
-                        <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                          <User className="h-6 w-6 text-gray-500" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">{kol.name}</div>
-                    </div>
+                  <div className="text-sm font-medium text-gray-900">
+                    {project.name}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">{kol.platform}</div>
+                  <div className="text-sm text-gray-500">
+                    {project.category}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-indigo-600">{kol.handle}</div>
+                  <a
+                    href={project.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-indigo-600 hover:text-indigo-900"
+                  >
+                    {project.website}
+                  </a>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">{kol.followers}</div>
+                  <div className="text-sm text-gray-500">
+                    {project.marketCap}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">{kol.expertise}</div>
+                  <div className="text-sm text-gray-500">
+                    {project.launchDate}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button
-                    onClick={() => handleEdit(kol)}
+                    onClick={() => handleEdit(project.id)}
                     className="text-indigo-600 hover:text-indigo-900 mr-3"
                   >
                     <Edit className="h-5 w-5" />
                   </button>
                   <button
-                    onClick={() => onDeleteKOL(kol.id)}
+                    onClick={() => handleDelete(project.id)}
                     className="text-red-600 hover:text-red-900"
                   >
                     <Trash2 className="h-5 w-5" />
@@ -133,9 +132,9 @@ const KOLsTable: React.FC<KOLsTableProps> = ({
       {isFormOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
-            <KOLForm
-              kol={currentKOL}
-              onSubmit={handleFormSubmit}
+            <ProjectForm
+              projectId={currentProjectId}
+              onSuccess={handleSuccess}
               onCancel={() => setIsFormOpen(false)}
             />
           </div>
@@ -145,4 +144,4 @@ const KOLsTable: React.FC<KOLsTableProps> = ({
   );
 };
 
-export default KOLsTable;
+export default ProjectsTable;

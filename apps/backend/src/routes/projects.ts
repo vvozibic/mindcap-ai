@@ -1,15 +1,16 @@
-import express from 'express'
+import express from "express";
 import {
-  getAllProjects,
   createProject,
-  updateProject,
   deleteProject,
-} from '../controllers/projects'
-import { authenticateAdmin } from '../middleware/auth'
+  getAllProjects,
+  getProject,
+  updateProject,
+} from "../controllers/projects";
 
-export const projectRoutes = express.Router()
+export const projectRoutes = express.Router();
 
-projectRoutes.get('/', getAllProjects)
-projectRoutes.post('/', createProject)
-projectRoutes.put('/:id', authenticateAdmin, updateProject)
-projectRoutes.delete('/:id', authenticateAdmin, deleteProject)
+projectRoutes.get("/", getAllProjects);
+projectRoutes.get("/:id", getProject);
+projectRoutes.post("/", createProject);
+projectRoutes.put("/:id", updateProject);
+projectRoutes.delete("/:id", deleteProject);

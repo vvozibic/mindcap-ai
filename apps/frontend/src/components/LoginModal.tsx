@@ -1,6 +1,6 @@
-import React, { Fragment } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
-import { X, User, Twitter } from 'lucide-react';
+import { Dialog, Transition } from "@headlessui/react";
+import { Twitter, User, X } from "lucide-react";
+import React, { Fragment } from "react";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -8,7 +8,11 @@ interface LoginModalProps {
   onLogin: () => void;
 }
 
-const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin }) => {
+const LoginModal: React.FC<LoginModalProps> = ({
+  isOpen,
+  onClose,
+  onLogin,
+}) => {
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={onClose}>
@@ -46,17 +50,18 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin }) => 
                     <X className="h-6 w-6" aria-hidden="true" />
                   </button>
                 </div>
-                
+
                 <Dialog.Title
                   as="h3"
                   className="text-lg font-medium leading-6 text-gray-200 text-center"
                 >
                   Sign in to AttentionFi
                 </Dialog.Title>
-                
+
                 <div className="mt-4">
                   <p className="text-sm text-gray-400 text-center">
-                    Connect your account to view your personalized metrics and earn rewards
+                    Connect your account to view your personalized metrics and
+                    earn rewards
                   </p>
                 </div>
 
@@ -64,12 +69,15 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin }) => 
                   <button
                     type="button"
                     className="w-full flex items-center justify-center px-4 py-2 border border-primary-600 shadow-sm text-sm font-medium rounded-md text-gray-300 bg-primary-700 hover:bg-primary-600"
-                    onClick={onClose}
+                    onClick={() => {
+                      onLogin();
+                      onClose();
+                    }}
                   >
                     <User className="h-5 w-5 mr-2" />
                     Continue with Email
                   </button>
-                  
+
                   <button
                     type="button"
                     className="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary-900 bg-accent-500 hover:bg-accent-600"
@@ -82,10 +90,11 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin }) => 
                     Continue with X
                   </button>
                 </div>
-                
+
                 <div className="mt-6">
                   <p className="text-xs text-gray-500 text-center">
-                    By signing in, you agree to our Terms of Service and Privacy Policy
+                    By signing in, you agree to our Terms of Service and Privacy
+                    Policy
                   </p>
                 </div>
               </Dialog.Panel>

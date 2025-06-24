@@ -28,9 +28,9 @@ app.use("/api/mentions", mentionRoutes);
 
 if (isDev) {
   app.use(
-    "/admin",
+    "/api",
     createProxyMiddleware({
-      target: "http://localhost:5174",
+      target: "http://localhost:5173",
       changeOrigin: true,
       ws: true,
     })
@@ -45,15 +45,10 @@ if (isDev) {
     })
   );
 } else {
-  app.use("/admin", express.static(path.join(__dirname, "../admin")));
-  app.use("/", express.static(path.join(__dirname, "../public")));
+  app.use(express.static(path.join(__dirname, "../dist")));
 
-  app.get("/admin/*", (_, res) => {
-    res.sendFile(path.join(__dirname, "../admin/index.html"));
-  });
-
-  app.get("*", (_, res) => {
-    res.sendFile(path.join(__dirname, "../public/index.html"));
+  app.get("/*", (_, res) => {
+    res.sendFile(path.join(__dirname, "../dist/index.html"));
   });
 }
 
