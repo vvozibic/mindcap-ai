@@ -1,11 +1,37 @@
 version: "3.9"
 services:
   backend:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "3001:3001"
     volumes:
       - ./apps/backend/prisma:/app/apps/backend/prisma
     environment:
-      - NODE_ENV=production
-      - DATABASE_URL="file:./dev.db"
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL}
+    depends_on:
+      - postgres
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.front
+    ports:
+      - "3000:80"
+
+  # postgres:
+  #   image: postgres:15
+  #   restart: always
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     POSTGRES_DB: appdb
+  #     POSTGRES_USER: appuser
+  #     POSTGRES_PASSWORD: supersecret
+  #   volumes:
+  #     - pgdata:/var/lib/postgresql/data
+
+# volumes:
+#   pgdata:
