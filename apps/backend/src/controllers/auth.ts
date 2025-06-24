@@ -13,6 +13,8 @@ export const login = async (req: Request, res: Response) => {
   if (!user) return res.status(401).json({ error: "Invalid credentials" });
 
   const valid = await bcrypt.compare(password, user.password);
+  // @ts-ignore
+
   if (!valid) return res.status(401).json({ error: "Invalid credentials" });
 
   const token = jwt.sign(

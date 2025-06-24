@@ -5,7 +5,7 @@
   "main": "src/server.ts",
   "scripts": {
     "dev": "vite-node src/server.ts",
-    "build": "pnpm prisma generate",
+    "build": "tsc && pnpm prisma generate",
     "start": "node dist/server.js",
     "seed": "ts-node --esm prisma/seed.ts",
     "prisma": "prisma"

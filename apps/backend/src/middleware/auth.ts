@@ -13,6 +13,7 @@ export const authenticateToken = (
 
   jwt.verify(token, process.env.JWT_SECRET as string, (err, user) => {
     if (err) return res.status(403).json({ error: "Invalid token" });
+    // @ts-ignore
     req.user = user; // @ts-ignore
     next();
   });
