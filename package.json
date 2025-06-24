@@ -6,9 +6,12 @@
   ],
   "scripts": {
     "dev:all": "./dev-all.sh",
-    "dev": "pnpm --filter @app/backend dev",
-    "build": "pnpm --filter @app/frontend build && pnpm --filter @app/backend build",
-    "start": "pnpm --filter @app/backend start"
+    "dev": "yarn --cwd @app/backend dev",
+    "build": "yarn workspace @app/frontend build && yarn workspace @app/backend build",
+    "start": "yarn workspace @app/backend start"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   },
   "devDependencies": {
     "@types/http-proxy-middleware": "^1.0.0",
