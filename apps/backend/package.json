@@ -1,7 +1,7 @@
 {
   "name": "@app/backend",
   "version": "1.0.0",
-  "type": "module",
+  "type": "commonjs",
   "main": "src/server.ts",
   "scripts": {
     "dev": "vite-node src/server.ts",
