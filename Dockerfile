@@ -34,6 +34,8 @@ RUN echo "--- Contents of backend/dist ---" && ls -la /app/apps/backend/dist
 # Вывести ENV
 RUN echo "ENV CONTENTS:" && env
 
+RUN yarn --cwd apps/backend seed
+
 # Переход в backend и запуск
 WORKDIR /app/apps/backend
 CMD ["node", "dist/server.js"]
