@@ -30,6 +30,9 @@ COPY apps/backend/prisma/dev.db apps/backend/prisma/dev.db
 RUN echo "--- Contents of backend/dist ---" && ls -la /app/apps/backend/dist
 RUN echo "--- Contents of prisma ---" && ls -la /app/apps/backend/prisma
 RUN echo "ENV CONTENTS:" && env
+RUN echo "--- DB file ---" && ls -la /app/apps/backend/prisma/dev.db
+# RUN apt-get update && apt-get install -y sqlite3
+# RUN sqlite3 /app/apps/backend/prisma/dev.db ".tables"
 
 # Переходим в backend
 WORKDIR /app/apps/backend
