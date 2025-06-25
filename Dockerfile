@@ -1,35 +1,27 @@
 # 1. Базовый образ
 FROM node:20
 
-# # 2. Установка pnpm
-# RUN npm install -g pnpm
+# 2. Создание рабочей директории
+WORKDIR /app
 
-# # 3. Создание рабочей директории
-# WORKDIR /app
+# 3. Копируем корневые файлы монорепы
+COPY package.json yarn.lock ./
 
-# # 4. Копируем корневые файлы монорепы
-# COPY pnpm-workspace.yaml ./
-# COPY pnpm-lock.yaml ./
-# COPY package.json ./
+# 4. Установка зависимостей
+RUN yarn install
 
-# # 5. Установка зависимостей на уровне корня (workspace)
-# RUN pnpm install
+# 5. Копируем приложения
+COPY apps ./apps
 
-# # 6. Копируем backend-приложение
-# COPY apps/backend ./apps/backend
-# # COPY apps/backend/.env ./apps/backend/.env
+# 6. Билдим frontend
+WORKDIR /app/apps/frontend
+RUN yarn install && yarn build
 
-# # 7. Копируем frontend-приложение и билдим его
-# COPY apps/frontend ./apps/frontend
-# WORKDIR /app/apps/frontend
-# RUN pnpm install && pnpm build
+# 7. Генерируем Prisma Client и билдим backend
+WORKDIR /app/apps/backend
+RUN yarn install && yarn build && yarn prisma generate
 
-# # 8. Возвращаемся в backend и билдим backend
-# WORKDIR /app/apps/backend
-# RUN pnpm install
-# RUN pnpm prisma generate
+# 8. Запускаем backend
+CMD ["node", "dist/server.js"]
 
-# # 9. Запускаем backend
-# CMD ["pnpm", "dev"]
-
-# EXPOSE 3001
+EXPOSE 3001
