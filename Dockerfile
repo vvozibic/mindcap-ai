@@ -1,30 +1,30 @@
-# 1. Базовый образ
 FROM node:20
 
-# 2. Создание рабочей директории
+# Устанавливаем Yarn
+RUN corepack enable && corepack prepare yarn@stable --activate
+
+# Рабочая директория
 WORKDIR /app
 
-# 3. Копируем корневые файлы монорепы
-COPY package.json yarn.lock ./
+# Копируем все файлы монорепы
+COPY . .
 
-# 4. Установка зависимостей
+# Установка зависимостей
 RUN yarn install
 
-# 5. Копируем приложения
-COPY apps ./apps
+# Сборка фронта
+RUN yarn --cwd apps/frontend build
 
-# 6. Билдим frontend
-WORKDIR /app/apps/frontend
-RUN yarn install && yarn build
+# Сборка бэкенда
+RUN yarn --cwd apps/backend build
 
-# 7. Генерируем Prisma Client и билдим backend
-WORKDIR /app/apps/backend
-RUN yarn install && yarn build && yarn prisma generate
+# Генерация Prisma
+RUN yarn --cwd apps/backend generate
 
-RUN ls -la /app/apps/backend/dist
 RUN echo "--- Contents of dist ---" && ls -la /app/apps/backend/dist
 
-# 8. Запускаем backend
+# Запуск backend
+WORKDIR /app/apps/backend
 CMD ["node", "dist/server.js"]
 
 EXPOSE 3001
