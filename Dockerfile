@@ -22,6 +22,7 @@ RUN yarn --cwd apps/backend build
 RUN yarn --cwd apps/backend generate
 
 RUN echo "--- Contents of dist ---" && ls -la /app/apps/backend/dist
+RUN echo "ENV CONTENTS:" && env
 
 # Запуск backend
 WORKDIR /app/apps/backend
