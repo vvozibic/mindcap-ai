@@ -11,7 +11,7 @@
     "start": "yarn workspace @app/backend start"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": "20.19.3"
   },
   "devDependencies": {
     "@types/http-proxy-middleware": "^1.0.0",
