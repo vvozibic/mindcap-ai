@@ -8,18 +8,22 @@ WORKDIR /app
 
 # Копируем всё из монорепы
 COPY . .
-
-# Установка зависимостей на уровне root и workspaces
-RUN yarn install
-
 ENV DATABASE_URL="file:./prisma/dev.db"
 
-# Сборка frontend (vite build)
-RUN yarn --cwd apps/frontend build
+# Установка зависимостей
+RUN echo "📦 Installing dependencies..." && yarn install
 
-# Сборка backend
-RUN yarn --cwd apps/backend build
-RUN yarn --cwd apps/backend generate
+# Сборка фронта
+RUN echo "🚧 Building frontend..." && yarn --cwd apps/frontend build
+
+# Лог: структура фронта
+RUN echo "📂 Tree of frontend after build:" && tree -L 3 apps/frontend
+
+# Сборка и генерация Prisma
+RUN echo "🚧 Building backend..." && yarn --cwd apps/backend build && yarn --cwd apps/backend generate
+
+# Лог: структура бэкенда после сборки
+RUN echo "📂 Tree of backend after build:" && tree -L 3 apps/backend
 
 # Применение миграций (создание dev.db)
 RUN yarn --cwd apps/backend prisma migrate deploy

@@ -2,6 +2,7 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
+import fs from "fs";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import path from "path";
 import { authRoutes } from "./routes/auth";
@@ -46,6 +47,17 @@ if (isDev) {
   app.get("*", (_, res) => {
     res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
   });
+}
+
+const frontendPath = path.join(__dirname, "../../frontend/dist");
+const indexHtmlPath = path.join(frontendPath, "index.html");
+
+console.log("🚀 Environment:", process.env.NODE_ENV);
+console.log("📁 Frontend dist path:", frontendPath);
+console.log("📄 Checking index.html exists:", fs.existsSync(indexHtmlPath));
+
+if (!fs.existsSync(indexHtmlPath)) {
+  console.error("❌ index.html NOT FOUND");
 }
 
 const PORT = Number(process.env.PORT) || 3001;
