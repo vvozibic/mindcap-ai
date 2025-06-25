@@ -36,3 +36,15 @@ export interface Influencer {
   followersCount: string;
   moneyScore: string;
 }
+
+export interface User {
+  id?: string;
+  username?: string;
+  email?: string;
+  role?: "admin" | "user";
+  twitterHandle?: string;
+  avatarUrl?: string;
+  createdAt?: string; // ISO string
+  updatedAt?: string; // ISO string
+  isAuthenticated?: boolean;
+}
