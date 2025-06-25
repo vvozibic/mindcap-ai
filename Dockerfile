@@ -3,29 +3,36 @@ FROM node:20
 # Устанавливаем Yarn
 RUN corepack enable && corepack prepare yarn@stable --activate
 
-# Рабочая директория
+# Создаём рабочую директорию
 WORKDIR /app
 
-# Копируем все файлы монорепы
+# Копируем всё из монорепы
 COPY . .
 
-# Установка зависимостей
+# Установка зависимостей на уровне root и workspaces
 RUN yarn install
 
-# Сборка фронта
+# Сборка frontend (vite build)
 RUN yarn --cwd apps/frontend build
 
-# Сборка бэкенда
+# Сборка backend (tsc + prisma)
 RUN yarn --cwd apps/backend build
-
-# Генерация Prisma
 RUN yarn --cwd apps/backend generate
 
-RUN echo "--- Contents of dist ---" && ls -la /app/apps/backend/dist
+# Убедимся, что база включена в образ
+# Копируем явно если нужно
+# COPY apps/backend/prisma/dev.db apps/backend/prisma/dev.db
+
+# Вывод содержимого dist и ENV (для отладки)
+RUN echo "--- Contents of backend/dist ---" && ls -la /app/apps/backend/dist
+RUN echo "--- Contents of prisma ---" && ls -la /app/apps/backend/prisma
 RUN echo "ENV CONTENTS:" && env
 
-# Запуск backend
+# Переходим в backend
 WORKDIR /app/apps/backend
-CMD ["node", "dist/server.js"]
 
+# Прокидываем порт
 EXPOSE 3001
+
+# Запуск backend
+CMD ["node", "dist/server.js"]
