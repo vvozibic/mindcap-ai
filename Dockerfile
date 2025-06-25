@@ -21,6 +21,9 @@ RUN yarn install && yarn build
 WORKDIR /app/apps/backend
 RUN yarn install && yarn build && yarn prisma generate
 
+RUN ls -la /app/apps/backend/dist
+RUN echo "--- Contents of dist ---" && ls -la /app/apps/backend/dist
+
 # 8. Запускаем backend
 CMD ["node", "dist/server.js"]
 
