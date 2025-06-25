@@ -39,7 +39,8 @@ RUN echo "--- Contents of backend/dist ---" && ls -la /app/apps/backend/dist
 # Вывести ENV
 RUN echo "ENV CONTENTS:" && env
 
-RUN yarn --cwd apps/backend seed
+# Прогон сидов после генерации Prisma
+RUN echo "🌱 Seeding database..." && yarn --cwd apps/backend prisma db seed
 
 # Переход в backend и запуск
 WORKDIR /app/apps/backend
