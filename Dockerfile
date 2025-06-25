@@ -1,7 +1,8 @@
 FROM node:20
 
-# Устанавливаем Yarn
-RUN corepack enable && corepack prepare yarn@stable --activate
+# Устанавливаем tree и Yarn
+RUN apt-get update && apt-get install -y tree && \
+  corepack enable && corepack prepare yarn@stable --activate
 
 # Создаём рабочую директорию
 WORKDIR /app
