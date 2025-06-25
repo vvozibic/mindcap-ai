@@ -10,6 +10,7 @@ WORKDIR /app
 # Копируем всё из монорепы
 COPY . .
 ENV DATABASE_URL="file:./prisma/dev.db"
+ENV NODE_ENV=production
 
 # Установка зависимостей
 RUN echo "📦 Installing dependencies..." && yarn install
