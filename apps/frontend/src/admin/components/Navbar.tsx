@@ -1,5 +1,5 @@
-import React from 'react';
-import { Layers } from 'lucide-react';
+import { Layers } from "lucide-react";
+import React from "react";
 
 interface NavbarProps {
   activeTab: string;
@@ -19,24 +19,34 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
           </div>
           <div className="flex">
             <button
-              onClick={() => setActiveTab('projects')}
+              onClick={() => setActiveTab("projects")}
               className={`px-4 py-2 mx-1 rounded-md text-sm font-medium transition-colors duration-150 ease-in-out ${
-                activeTab === 'projects'
-                  ? 'bg-white text-indigo-600'
-                  : 'text-white hover:bg-indigo-500'
+                activeTab === "projects"
+                  ? "bg-white text-indigo-600"
+                  : "text-white hover:bg-indigo-500"
               }`}
             >
               Projects
             </button>
             <button
-              onClick={() => setActiveTab('kols')}
+              onClick={() => setActiveTab("kols")}
               className={`px-4 py-2 mx-1 rounded-md text-sm font-medium transition-colors duration-150 ease-in-out ${
-                activeTab === 'kols'
-                  ? 'bg-white text-indigo-600'
-                  : 'text-white hover:bg-indigo-500'
+                activeTab === "kols"
+                  ? "bg-white text-indigo-600"
+                  : "text-white hover:bg-indigo-500"
               }`}
             >
               KOLs
+            </button>
+            <button
+              onClick={() => setActiveTab("users")}
+              className={`px-4 py-2 mx-1 rounded-md text-sm font-medium transition-colors duration-150 ease-in-out ${
+                activeTab === "users"
+                  ? "bg-white text-indigo-600"
+                  : "text-white hover:bg-indigo-500"
+              }`}
+            >
+              Users
             </button>
           </div>
         </div>

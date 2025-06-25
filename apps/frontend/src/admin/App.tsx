@@ -1,4 +1,5 @@
 import { useState } from "react";
+import UsersTable from "./components/ClientsTable";
 import KOLsTable from "./components/KOLsTable";
 import Navbar from "./components/Navbar";
 import ProjectsTable from "./components/ProjectsTable";
@@ -13,18 +14,22 @@ function App() {
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
-            {activeTab === "projects"
-              ? "Crypto Projects Management"
-              : "Influencers Management"}
+            {activeTab === "projects" && "Crypto Projects Management"}
+            {activeTab === "kols" && "Influencers Management"}
+            {activeTab === "users" && "Users"}
           </h1>
           <p className="mt-2 text-sm text-gray-600">
-            {activeTab === "projects"
-              ? "Manage your crypto projects database with detailed information."
-              : "Track and manage key opinion leaders in the crypto space."}
+            {activeTab === "projects" &&
+              "Manage your crypto projects database with detailed information."}
+
+            {activeTab === "kols" &&
+              "Track and manage key opinion leaders in the crypto space."}
           </p>
         </div>
 
-        {activeTab === "projects" ? <ProjectsTable /> : <KOLsTable />}
+        {activeTab === "projects" && <ProjectsTable />}
+        {activeTab === "kols" && <KOLsTable />}
+        {activeTab === "users" && <UsersTable />}
       </main>
 
       <footer className="bg-white border-t mt-auto py-4">

@@ -8,7 +8,7 @@ function AdminLayout() {
       <div className="flex min-h-screen">
         <section className="flex-1">
           <Routes>
-            <Route path="" element={<App />} />
+            <Route path="/" element={<App />} />
           </Routes>
         </section>
       </div>

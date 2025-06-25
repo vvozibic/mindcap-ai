@@ -9,6 +9,7 @@ import { authRoutes } from "./routes/auth";
 import { influencerRoutes } from "./routes/influencers";
 import { mentionRoutes } from "./routes/mentions";
 import { projectRoutes } from "./routes/projects";
+import { usersRoutes } from "./routes/users";
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/influencers", influencerRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/mentions", mentionRoutes);
+app.use("/api/users", usersRoutes);
 
 if (isDev) {
   app.use(
