@@ -12,6 +12,8 @@ COPY . .
 # Установка зависимостей на уровне root и workspaces
 RUN yarn install
 
+ENV DATABASE_URL="file:./prisma/dev.db"
+
 # Сборка frontend (vite build)
 RUN yarn --cwd apps/frontend build
 
