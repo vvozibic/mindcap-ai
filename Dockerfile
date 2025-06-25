@@ -15,13 +15,16 @@ RUN yarn install
 # Сборка frontend (vite build)
 RUN yarn --cwd apps/frontend build
 
-# Сборка backend (tsc + prisma)
+# Сборка backend
 RUN yarn --cwd apps/backend build
 RUN yarn --cwd apps/backend generate
 
+# Поднимаем миграции (создаём таблицы в dev.db)
+RUN yarn --cwd apps/backend prisma migrate deploy
+
 # Убедимся, что база включена в образ
 # Копируем явно если нужно
-# COPY apps/backend/prisma/dev.db apps/backend/prisma/dev.db
+COPY apps/backend/prisma/dev.db apps/backend/prisma/dev.db
 
 # Вывод содержимого dist и ENV (для отладки)
 RUN echo "--- Contents of backend/dist ---" && ls -la /app/apps/backend/dist
