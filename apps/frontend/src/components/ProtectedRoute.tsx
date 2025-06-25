@@ -8,7 +8,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const token = localStorage.getItem("token");
     if (!token) return setIsAuthenticated(false);
 
-    fetch("/api/auth/me", {
+    fetch("/api/auth/admin/me", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => setIsAuthenticated(res.ok))

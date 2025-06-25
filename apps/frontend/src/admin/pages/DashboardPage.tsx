@@ -7,7 +7,7 @@ const Dashboard = () => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    fetch("/api/auth/me", {
+    fetch("/api/auth/admin/me", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
