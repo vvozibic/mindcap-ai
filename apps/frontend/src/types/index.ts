@@ -11,7 +11,7 @@ export interface Project {
   twitter?: string | null;
   telegram?: string | null;
   discord?: string | null;
-  rawJson?: string | null;
+  rawData?: any | null;
 
   // Поля анализа
   mindshare?: string | null;
@@ -39,6 +39,7 @@ export interface Influencer {
   followings?: string | null;
   expertise?: string | null;
   profileUrl?: string | null;
+  twitterScoutJsonRaw?: any | null;
 
   mindshare?: string | null;
   pow?: string | null;
@@ -46,6 +47,7 @@ export interface Influencer {
   poe?: string | null;
   smartFollowers?: string | null;
   followersCount?: string | null;
+
   moneyScore?: string | null;
 
   createdAt?: string;

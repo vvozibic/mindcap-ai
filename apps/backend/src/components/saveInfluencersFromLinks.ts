@@ -11,10 +11,7 @@ function extractHandle(url: string): string | null {
 }
 
 async function saveAllInfluencersParallel(concurrency = 6) {
-  const handles = users
-    .slice(0, 1)
-    .map(extractHandle)
-    .filter(Boolean) as string[];
+  const handles = users.map(extractHandle).filter(Boolean) as string[];
 
   // Читаем уже сохранённые username из базы
   const existingInfluencers = await prisma.influencer.findMany({

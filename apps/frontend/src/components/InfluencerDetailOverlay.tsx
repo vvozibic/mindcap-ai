@@ -58,16 +58,16 @@ const getInfluencerDetailData = (
   if (!kol) return null;
 
   return {
-    biography: "Yet from Degen planet",
+    biography: kol?.bio || "No biography available",
     followers: Number(kol?.followersCount || 1000),
-    following: 8,
-    isBusinessAccount: false,
+    following: Number(kol?.followings || 100),
+    isBusinessAccount: kol?.businessAccount || false,
     accountStatus: "Active",
     syncStatus: "Idle",
-    lastSync: null,
+    lastSync: "Jun 20, 2025, 12:27 PM",
     nextSync: null,
     lastUpdated: "Jun 12, 2025, 12:27 PM",
-    totalPosts: 10,
+    totalPosts: kol?.twitterScoutJsonRaw?.tweets_count || 1000,
     engagement: 504.4,
     engagementTrend: "up",
     averageLikes: 274466.5,
@@ -203,7 +203,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                               Following
                             </h6>
                             <p className="text-lg font-bold text-gray-200">
-                              {detailData.following.toLocaleString()}
+                              {detailData?.following.toLocaleString() || "0"}
                             </p>
                           </div>
                         </div>
@@ -245,7 +245,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                     </h5>
                     <div className="bg-primary-700 rounded-lg p-4 mb-6">
                       <div className="flex items-center mb-3">
-                        <div className="h-2 w-2 rounded-full bg-gray-500 mr-2"></div>
+                        <div className="h-2 w-2 rounded-full bg-green-500 mr-2"></div>
                         <p className="text-gray-300">{detailData.syncStatus}</p>
                       </div>
 

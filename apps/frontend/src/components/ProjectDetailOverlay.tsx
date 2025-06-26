@@ -250,7 +250,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                     >
                       {project.name}
                     </Dialog.Title>
-                    <p className="text-gray-300">{project.description}</p>
+                    {/* <p className="text-gray-300">{project.description}</p> */}
                   </div>
                 </div>
 
@@ -519,23 +519,15 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                           About the Project
                         </h5>
                         <div className="bg-primary-700 rounded-lg p-4 mb-6">
-                          <p className="text-gray-300">
-                            {project.name} is a leading Web3 project focused on
-                            building decentralized infrastructure for the next
-                            generation of applications. With a strong focus on
-                            security, scalability, and user experience,{" "}
-                            {project.name} is pushing the boundaries of what's
-                            possible in the blockchain space.
-                          </p>
+                          <p className="text-gray-300">{project.description}</p>
                           <div className="mt-4 pt-4 border-t border-primary-600">
                             <h6 className="text-sm font-medium text-gray-300 mb-2">
-                              Key Features
+                              Categories
                             </h6>
                             <ul className="list-disc list-inside text-gray-400 space-y-1">
-                              <li>High throughput and low latency</li>
-                              <li>Developer-friendly tools and SDKs</li>
-                              <li>Cross-chain interoperability</li>
-                              <li>Strong security guarantees</li>
+                              {project?.rawData?.categories.map((c: string) => (
+                                <li>{c}</li>
+                              ))}
                             </ul>
                           </div>
                         </div>
@@ -546,13 +538,14 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                         <div className="bg-primary-700 rounded-lg p-4">
                           <div className="grid grid-cols-2 gap-4">
                             <a
-                              href="#"
+                              href={project?.website || "/"}
+                              target="_blank"
                               className="flex items-center text-gray-300 hover:text-accent-500"
                             >
                               <ExternalLink className="h-4 w-4 mr-2" />
                               Website
                             </a>
-                            <a
+                            {/* <a
                               href="#"
                               className="flex items-center text-gray-300 hover:text-accent-500"
                             >
@@ -572,7 +565,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                             >
                               <ExternalLink className="h-4 w-4 mr-2" />
                               Telegram
-                            </a>
+                            </a> */}
                           </div>
                         </div>
                       </div>

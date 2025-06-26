@@ -12,28 +12,30 @@ async function delay(ms: number) {
 console.log("🔑 Using", API_KEY);
 async function fetchWithRetry<T>(
   url: string,
-  params: Record<string, string | number> = {},
+  params: Record<string, any>,
   retries = 5
 ): Promise<T> {
+  const query = {
+    ...params,
+    x_cg_demo_api_key: API_KEY,
+  };
+
   for (let i = 0; i < retries; i++) {
     try {
-      const res = await axios.get<T>(url, {
-        headers: API_KEY ? { "x-cg-pro-api-key": API_KEY } : {},
-        params,
-      });
+      const res = await axios.get<T>(url, { params: query });
       return res.data;
     } catch (err: any) {
       console.warn(
         `Retry ${i + 1}/${retries}: ${url}`,
         err.code,
         err.message,
-        err.response?.status,
-        err.response?.data
+        err.response?.headers
       );
-      await delay(60000);
+      await delay(3000);
     }
   }
-  throw new Error(`❌ Failed to fetch after ${retries} retries: ${url}`);
+
+  throw new Error(`Failed to fetch after ${retries} retries: ${url}`);
 }
 
 async function getTopProjects(count = 100) {
@@ -110,7 +112,7 @@ export default async function run() {
     );
     const details = await getProjectDetails(project.id);
     await saveProject(details);
-    await delay(30000); // to avoid rate limit
+    await delay(3000); // to avoid rate limit
   }
 
   console.log("✅ All new projects saved");
