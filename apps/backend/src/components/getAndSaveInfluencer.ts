@@ -1,9 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 import axios from "axios";
+import fs from "fs/promises";
+import { retryWithDelay } from "./retryWithDelay";
 
 const prisma = new PrismaClient();
 
-type TweetScoutResponse = {
+export type TweetScoutResponse = {
   avatar: string;
   banner: string;
   can_dm: boolean;
@@ -18,19 +20,40 @@ type TweetScoutResponse = {
   verified: boolean;
 };
 
-export async function getAndSaveInfluencer(screenName: string) {
+export async function getAndSaveInfluencer(
+  screenName: string,
+  skipIfExists = true
+) {
+  const username = screenName.toLowerCase();
+
   try {
-    const { data } = await axios.get<TweetScoutResponse>(
-      `https://api.tweetscout.io/v2/info/${screenName}`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.TWEETSCOUT_API_KEY}`,
-        },
+    if (skipIfExists) {
+      const exists = await prisma.influencer.findUnique({
+        where: { username },
+        select: { id: true },
+      });
+      if (exists) {
+        console.log(`ℹ️ Already in DB: ${username}`);
+        return;
       }
+    }
+
+    const data = await retryWithDelay(() =>
+      axios
+        .get<TweetScoutResponse>(
+          `https://api.tweetscout.io/v2/info/${username}`,
+          {
+            headers: {
+              Accept: "application/json",
+              ApiKey: process.env.TWEETSCOUT_API_KEY || "",
+            },
+          }
+        )
+        .then((res) => res.data)
     );
 
     await prisma.influencer.upsert({
-      where: { username: data.screen_name },
+      where: { username },
       update: {
         name: data.name,
         bio: data.description,
@@ -42,10 +65,11 @@ export async function getAndSaveInfluencer(screenName: string) {
         tweetsCount: data.tweets_count.toString(),
         followersCount: data.followers_count.toString(),
         followings: data.friends_count.toString(),
+        twitterScoutJsonRaw: data,
       },
       create: {
+        username,
         name: data.name,
-        username: data.screen_name,
         bio: data.description,
         avatarUrl: data.avatar,
         bannerUrl: data.banner,
@@ -56,14 +80,24 @@ export async function getAndSaveInfluencer(screenName: string) {
         followersCount: data.followers_count.toString(),
         followings: data.friends_count.toString(),
         businessAccount: false,
+        twitterScoutJsonRaw: data,
       },
     });
 
-    console.log(`✅ Saved influencer: ${data.screen_name}`);
+    console.log(`✅ Saved: ${username}`);
   } catch (err: any) {
-    console.error(
-      `❌ Failed to fetch/save ${screenName}:`,
-      err?.response?.data || err
+    const message = err?.response?.data || err?.message || "Unknown error";
+    console.error(`❌ Failed: ${username} —`, message);
+
+    const failed = {
+      handle: username,
+      error: typeof message === "string" ? message : JSON.stringify(message),
+    };
+
+    await fs.writeFile(
+      "failed-influencers.json",
+      JSON.stringify([failed], null, 2),
+      { flag: "a" }
     );
   }
 }

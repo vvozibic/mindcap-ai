@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import axios from "axios";
 
 const prisma = new PrismaClient();
-const BASE_URL = "https://pro-api.coingecko.com/api/v3";
+const BASE_URL = "https://api.coingecko.com/api/v3";
 const API_KEY = process.env.COINGECKO_API_KEY;
 
 async function delay(ms: number) {
@@ -10,35 +10,45 @@ async function delay(ms: number) {
 }
 
 console.log("🔑 Using", API_KEY);
-
-async function fetchWithRetry<T>(url: string, retries = 5): Promise<T> {
+async function fetchWithRetry<T>(
+  url: string,
+  params: Record<string, string | number> = {},
+  retries = 5
+): Promise<T> {
   for (let i = 0; i < retries; i++) {
     try {
       const res = await axios.get<T>(url, {
         headers: API_KEY ? { "x-cg-pro-api-key": API_KEY } : {},
+        params,
       });
       return res.data;
-    } catch (err) {
+    } catch (err: any) {
       console.warn(
         `Retry ${i + 1}/${retries}: ${url}`,
         err.code,
         err.message,
-        err.response?.headers
+        err.response?.status,
+        err.response?.data
       );
-      await delay(1000);
+      await delay(60000);
     }
   }
-  throw new Error(`Failed to fetch after ${retries} retries: ${url}`);
+  throw new Error(`❌ Failed to fetch after ${retries} retries: ${url}`);
 }
 
 async function getTopProjects(count = 100) {
-  const url = `${BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${count}&page=1`;
-  return fetchWithRetry<any[]>(url);
+  const url = `${BASE_URL}/coins/markets`;
+  return fetchWithRetry<any[]>(url, {
+    vs_currency: "usd",
+    order: "market_cap_desc",
+    per_page: count,
+    page: 1,
+  });
 }
 
 async function getProjectDetails(id: string) {
   const url = `${BASE_URL}/coins/${id}`;
-  return fetchWithRetry<any>(url);
+  return fetchWithRetry<any>(url, {});
 }
 
 async function saveProject(data: any) {
@@ -100,7 +110,7 @@ export default async function run() {
     );
     const details = await getProjectDetails(project.id);
     await saveProject(details);
-    await delay(1000); // to avoid rate limit
+    await delay(30000); // to avoid rate limit
   }
 
   console.log("✅ All new projects saved");

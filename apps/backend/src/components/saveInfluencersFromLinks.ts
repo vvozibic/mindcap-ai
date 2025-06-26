@@ -1,14 +1,30 @@
+import { PrismaClient } from "@prisma/client";
 import fs from "fs/promises";
 import { getAndSaveInfluencer } from "./getAndSaveInfluencer";
 import { users } from "./users";
 
+const prisma = new PrismaClient();
+
 function extractHandle(url: string): string | null {
   const match = url.match(/(?:twitter\.com|x\.com)\/@?([\w\d_]+)/i);
-  return match ? match[1] : null;
+  return match ? match[1].toLowerCase() : null;
 }
 
 async function saveAllInfluencersParallel(concurrency = 6) {
-  const handles = users.map(extractHandle).filter(Boolean) as string[];
+  const handles = users
+    .slice(0, 1)
+    .map(extractHandle)
+    .filter(Boolean) as string[];
+
+  // Читаем уже сохранённые username из базы
+  const existingInfluencers = await prisma.influencer.findMany({
+    select: { username: true },
+  });
+  const existingUsernames = new Set(
+    existingInfluencers.map((i) => i.username.toLowerCase())
+  );
+
+  const filteredHandles = handles.filter((h) => !existingUsernames.has(h));
 
   const failed: { handle: string; error: string }[] = [];
   let active = 0;
@@ -16,7 +32,7 @@ async function saveAllInfluencersParallel(concurrency = 6) {
 
   return new Promise<void>((resolve, reject) => {
     const runNext = async () => {
-      if (index >= handles.length) {
+      if (index >= filteredHandles.length) {
         if (active === 0) {
           if (failed.length > 0) {
             await fs.writeFile(
@@ -32,7 +48,7 @@ async function saveAllInfluencersParallel(concurrency = 6) {
         return;
       }
 
-      const handle = handles[index++];
+      const handle = filteredHandles[index++];
       active++;
 
       try {
@@ -54,5 +70,11 @@ async function saveAllInfluencersParallel(concurrency = 6) {
 }
 
 saveAllInfluencersParallel(6)
-  .then(() => console.log("🎉 Done"))
-  .catch(console.error);
+  .then(() => {
+    console.log("🎉 Done");
+    return prisma.$disconnect();
+  })
+  .catch((err) => {
+    console.error(err);
+    prisma.$disconnect();
+  });

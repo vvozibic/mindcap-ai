@@ -67,6 +67,7 @@ model Influencer {
   followersCount  String?   
   followings      String?   
   businessAccount Boolean   @default(false)
+  twitterScoutJsonRaw Json?
 
   badges          String?
   expertise       String?
