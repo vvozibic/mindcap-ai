@@ -2,6 +2,7 @@ import { Edit, Plus, Trash2, User } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Influencer } from "../../types";
 import KOLForm from "./KOLForm";
+import { TableSkeleton } from "./TableSkeleton";
 
 const KOLsTable: React.FC = () => {
   const [kols, setKols] = useState<Influencer[]>([]);
@@ -36,6 +37,10 @@ const KOLsTable: React.FC = () => {
       .then(setKols)
       .finally(() => setIsFormOpen(false));
   };
+
+  if (!kols?.length) {
+    return <TableSkeleton />;
+  }
 
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
@@ -76,6 +81,7 @@ const KOLsTable: React.FC = () => {
               </th>
             </tr>
           </thead>
+
           <tbody className="bg-white divide-y divide-gray-200">
             {kols.map((kol) => (
               <tr key={kol.id} className="hover:bg-gray-50">
@@ -85,7 +91,7 @@ const KOLsTable: React.FC = () => {
                       {kol?.avatarUrl || "" ? (
                         <img
                           className="h-10 w-10 rounded-full object-cover"
-                          src={kol.avatarUrl}
+                          src={kol.avatarUrl || ""}
                           alt={kol.name}
                         />
                       ) : (
@@ -134,8 +140,8 @@ const KOLsTable: React.FC = () => {
       </div>
 
       {isFormOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 h-full overflow-y-auto">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl h-full max-h-80h overflow-y-auto">
             <KOLForm
               influencerId={currentKOLId}
               onSuccess={handleSuccess}

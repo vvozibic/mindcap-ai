@@ -2,6 +2,7 @@ import { Edit, Plus, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Project } from "../../types";
 import ProjectForm from "./ProjectForm";
+import { TableSkeleton } from "./TableSkeleton";
 
 interface ProjectsTableProps {}
 
@@ -38,6 +39,10 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({}) => {
       .then(setProjects)
       .finally(() => setIsFormOpen(false));
   };
+
+  if (!projects?.length) {
+    return <TableSkeleton />;
+  }
 
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
@@ -76,6 +81,7 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({}) => {
               </th>
             </tr>
           </thead>
+
           <tbody className="bg-white divide-y divide-gray-200">
             {projects.map((project) => (
               <tr key={project.id} className="hover:bg-gray-50">
@@ -91,7 +97,7 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({}) => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <a
-                    href={project.website}
+                    href={project.website || "#"}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm text-indigo-600 hover:text-indigo-900"
@@ -130,8 +136,8 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({}) => {
       </div>
 
       {isFormOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-5 h-full overflow-y-auto">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl h-full max-h-80h overflow-y-auto">
             <ProjectForm
               projectId={currentProjectId}
               onSuccess={handleSuccess}
