@@ -1,4 +1,9 @@
 #!/bin/sh
+echo "✅ Script docker-backend-build.sh started"
+env
+
+cd /app/apps/backend
+
 echo "🤖 ENV CONTENTS:"
 env
 
