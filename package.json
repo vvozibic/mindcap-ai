@@ -5,7 +5,7 @@
     "apps/*"
   ],
   "scripts": {
-    "dev:all": "./dev-all.sh",
+    "dev:all": "./scripts/dev-all.sh",
     "dev": "yarn --cwd @app/backend dev",
     "build": "yarn workspace @app/frontend build && yarn workspace @app/backend build",
     "start": "yarn workspace @app/backend start"
