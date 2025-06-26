@@ -350,7 +350,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-200">
-                      {kol.followersCount?.toLocaleString()}
+                      {kol.followersCountNumeric?.toLocaleString()}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
