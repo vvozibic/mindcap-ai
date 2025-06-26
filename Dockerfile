@@ -24,21 +24,8 @@ RUN echo "📦 Installing dependencies..." && \
 RUN echo "🚧 Building frontend..." && \
   yarn --cwd apps/frontend build
 
-# Сборка и генерация Prisma
-RUN echo "🚧 Building backend..." && \
-  yarn --cwd apps/backend build && \
-  yarn --cwd apps/backend generate
-
-# Применение миграций (создание dev.db)
-RUN echo "🚜 Migration..." && \
-  yarn --cwd apps/backend prisma migrate deploy
-
-# Прогон сидов после генерации Prisma
-RUN echo "🌱 Seeding database..." && \
-  yarn --cwd apps/backend prisma db seed
-
-# Переход в backend и запуск
 WORKDIR /app/apps/backend
-CMD ["node", "dist/server.js"]
+RUN chmod +x docker-backend-build.sh
+CMD ["./start.sh"]
 
 EXPOSE 3001
