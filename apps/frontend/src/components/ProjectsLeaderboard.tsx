@@ -256,7 +256,7 @@ const ProjectsLeaderboard: React.FC<ProjectsLeaderboardProps> = ({
                       <div className="flex-shrink-0 h-10 w-10">
                         <img
                           className="h-10 w-10 rounded-full"
-                          src={project.avatarUrl}
+                          src={project.avatarUrl || ""}
                           alt={project.name}
                         />
                       </div>
@@ -292,7 +292,7 @@ const ProjectsLeaderboard: React.FC<ProjectsLeaderboardProps> = ({
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-200">
-                      ${project.rewardPoolUsd.toLocaleString()}
+                      ${project?.rewardPoolUsd?.toLocaleString()}
                     </div>
                   </td>
                 </tr>

@@ -121,6 +121,57 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                 >
                   Influencer
                 </th>
+
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
+                  onClick={() => handleSort("smartFollowers")}
+                >
+                  <div className="flex items-center relative">
+                    Smart Followers
+                    {sortField === "smartFollowers" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowUp className="h-4 w-4 ml-1" />
+                      ) : (
+                        <ArrowDown className="h-4 w-4 ml-1" />
+                      ))}
+                    <Info
+                      className="h-4 w-4 ml-1 text-gray-500 cursor-help"
+                      onMouseEnter={() => showTooltip("smartFollowers")}
+                      onMouseLeave={hideTooltip}
+                    />
+                    {tooltipVisible === "smartFollowers" && (
+                      <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
+                        {tooltips.smartFollowers}
+                      </div>
+                    )}
+                  </div>
+                </th>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
+                  onClick={() => handleSort("followers")}
+                >
+                  <div className="flex items-center relative">
+                    Followers
+                    {sortField === "followers" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowUp className="h-4 w-4 ml-1" />
+                      ) : (
+                        <ArrowDown className="h-4 w-4 ml-1" />
+                      ))}
+                    <Info
+                      className="h-4 w-4 ml-1 text-gray-500 cursor-help"
+                      onMouseEnter={() => showTooltip("followers")}
+                      onMouseLeave={hideTooltip}
+                    />
+                    {tooltipVisible === "followers" && (
+                      <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
+                        {tooltips.followers}
+                      </div>
+                    )}
+                  </div>
+                </th>
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
@@ -224,56 +275,6 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort("smartFollowers")}
-                >
-                  <div className="flex items-center relative">
-                    Smart Followers
-                    {sortField === "smartFollowers" &&
-                      (sortDirection === "asc" ? (
-                        <ArrowUp className="h-4 w-4 ml-1" />
-                      ) : (
-                        <ArrowDown className="h-4 w-4 ml-1" />
-                      ))}
-                    <Info
-                      className="h-4 w-4 ml-1 text-gray-500 cursor-help"
-                      onMouseEnter={() => showTooltip("smartFollowers")}
-                      onMouseLeave={hideTooltip}
-                    />
-                    {tooltipVisible === "smartFollowers" && (
-                      <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
-                        {tooltips.smartFollowers}
-                      </div>
-                    )}
-                  </div>
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort("followers")}
-                >
-                  <div className="flex items-center relative">
-                    Followers
-                    {sortField === "followers" &&
-                      (sortDirection === "asc" ? (
-                        <ArrowUp className="h-4 w-4 ml-1" />
-                      ) : (
-                        <ArrowDown className="h-4 w-4 ml-1" />
-                      ))}
-                    <Info
-                      className="h-4 w-4 ml-1 text-gray-500 cursor-help"
-                      onMouseEnter={() => showTooltip("followers")}
-                      onMouseLeave={hideTooltip}
-                    />
-                    {tooltipVisible === "followers" && (
-                      <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
-                        {tooltips.followers}
-                      </div>
-                    )}
-                  </div>
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
                   onClick={() => handleSort("moneyScore")}
                 >
                   <div className="flex items-center relative">
@@ -341,6 +342,17 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                       </div>
                     </div>
                   </td>
+
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-200">
+                      {kol.smartFollowers?.toLocaleString()}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-200">
+                      {kol.followersCount?.toLocaleString()}
+                    </div>
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-200 font-medium">
                       {kol.mindshare}
@@ -354,16 +366,6 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-200">{kol.poe}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-200">
-                      {kol.smartFollowers?.toLocaleString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-200">
-                      {kol.followersCount?.toLocaleString()}
-                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-200">

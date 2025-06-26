@@ -64,13 +64,13 @@ const getInfluencerDetailData = (
     isBusinessAccount: kol?.businessAccount || false,
     accountStatus: "Active",
     syncStatus: "Idle",
-    lastSync: "Jun 20, 2025, 12:27 PM",
+    lastSync: String(kol?.updatedAt),
     nextSync: null,
     lastUpdated: "Jun 12, 2025, 12:27 PM",
-    totalPosts: kol?.twitterScoutJsonRaw?.tweets_count || 1000,
-    engagement: 504.4,
-    engagementTrend: "up",
-    averageLikes: 274466.5,
+    totalPosts: kol?.tweetsCountNumeric || 1000,
+    engagement: kol?.engagementRate,
+    engagementTrend: kol?.engagementRate > 0 ? "up" : "down",
+    averageLikes: kol?.avgLikes,
     averageLikesTrend: "up",
     postingFrequency: "0.6/day",
     likes: 2744665,
@@ -80,7 +80,7 @@ const getInfluencerDetailData = (
     avgCommentsPerPost: 368.8,
     avgSharesPerPost: 0,
     avgEngagementPerPost: 274835.3,
-    engagementRate: 504.4,
+    engagementRate: kol?.engagementRate,
   };
 };
 

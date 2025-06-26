@@ -525,7 +525,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                               Categories
                             </h6>
                             <ul className="list-disc list-inside text-gray-400 space-y-1">
-                              {project?.rawData?.categories.map((c: string) => (
+                              {project?.categories?.map((c: string) => (
                                 <li>{c}</li>
                               ))}
                             </ul>

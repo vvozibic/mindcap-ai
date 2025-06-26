@@ -4,6 +4,7 @@ export interface Project {
   slug: string; // уникальный идентификатор (равен id в Coingecko)
   avatarUrl?: string | null;
   category?: string | null;
+  categories?: string[] | null;
   website?: string | null;
   description?: string | null;
   marketCap?: string | null;
@@ -40,6 +41,15 @@ export interface Influencer {
   expertise?: string | null;
   profileUrl?: string | null;
   twitterScoutJsonRaw?: any | null;
+
+  followingsNumeric: number;
+  followersCountNumeric: number;
+  tweetsCountNumeric: number;
+  avgLikes: number;
+  avgViews: number;
+  engagementRate: number;
+  kolScore: number;
+  totalPosts: number;
 
   mindshare?: string | null;
   pow?: string | null;

@@ -51,6 +51,11 @@ model Project {
   updatedAt     DateTime  @default(now())
 
   mentions      Mention[]
+
+  @@index([marketCap])
+  @@index([slug])
+  @@index([createdAt])
+  @@index([category])
 }
 
 
@@ -93,6 +98,11 @@ model Influencer {
   updatedAt       DateTime  @default(now())
 
   mentions        Mention[]
+
+  @@index([followersCountNumeric])
+  @@index([tweetsCountNumeric])
+  @@index([username])
+  @@index([createdAt])
 }
 
 
