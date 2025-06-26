@@ -59,8 +59,8 @@ const getInfluencerDetailData = (
 
   return {
     biography: kol?.bio || "No biography available",
-    followers: Number(kol?.followersCount || 1000),
-    following: Number(kol?.followings || 100),
+    followers: Number(kol?.followersCountNumeric || 1000),
+    following: Number(kol?.followingsNumeric || 100),
     isBusinessAccount: kol?.businessAccount || false,
     accountStatus: "Active",
     syncStatus: "Idle",
