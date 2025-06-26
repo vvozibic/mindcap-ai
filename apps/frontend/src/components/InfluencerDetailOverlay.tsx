@@ -317,7 +317,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                           </h6>
                           <div className="flex items-center">
                             <p className="text-lg font-bold text-gray-200">
-                              {detailData.engagement}%
+                              {detailData.engagement.toFixed(2)}%
                             </p>
                             {detailData.engagementTrend === "up" && (
                               <TrendingUp className="h-4 w-4 ml-1 text-status-green" />
@@ -441,7 +441,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                             Engagement Rate
                           </p>
                           <p className="text-gray-200 font-medium">
-                            {detailData.engagementRate}%
+                            {detailData.engagementRate.toFixed(2)}%
                           </p>
                         </div>
                       </div>
