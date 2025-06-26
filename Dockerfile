@@ -10,11 +10,7 @@ WORKDIR /app
 
 # Копируем всё из монорепы
 COPY . .
-# ENV DATABASE_URL="file:./prisma/dev.db"
 ENV NODE_ENV=production
-
-# Вывести ENV
-RUN echo "🤖 ENV CONTENTS:" && env
 
 # Установка зависимостей
 RUN echo "📦 Installing dependencies..." && \
@@ -25,7 +21,7 @@ RUN echo "🚧 Building frontend..." && \
   yarn --cwd apps/frontend build
 
 WORKDIR /app/apps/backend
-RUN chmod +x docker-backend-build.sh
-CMD ["./start.sh"]
+RUN chmod +x scripts/docker-backend-build.sh
+CMD ["./scripts/docker-backend-build.sh"]
 
 EXPOSE 3001

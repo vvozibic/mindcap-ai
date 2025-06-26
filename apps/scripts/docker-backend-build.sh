@@ -1,4 +1,6 @@
 #!/bin/sh
+echo "🤖 ENV CONTENTS:"
+env
 
 echo "🚧 Building backend..."
 yarn build
