@@ -21,7 +21,7 @@ RUN echo "🚧 Building frontend..." && \
   yarn --cwd apps/frontend build
 
 WORKDIR /app/apps/backend
-RUN chmod +x scripts/docker-backend-build.sh
+RUN chmod +x ./scripts/docker-backend-build.sh
 CMD ["./scripts/docker-backend-build.sh"]
 
 EXPOSE 3001
