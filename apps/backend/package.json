@@ -4,7 +4,7 @@
   "type": "commonjs",
   "main": "src/server.ts",
   "scripts": {
-    "dev": "vite-node src/server.ts",
+    "dev": "tsx watch src/server.ts",
     "build": "tsc && prisma generate",
     "start": "node dist/server.js",
     "seed": "tsx prisma/seed.ts",
