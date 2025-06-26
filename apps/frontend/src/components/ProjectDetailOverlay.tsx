@@ -239,7 +239,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
 
                 <div className="flex items-center mb-6 pb-4 border-b border-primary-700">
                   <img
-                    src={project.avatarUrl}
+                    src={project?.avatarUrl || "/default-project-avatar.png"}
                     alt={project.name}
                     className="h-16 w-16 rounded-full border-2 border-accent-500"
                   />
@@ -416,7 +416,10 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                     <div className="flex items-center">
                                       <img
                                         className="h-6 w-6 rounded-full"
-                                        src={kol.avatarUrl}
+                                        src={
+                                          kol?.avatarUrl ||
+                                          "/default-avatar.png"
+                                        }
                                         alt={kol.name}
                                       />
                                       <div className="ml-2">
@@ -442,7 +445,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                     {kol.poe}
                                   </td>
                                   <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
-                                    {kol.smartFollowers.toLocaleString()}
+                                    {kol.smartFollowers?.toLocaleString()}
                                   </td>
                                 </tr>
                               ))}

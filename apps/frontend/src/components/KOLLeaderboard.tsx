@@ -305,7 +305,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
               >
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-200">
-                    #{kol.rank}
+                    #{index}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -313,7 +313,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                     <div className="flex-shrink-0 h-10 w-10">
                       <img
                         className="h-10 w-10 rounded-full"
-                        src={kol.avatarUrl}
+                        src={kol.avatarUrl || "/default-avatar.png"}
                         alt={kol.name}
                       />
                     </div>
@@ -353,12 +353,12 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-200">
-                    {kol.smartFollowers.toLocaleString()}
+                    {kol.smartFollowers?.toLocaleString()}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-200">
-                    {kol.followers.toLocaleString()}
+                    {kol.followersCount?.toLocaleString()}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">

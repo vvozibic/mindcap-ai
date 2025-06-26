@@ -59,7 +59,7 @@ const getInfluencerDetailData = (
 
   return {
     biography: "Yet from Degen planet",
-    followers: +kol.followers,
+    followers: Number(kol?.followersCount || 1000),
     following: 8,
     isBusinessAccount: false,
     accountStatus: "Active",
@@ -133,7 +133,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
 
                 <div className="flex items-center mb-6 pb-4 border-b border-primary-700">
                   <img
-                    src={influencer.avatarUrl}
+                    src={influencer?.avatarUrl || "/default-avatar.png"}
                     alt={influencer.name}
                     className="h-16 w-16 rounded-full border-2 border-accent-500"
                   />

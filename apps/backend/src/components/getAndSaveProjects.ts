@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import axios from "axios";
 
 const prisma = new PrismaClient();
-const BASE_URL = "https://pro-api.coingecko.com/api/v3/";
+const BASE_URL = "https://pro-api.coingecko.com/api/v3";
 const API_KEY = process.env.COINGECKO_API_KEY;
 
 async function delay(ms: number) {
