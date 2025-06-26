@@ -5,9 +5,53 @@ import { Request, Response } from "express";
 const prisma = new PrismaClient();
 
 export const getAllProjects = async (_: Request, res: Response) => {
-  const projects = await prisma.project.findMany();
+  const projects = await prisma.project.findMany({
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      avatarUrl: true,
+      category: true,
+      categories: true,
+      website: true,
+      description: true,
+      marketCap: true,
+      launchDate: true,
+      mindshare: true,
+      kolAttention: true,
+      engagement: true,
+      trustScore: true,
+      rewardPoolUsd: true,
+      rewardRank: true,
+      twitter: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+    orderBy: {
+      marketCap: "desc",
+    },
+  });
+
   res.json(projects);
 };
+
+// export const getAllProjects = async (req: Request, res: Response) => {
+//   const { limit, offset } = getPaginationParams(req);
+
+//   const [items, total] = await prisma.$transaction([
+//     prisma.project.findMany({
+//       skip: offset,
+//       take: limit,
+//       orderBy: { marketCap: "desc" },
+//     }),
+//     prisma.project.count(),
+//   ]);
+
+//   res.json({
+//     items,
+//     meta: buildPaginationMeta(total, limit, offset),
+//   });
+// };
 
 export const getProject = async (req: Request, res: Response) => {
   const { id } = req.params;

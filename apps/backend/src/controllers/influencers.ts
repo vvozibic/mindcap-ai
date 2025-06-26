@@ -3,9 +3,59 @@ import { Request, Response } from "express";
 const prisma = new PrismaClient();
 
 export const getInfluencers = async (_req: Request, res: Response) => {
-  const influencers = await prisma.influencer.findMany();
+  const influencers = await prisma.influencer.findMany({
+    select: {
+      id: true,
+      name: true,
+      badges: true,
+      username: true,
+      avatarUrl: true,
+      platform: true,
+      followingsNumeric: true,
+      followersCountNumeric: true,
+      smartFollowers: true,
+      tweetsCountNumeric: true,
+      avgLikes: true,
+      avgViews: true,
+      engagementRate: true,
+      kolScore: true,
+      totalPosts: true,
+      expertise: true,
+      bio: true,
+      profileUrl: true,
+      mindshare: true,
+      pow: true,
+      poi: true,
+      poe: true,
+      moneyScore: true,
+      verified: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+    orderBy: {
+      followersCountNumeric: "desc",
+    },
+  });
   res.json(influencers);
 };
+
+// export const getInfluencers = async (req: Request, res: Response) => {
+//   const { limit, offset } = getPaginationParams(req);
+
+//   const [items, total] = await prisma.$transaction([
+//     prisma.influencer.findMany({
+//       skip: offset,
+//       take: limit,
+//       orderBy: { followersCount: "desc" },
+//     }),
+//     prisma.influencer.count(),
+//   ]);
+
+//   res.json({
+//     items,
+//     meta: buildPaginationMeta(total, limit, offset),
+//   });
+// };
 
 export const getInfluencer = async (req: Request, res: Response) => {
   const { id } = req.params;

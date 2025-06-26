@@ -32,6 +32,7 @@ model Project {
   slug          String    @unique
   description   String?
   category      String?
+  categories    String[] @default([])
   website       String?
   launchDate    DateTime?
   marketCap     String?
@@ -45,7 +46,7 @@ model Project {
   telegram      String?
   rewardPoolUsd String?
   rewardRank    String?
-  rawData       Json?     // <- Добавлено поле для хранения всего API-респонса
+  rawData       Json?     // <- Добавлено поле для хранения всего API-респонса twitterScout
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now())
 
@@ -63,11 +64,14 @@ model Influencer {
   profileUrl      String?
   platform        String?   
   verified        Boolean   @default(false)
-  tweetsCount     String?   
-  followersCount  String?   
-  followings      String?   
+  tweetsCount            String
+  tweetsCountNumeric     Int?     @default(0)
+  followersCount         String
+  followersCountNumeric  Int?     @default(0)
+  followings             String
+  followingsNumeric      Int?     @default(0) 
   businessAccount Boolean   @default(false)
-  twitterScoutJsonRaw Json?
+  twitterScoutJsonRaw Json? // <- Добавлено поле для хранения всего API-респонса twitterScout
 
   badges          String?
   expertise       String?
@@ -75,8 +79,15 @@ model Influencer {
   pow             String?
   poi             String?
   poe             String?
-  smartFollowers  String?
   moneyScore      String?
+
+  kolScore         Int?
+  smartFollowers   Int?
+  engagementRate   Float?
+  avgViews         Int?
+  avgLikes         Int?
+  totalPosts       Int?
+  protokolsJsonRaw Json? // <- Добавлено поле для хранения всего API-респонса protokols api
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @default(now())
