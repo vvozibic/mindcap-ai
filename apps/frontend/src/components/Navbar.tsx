@@ -28,7 +28,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <Zap className="h-8 w-8 text-accent-500" />
-              <span className="ml-2 text-xl font-bold">MindCup AI</span>
+              <span className="ml-2 text-xl font-bold">MindCap AI</span>
             </Link>
           </div>
 
