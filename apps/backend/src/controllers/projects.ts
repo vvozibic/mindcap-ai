@@ -40,6 +40,14 @@ export const updateProject = async (req: Request, res: Response) => {
 
 export const deleteProject = async (req: Request, res: Response) => {
   const { id } = req.params;
-  await prisma.project.delete({ where: { id } });
-  res.status(204).end();
+
+  await prisma.mention.deleteMany({
+    where: { projectId: id },
+  });
+
+  await prisma.project.delete({
+    where: { id },
+  });
+
+  res.status(200).json({ message: "Project and related mentions deleted" });
 };

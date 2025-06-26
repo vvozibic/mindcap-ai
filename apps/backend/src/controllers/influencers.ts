@@ -30,6 +30,14 @@ export const updateInfluencer = async (req: Request, res: Response) => {
 
 export const deleteInfluencer = async (req: Request, res: Response) => {
   const { id } = req.params;
-  await prisma.influencer.delete({ where: { id } });
-  res.status(204).send();
+
+  await prisma.mention.deleteMany({
+    where: { projectId: id },
+  });
+
+  await prisma.influencer.delete({
+    where: { id },
+  });
+
+  res.status(200).json({ message: "Project and related mentions deleted" });
 };

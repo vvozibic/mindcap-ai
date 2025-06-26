@@ -45,43 +45,50 @@ model Project {
   telegram      String?
   rewardPoolUsd String?
   rewardRank    String?
+  rawData       Json?     // <- Добавлено поле для хранения всего API-респонса
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now())
 
   mentions      Mention[]
 }
 
+
 model Influencer {
   id              String    @id @default(cuid())
   name            String
   username        String    @unique
-  badges          String?
   bio             String?
   avatarUrl       String?
-  platform        String?
-  businessAccount Boolean   @default(false)
-  followers       String?
-  followings      String?
-  expertise       String?
+  bannerUrl       String?
   profileUrl      String?
+  platform        String?   
+  verified        Boolean   @default(false)
+  tweetsCount     String?   
+  followersCount  String?   
+  followings      String?   
+  businessAccount Boolean   @default(false)
+
+  badges          String?
+  expertise       String?
   mindshare       String?
   pow             String?
   poi             String?
   poe             String?
   smartFollowers  String?
-  followersCount  String?
   moneyScore      String?
+
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @default(now())
 
   mentions        Mention[]
 }
 
+
 model Mention {
   id             String      @id @default(cuid())
-  project        Project     @relation(fields: [projectId], references: [id])
+  project        Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId      String
-  influencer     Influencer  @relation(fields: [influencerId], references: [id])
+  influencer     Influencer  @relation(fields: [influencerId], references: [id], onDelete: Cascade)
   influencerId   String
 
   mindshare      String?

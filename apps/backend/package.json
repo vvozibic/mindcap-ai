@@ -7,6 +7,8 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc && prisma generate",
     "seed": "tsx prisma/seed.ts",
+    "save:influencers": "tsx src/components/saveInfluencersFromLinks.ts",
+    "save:projects": "tsx src/components/getAndSaveProjects.ts",
     "generate": "prisma generate",
     "migrate:deploy": "prisma migrate deploy",
     "postinstall": "prisma generate"
@@ -19,6 +21,8 @@
   },
   "dependencies": {
     "@prisma/client": "^6.10.1",
+    "apify-client": "^2.12.5",
+    "axios": "^1.10.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",

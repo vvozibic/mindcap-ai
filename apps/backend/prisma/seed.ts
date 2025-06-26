@@ -21,26 +21,26 @@ async function main() {
 
   console.log(`✅ Admin created/updated: ${admin.username}`);
 
-  const solana = await prisma.project.upsert({
-    where: { slug: "solana" },
-    update: {},
-    create: {
-      name: "Solana",
-      slug: "solana",
-      description: "High-performance blockchain",
-      category: "Smart Contract Platform",
-      website: "https://solana.com",
-      launchDate: new Date("2020-03-16"),
-      marketCap: "$45B",
-      mindshare: "94",
-      kolAttention: "93",
-      engagement: "92",
-      trustScore: "91",
-      rewardPoolUsd: "200000",
-      rewardRank: "2",
-      twitter: "https://twitter.com/solana",
-    },
-  });
+  // const solana = await prisma.project.upsert({
+  //   where: { slug: "solana" },
+  //   update: {},
+  //   create: {
+  //     name: "Solana",
+  //     slug: "solana",
+  //     description: "High-performance blockchain",
+  //     category: "Smart Contract Platform",
+  //     website: "https://solana.com",
+  //     launchDate: new Date("2020-03-16"),
+  //     marketCap: "$45B",
+  //     mindshare: "94",
+  //     kolAttention: "93",
+  //     engagement: "92",
+  //     trustScore: "91",
+  //     rewardPoolUsd: "200000",
+  //     rewardRank: "2",
+  //     twitter: "https://twitter.com/solana",
+  //   },
+  // });
 
   const influencers = [
     {
@@ -48,7 +48,7 @@ async function main() {
       username: "@cryptoalex",
       avatarUrl: "/avatars/alex.png",
       platform: "X (Twitter)",
-      followers: "120000",
+      followersCount: "120000",
       smartFollowers: "85000",
       expertise: "DeFi, Crypto",
       mindshare: "98",
@@ -61,7 +61,7 @@ async function main() {
       name: "Sophia Chen",
       username: "@sophiaconchain",
       platform: "X (Twitter)",
-      followers: "105000",
+      followersCount: "105000",
       smartFollowers: "78000",
       expertise: "Web3 Marketing",
       mindshare: "96",
@@ -74,7 +74,7 @@ async function main() {
       name: "Marcus Johnson",
       username: "@mjcrypto",
       platform: "X (Twitter)",
-      followers: "98000",
+      followersCount: "98000",
       smartFollowers: "72000",
       expertise: "Insight Provider",
       mindshare: "94",
@@ -92,20 +92,20 @@ async function main() {
       create: data,
     });
 
-    await prisma.mention.create({
-      data: {
-        projectId: solana.id,
-        influencerId: influencer.id,
-        mindshare: influencer.mindshare,
-        pow: influencer.pow,
-        poi: influencer.poi,
-        poe: influencer.poe,
-        smartFollowers: influencer.smartFollowers,
-      },
-    });
+    // await prisma.mention.create({
+    //   data: {
+    //     projectId: solana.id,
+    //     influencerId: influencer.id,
+    //     mindshare: influencer.mindshare,
+    //     pow: influencer.pow,
+    //     poi: influencer.poi,
+    //     poe: influencer.poe,
+    //     smartFollowers: influencer.smartFollowers,
+    //   },
+    // });
   }
 
-  console.log("✅ Seeded Solana + 3 Influencers");
+  console.log("✅ Seeded Influencers");
 }
 
 main()
