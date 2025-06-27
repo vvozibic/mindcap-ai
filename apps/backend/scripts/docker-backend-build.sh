@@ -11,8 +11,8 @@ echo "🚧 Building backend..."
 yarn build
 yarn generate
 
-echo "🚜 Running migrations..."
-yarn prisma migrate deploy
+# echo "🚜 Running migrations..."
+# yarn prisma migrate deploy
 
 # echo "🌱 Seeding data..."
 # yarn prisma db seed

@@ -47,6 +47,7 @@ model Project {
   updatedAt     DateTime  @default(now())
   rawData       Json?
   categories    String[]  @default([])
+  featured      Boolean   @default(false)
   mentions      Mention[]
 
   @@index([marketCap])

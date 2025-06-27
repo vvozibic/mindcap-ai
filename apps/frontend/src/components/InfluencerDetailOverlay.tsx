@@ -4,6 +4,7 @@ import {
   Bot,
   Calendar,
   CheckCircle,
+  ExternalLink,
   FileText,
   Heart,
   MessageCircle,
@@ -50,6 +51,7 @@ interface InfluencerDetailData {
   likes: number;
   comments: number;
   retwets: number;
+  profileUrl: string;
   twitterRegisterDate: string;
   aiGeneratedContent: number;
   avgCommentsPerPost: string;
@@ -100,6 +102,7 @@ const getInfluencerDetailData = (
     ).toFixed(4),
     engagementRate: kol?.engagementRate,
     twitterRegisterDate: new Date(kol.twitterRegisterDate).toLocaleDateString(),
+    profileUrl: kol?.profileUrl || "",
   };
 };
 
@@ -298,6 +301,43 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                         <p className="text-gray-300">
                           {detailData.twitterRegisterDate}
                         </p>
+                      </div>
+                    </div>
+
+                    <h5 className="text-md font-medium text-gray-300 mb-3">
+                      Social Channels
+                    </h5>
+                    <div className="bg-primary-700 rounded-lg p-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <a
+                          href={detailData?.profileUrl || "/"}
+                          target="_blank"
+                          className="flex items-center text-gray-300 hover:text-accent-500"
+                        >
+                          <ExternalLink className="h-4 w-4 mr-2" />
+                          Profile X
+                        </a>
+                        {/* <a
+                              href="#"
+                              className="flex items-center text-gray-300 hover:text-accent-500"
+                            >
+                              <ExternalLink className="h-4 w-4 mr-2" />
+                              Twitter
+                            </a>
+                            <a
+                              href="#"
+                              className="flex items-center text-gray-300 hover:text-accent-500"
+                            >
+                              <ExternalLink className="h-4 w-4 mr-2" />
+                              Discord
+                            </a>
+                            <a
+                              href="#"
+                              className="flex items-center text-gray-300 hover:text-accent-500"
+                            >
+                              <ExternalLink className="h-4 w-4 mr-2" />
+                              Telegram
+                            </a> */}
                       </div>
                     </div>
                   </div>
