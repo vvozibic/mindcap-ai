@@ -84,6 +84,11 @@ CREATE TABLE "Influencer" (
     "protokolsJsonRaw" JSONB,
     "totalPosts" INTEGER,
     "smartFollowers" INTEGER,
+    "totalComments" INTEGER,
+    "totalLikes" INTEGER,
+    "totalReplies" INTEGER,
+    "totalRetweets" INTEGER,
+    "totalViews" INTEGER,
 
     CONSTRAINT "Influencer_pkey" PRIMARY KEY ("id")
 );
