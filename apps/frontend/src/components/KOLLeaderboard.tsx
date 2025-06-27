@@ -7,18 +7,20 @@ import { TableSkeleton } from "./TableSkeleton";
 interface KOLLeaderboardProps {}
 
 type SortField =
-  | "rank"
+  | "followersCountNumeric"
   | "mindshare"
   | "pow"
   | "poi"
   | "poe"
   | "smartFollowers"
   | "followers"
-  | "moneyScore";
+  | "kolScore";
 
 const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
-  const [sortField, setSortField] = useState<SortField>("rank");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [sortField, setSortField] = useState<SortField>(
+    "followersCountNumeric"
+  );
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [tooltipVisible, setTooltipVisible] = useState<string | null>(null);
   const [selectedInfluencer, setSelectedInfluencer] =
     useState<Influencer | null>(null);
@@ -103,11 +105,11 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort("rank")}
+                  onClick={() => handleSort("followersCountNumeric")}
                 >
                   <div className="flex items-center">
                     Rank
-                    {sortField === "rank" &&
+                    {sortField === "followersCountNumeric" &&
                       (sortDirection === "asc" ? (
                         <ArrowUp className="h-4 w-4 ml-1" />
                       ) : (
@@ -175,6 +177,31 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
+                  onClick={() => handleSort("kolScore")}
+                >
+                  <div className="flex items-center relative">
+                    Kol Score
+                    {sortField === "kolScore" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowUp className="h-4 w-4 ml-1" />
+                      ) : (
+                        <ArrowDown className="h-4 w-4 ml-1" />
+                      ))}
+                    <Info
+                      className="h-4 w-4 ml-1 text-gray-500 cursor-help"
+                      onMouseEnter={() => showTooltip("moneyScore")}
+                      onMouseLeave={hideTooltip}
+                    />
+                    {tooltipVisible === "moneyScore" && (
+                      <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
+                        {tooltips.moneyScore}
+                      </div>
+                    )}
+                  </div>
+                </th>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
                   onClick={() => handleSort("mindshare")}
                 >
                   <div className="flex items-center relative">
@@ -217,7 +244,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                     />
                     {tooltipVisible === "pow" && (
                       <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
-                        {tooltips.pow}
+                        {tooltips.pow || "Soon"}
                       </div>
                     )}
                   </div>
@@ -242,7 +269,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                     />
                     {tooltipVisible === "poi" && (
                       <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
-                        {tooltips.poi}
+                        {tooltips.poi || "Soon"}
                       </div>
                     )}
                   </div>
@@ -267,32 +294,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                     />
                     {tooltipVisible === "poe" && (
                       <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
-                        {tooltips.poe}
-                      </div>
-                    )}
-                  </div>
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort("moneyScore")}
-                >
-                  <div className="flex items-center relative">
-                    Money Score
-                    {sortField === "moneyScore" &&
-                      (sortDirection === "asc" ? (
-                        <ArrowUp className="h-4 w-4 ml-1" />
-                      ) : (
-                        <ArrowDown className="h-4 w-4 ml-1" />
-                      ))}
-                    <Info
-                      className="h-4 w-4 ml-1 text-gray-500 cursor-help"
-                      onMouseEnter={() => showTooltip("moneyScore")}
-                      onMouseLeave={hideTooltip}
-                    />
-                    {tooltipVisible === "moneyScore" && (
-                      <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
-                        {tooltips.moneyScore}
+                        {tooltips.poe || "Soon"}
                       </div>
                     )}
                   </div>
@@ -345,31 +347,37 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
 
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-200">
-                      {kol.smartFollowers?.toLocaleString()}
+                      {kol.smartFollowers || "–"}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-200">
-                      {kol.followersCountNumeric?.toLocaleString()}
+                      {kol.followersCountNumeric || "–"}
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-200 font-medium">
-                      {kol.mindshare}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-200">{kol.pow}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-200">{kol.poi}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-200">{kol.poe}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-200">
-                      {kol.moneyScore}
+                      {kol.kolScore || "–"}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-500 font-medium">
+                      {kol.mindshare || "Soon"}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">
+                      {kol.pow || "Soon"}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">
+                      {kol.poi || "Soon"}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">
+                      {kol.poe || "Soon"}
                     </div>
                   </td>
                 </tr>

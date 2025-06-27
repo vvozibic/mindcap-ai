@@ -27,7 +27,7 @@ async function enrichInfluencers() {
     });
 
     console.log(
-      `🧠 Updated influencer ${inf.id} → added data ${totalLikes} ${totalViews} ${totalReplies} ${totalComments} ${totalRetweets}`
+      `🧠 Updated influencer ${inf.id} → added data ${twitterRegisterDate}`
     );
   }
   // }

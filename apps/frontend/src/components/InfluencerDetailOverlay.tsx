@@ -17,6 +17,13 @@ import {
 import React, { Fragment } from "react";
 import { Influencer } from "../types";
 
+function daysBetween(date1: string, date2: Date): number {
+  const d1 = new Date(date1);
+  const d2 = date2;
+  const diffInMs = Math.abs(d2.getTime() - d1.getTime());
+  return Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+}
+
 interface InfluencerDetailOverlayProps {
   isOpen: boolean;
   onClose: () => void;
@@ -43,6 +50,7 @@ interface InfluencerDetailData {
   likes: number;
   comments: number;
   retwets: number;
+  twitterRegisterDate: string;
   aiGeneratedContent: number;
   avgCommentsPerPost: string;
   avgRetweetsPerPost: string;
@@ -74,7 +82,9 @@ const getInfluencerDetailData = (
     engagementTrend: kol?.engagementRate > 0 ? "up" : "down",
     averageLikes: kol?.avgLikes,
     averageLikesTrend: "up",
-    postingFrequency: "0.6/day",
+    postingFrequency: `~${Number(
+      kol?.tweetsCountNumeric / daysBetween(kol.twitterRegisterDate, new Date())
+    ).toFixed(0)}/day`,
     likes: kol?.totalLikes,
     comments: kol?.totalComments,
     retwets: kol?.totalRetweets,
@@ -89,6 +99,7 @@ const getInfluencerDetailData = (
       kol?.engagementRate / kol?.tweetsCountNumeric || 0
     ).toFixed(4),
     engagementRate: kol?.engagementRate,
+    twitterRegisterDate: new Date(kol.twitterRegisterDate).toLocaleDateString(),
   };
 };
 
@@ -282,10 +293,10 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                       <Calendar className="h-5 w-5 text-accent-500" />
                       <div className="ml-3">
                         <h6 className="text-xs font-medium text-gray-400">
-                          Last Updated
+                          Registered
                         </h6>
                         <p className="text-gray-300">
-                          {detailData.lastUpdated}
+                          {detailData.twitterRegisterDate}
                         </p>
                       </div>
                     </div>

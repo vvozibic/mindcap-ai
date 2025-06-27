@@ -25,6 +25,7 @@ export const getInfluencers = async (_req: Request, res: Response) => {
       totalRetweets: true,
       totalViews: true,
       totalComments: true,
+      twitterRegisterDate: true,
       expertise: true,
       bio: true,
       profileUrl: true,

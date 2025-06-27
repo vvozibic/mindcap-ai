@@ -94,6 +94,7 @@ model Influencer {
   totalReplies          Int?
   totalRetweets         Int?
   totalViews            Int?
+  twitterRegisterDate   String?
   mentions              Mention[]
 
   @@index([followersCountNumeric])
