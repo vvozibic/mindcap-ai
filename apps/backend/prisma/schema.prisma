@@ -1,5 +1,3 @@
-// schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,7 +11,7 @@ model AdminUser {
   id        Int      @id @default(autoincrement())
   username  String   @unique
   password  String
-  role      String   @default("ADMIN") // "ADMIN" | "SUPERADMIN"
+  role      String   @default("ADMIN")
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
@@ -32,7 +30,6 @@ model Project {
   slug          String    @unique
   description   String?
   category      String?
-  categories    String[] @default([])
   website       String?
   launchDate    DateTime?
   marketCap     String?
@@ -46,10 +43,10 @@ model Project {
   telegram      String?
   rewardPoolUsd String?
   rewardRank    String?
-  rawData       Json?     // <- Добавлено поле для хранения всего API-респонса twitterScout
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now())
-
+  rawData       Json?
+  categories    String[]  @default([])
   mentions      Mention[]
 
   @@index([marketCap])
@@ -58,46 +55,41 @@ model Project {
   @@index([category])
 }
 
-
 model Influencer {
-  id              String    @id @default(cuid())
-  name            String
-  username        String    @unique
-  bio             String?
-  avatarUrl       String?
-  bannerUrl       String?
-  profileUrl      String?
-  platform        String?   
-  verified        Boolean   @default(false)
-  tweetsCount            String
-  tweetsCountNumeric     Int?     @default(0)
-  followersCount         String
-  followersCountNumeric  Int?     @default(0)
-  followings             String
-  followingsNumeric      Int?     @default(0) 
-  businessAccount Boolean   @default(false)
-  twitterScoutJsonRaw Json? // <- Добавлено поле для хранения всего API-респонса twitterScout
-
-  badges          String?
-  expertise       String?
-  mindshare       String?
-  pow             String?
-  poi             String?
-  poe             String?
-  moneyScore      String?
-
-  kolScore         Int?
-  smartFollowers   Int?
-  engagementRate   Float?
-  avgViews         Int?
-  avgLikes         Int?
-  totalPosts       Int?
-  protokolsJsonRaw Json? // <- Добавлено поле для хранения всего API-респонса protokols api
-
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @default(now())
-
-  mentions        Mention[]
+  id                    String    @id @default(cuid())
+  name                  String
+  username              String    @unique
+  badges                String?
+  bio                   String?
+  avatarUrl             String?
+  platform              String?
+  businessAccount       Boolean   @default(false)
+  followings            String
+  expertise             String?
+  profileUrl            String?
+  mindshare             String?
+  pow                   String?
+  poi                   String?
+  poe                   String?
+  followersCount        String
+  moneyScore            String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @default(now())
+  bannerUrl             String?
+  tweetsCount           String
+  verified              Boolean   @default(false)
+  twitterScoutJsonRaw   Json?
+  followersCountNumeric Int?      @default(0)
+  followingsNumeric     Int?      @default(0)
+  tweetsCountNumeric    Int?      @default(0)
+  avgLikes              Int?
+  avgViews              Int?
+  engagementRate        Float?
+  kolScore              Int?
+  protokolsJsonRaw      Json?
+  totalPosts            Int?
+  smartFollowers        Int?
+  mentions              Mention[]
 
   @@index([followersCountNumeric])
   @@index([tweetsCountNumeric])
@@ -105,19 +97,16 @@ model Influencer {
   @@index([createdAt])
 }
 
-
 model Mention {
-  id             String      @id @default(cuid())
-  project        Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id             String     @id @default(cuid())
   projectId      String
-  influencer     Influencer  @relation(fields: [influencerId], references: [id], onDelete: Cascade)
   influencerId   String
-
   mindshare      String?
   pow            String?
   poi            String?
   poe            String?
   smartFollowers String?
-
-  createdAt      DateTime @default(now())
+  createdAt      DateTime   @default(now())
+  influencer     Influencer @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+  project        Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
