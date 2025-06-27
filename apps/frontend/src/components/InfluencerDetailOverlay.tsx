@@ -42,11 +42,11 @@ interface InfluencerDetailData {
   postingFrequency: string;
   likes: number;
   comments: number;
-  shares: number;
+  retwets: number;
   aiGeneratedContent: number;
-  avgCommentsPerPost: number;
-  avgSharesPerPost: number;
-  avgEngagementPerPost: number;
+  avgCommentsPerPost: string;
+  avgRetweetsPerPost: string;
+  avgEngagementPerPost: string;
   engagementRate: number;
 }
 
@@ -64,22 +64,30 @@ const getInfluencerDetailData = (
     isBusinessAccount: kol?.businessAccount || false,
     accountStatus: "Active",
     syncStatus: "Idle",
-    lastSync: String(kol?.updatedAt),
-    nextSync: null,
-    lastUpdated: "Jun 12, 2025, 12:27 PM",
+    lastSync: kol?.updatedAt ? new Date(kol?.updatedAt).toLocaleString() : "",
+    nextSync: "",
+    lastUpdated: kol?.updatedAt
+      ? new Date(kol?.updatedAt).toLocaleString()
+      : "",
     totalPosts: kol?.tweetsCountNumeric || 1000,
     engagement: kol?.engagementRate,
     engagementTrend: kol?.engagementRate > 0 ? "up" : "down",
     averageLikes: kol?.avgLikes,
     averageLikesTrend: "up",
     postingFrequency: "0.6/day",
-    likes: 2744665,
-    comments: 3688,
-    shares: 0,
+    likes: kol?.totalLikes,
+    comments: kol?.totalComments,
+    retwets: kol?.totalRetweets,
     aiGeneratedContent: 0,
-    avgCommentsPerPost: 368.8,
-    avgSharesPerPost: 0,
-    avgEngagementPerPost: 274835.3,
+    avgCommentsPerPost: Number(
+      kol?.totalComments / kol?.tweetsCountNumeric || 0
+    ).toFixed(4),
+    avgRetweetsPerPost: Number(
+      kol?.totalRetweets / kol?.tweetsCountNumeric || 0
+    ).toFixed(4),
+    avgEngagementPerPost: Number(
+      kol?.engagementRate / kol?.tweetsCountNumeric || 0
+    ).toFixed(4),
     engagementRate: kol?.engagementRate,
   };
 };
@@ -191,7 +199,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                               Followers
                             </h6>
                             <p className="text-lg font-bold text-gray-200">
-                              {detailData.followers.toLocaleString()}
+                              {detailData.followers}
                             </p>
                           </div>
                         </div>
@@ -203,7 +211,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                               Following
                             </h6>
                             <p className="text-lg font-bold text-gray-200">
-                              {detailData?.following.toLocaleString() || "0"}
+                              {detailData?.following || "0"}
                             </p>
                           </div>
                         </div>
@@ -255,7 +263,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                             Last Sync
                           </h6>
                           <p className="text-gray-300">
-                            {detailData.lastSync || "Not available"}
+                            {detailData.lastSync || "Soon"}
                           </p>
                         </div>
 
@@ -264,7 +272,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                             Next Sync
                           </h6>
                           <p className="text-gray-300">
-                            {detailData.nextSync || "Not available"}
+                            {detailData.nextSync || "Soon"}
                           </p>
                         </div>
                       </div>
@@ -361,7 +369,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                             Likes
                           </p>
                           <p className="text-lg font-bold text-gray-200">
-                            {detailData.likes.toLocaleString()}
+                            {detailData.likes}
                           </p>
                         </div>
 
@@ -371,17 +379,17 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                             Comments
                           </p>
                           <p className="text-lg font-bold text-gray-200">
-                            {detailData.comments.toLocaleString()}
+                            {detailData.comments}
                           </p>
                         </div>
 
                         <div className="flex flex-col items-center">
                           <Share2 className="h-5 w-5 text-green-500 mb-1" />
                           <p className="text-xs font-medium text-gray-400">
-                            Shares
+                            Retweets
                           </p>
                           <p className="text-lg font-bold text-gray-200">
-                            {detailData.shares.toLocaleString()}
+                            {detailData.retwets}
                           </p>
                         </div>
                       </div>
@@ -420,10 +428,10 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
 
                         <div>
                           <p className="text-xs text-gray-400">
-                            Avg. Shares/Post
+                            Avg. Retweets/Post
                           </p>
                           <p className="text-gray-200 font-medium">
-                            {detailData.avgSharesPerPost}
+                            {detailData.avgRetweetsPerPost}
                           </p>
                         </div>
 
@@ -432,7 +440,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                             Avg. Engagement/Post
                           </p>
                           <p className="text-gray-200 font-medium">
-                            {detailData.avgEngagementPerPost.toLocaleString()}
+                            {detailData.avgEngagementPerPost}
                           </p>
                         </div>
 

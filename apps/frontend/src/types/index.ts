@@ -50,6 +50,11 @@ export interface Influencer {
   engagementRate: number;
   kolScore: number;
   totalPosts: number;
+  totalLikes: number;
+  totalViews: number;
+  totalReplies: number;
+  totalComments: number;
+  totalRetweets: number;
 
   mindshare?: string | null;
   pow?: string | null;

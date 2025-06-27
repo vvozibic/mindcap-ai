@@ -89,6 +89,11 @@ model Influencer {
   protokolsJsonRaw      Json?
   totalPosts            Int?
   smartFollowers        Int?
+  totalLikes            Int?
+  totalViews            Int?
+  totalReplies          Int?
+  totalComments         Int?
+  totalRetweets         Int?
   mentions              Mention[]
 
   @@index([followersCountNumeric])
