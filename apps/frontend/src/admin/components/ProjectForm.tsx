@@ -66,7 +66,10 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({
+        ...formData,
+        featured: formData?.featured === "true" ? true : false,
+      }),
     });
 
     if (res.ok) {
@@ -94,21 +97,28 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         onSubmit={handleSubmit}
         className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"
       >
-        {Object.entries(formData).map(([key, value]) =>
-          key === "id" ? null : (
-            <div key={key}>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {key.charAt(0).toUpperCase() + key.slice(1)}
-              </label>
-              <input
-                name={key}
-                value={value || ""}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
-              />
-            </div>
-          )
-        )}
+        {Object.entries(formData)
+          .filter(([key]) => key !== "createdAt" && key !== "updatedAt")
+          .map(([key, value]) =>
+            key === "id" ? null : (
+              <div key={key}>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {key.charAt(0).toUpperCase() + key.slice(1)}
+                </label>
+                <input
+                  name={key}
+                  disabled={typeof value === "object" && value !== null}
+                  value={
+                    typeof value === "object" && value !== null
+                      ? JSON.stringify(value)
+                      : value || ""
+                  }
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
+                />
+              </div>
+            )
+          )}
 
         <div className="flex justify-end space-x-3">
           <button

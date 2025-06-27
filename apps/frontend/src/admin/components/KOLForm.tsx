@@ -126,23 +126,30 @@ const InfluencerForm: React.FC<InfluencerFormProps> = ({
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          {Object.entries(formData).map(
-            ([key, value]) =>
-              key !== "id" && (
-                <div key={key}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {key.charAt(0).toUpperCase() + key.slice(1)}
-                  </label>
-                  <input
-                    type="text"
-                    name={key}
-                    value={value || ""}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
-                  />
-                </div>
-              )
-          )}
+          {Object.entries(formData)
+            .filter(([key]) => key !== "createdAt" && key !== "updatedAt")
+            .map(
+              ([key, value = ""]) =>
+                key !== "id" && (
+                  <div key={key}>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      {key.charAt(0).toUpperCase() + key.slice(1)}
+                    </label>
+                    <input
+                      type="text"
+                      name={key}
+                      disabled={typeof value === "object" && value !== null}
+                      value={
+                        typeof value === "object" && value !== null
+                          ? JSON.stringify(value)
+                          : value || ""
+                      }
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
+                    />
+                  </div>
+                )
+            )}
         </div>
 
         <div className="flex justify-end space-x-3">

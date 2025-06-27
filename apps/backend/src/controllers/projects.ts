@@ -27,9 +27,7 @@ export const getAllProjects = async (_: Request, res: Response) => {
       createdAt: true,
       updatedAt: true,
     },
-    orderBy: {
-      marketCap: "desc",
-    },
+    orderBy: [{ featured: "desc" }, { marketCap: "desc" }],
   });
 
   res.json(projects);

@@ -14,6 +14,8 @@ export interface Project {
   discord?: string | null;
   rawData?: any | null;
 
+  featured: boolean | string;
+
   // Поля анализа
   mindshare?: string | null;
   kolAttention?: string | null;
