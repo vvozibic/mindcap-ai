@@ -64,6 +64,16 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
               >
                 My Social Card
               </Link>
+              <Link
+                to="/for-business"
+                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  isActive("/for-business")
+                    ? "bg-primary-700 text-white"
+                    : "text-gray-300 hover:bg-primary-600 hover:text-white"
+                }`}
+              >
+                For Business
+              </Link>
             </div>
           </div>
 
@@ -142,6 +152,17 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
               onClick={() => setIsMenuOpen(false)}
             >
               My Social Card
+            </Link>
+            <Link
+              to="/for-business"
+              className={`block px-3 py-2 rounded-md text-base font-medium ${
+                isActive("/for-business")
+                  ? "bg-primary-700 text-white"
+                  : "text-gray-300 hover:bg-primary-600 hover:text-white"
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              For Business
             </Link>
           </div>
           <div className="pt-4 pb-3 border-t border-primary-600">

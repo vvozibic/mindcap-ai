@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import LoginModal from "../components/LoginModal";
 import Navbar from "../components/Navbar";
+import ForBusinessPage from "../pages/ForBusinessPage";
 import HomePage from "../pages/HomePage";
 import ProjectsPage from "../pages/ProjectsPage";
 import SocialCardPage from "../pages/SocialCardPage";
@@ -68,7 +69,8 @@ function ClientLayout() {
                 onLogin={() => setIsLoginModalOpen(true)}
               />
             }
-          />
+          />{" "}
+          <Route path="/for-business" element={<ForBusinessPage />} />
         </Routes>
       </main>
 
