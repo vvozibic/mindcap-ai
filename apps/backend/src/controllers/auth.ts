@@ -80,18 +80,21 @@ export const loginWithTwitter = async (req: Request, res: Response) => {
 };
 
 export const getMe = async (req: Request, res: Response) => {
-  const { user: userFromQuery } = req.query;
+  try {
+    const userInfo = await fetch("https://api.twitter.com/2/users/me", {
+      headers: { Authorization: `Bearer ${req.userToken}` },
+    });
+    const user = await userInfo.json();
 
-  const user = await prisma.user.findFirst({
-    where: {
-      OR: [
-        { email: String(userFromQuery) },
-        { twitterHandle: String(userFromQuery) },
-      ].filter(Boolean), // убираем undefined
-    },
-  });
-
-  if (!user) return res.status(404).json({ error: "User not found" });
-
-  res.json({ user });
+    if (user && user.data.username) {
+      let userData = await prisma.user.findFirst({
+        where: { username: user.data.username },
+      });
+      return res.json({ success: true, user: userData });
+    } else {
+      res.status(401).json({ error: "Unauthorized" });
+    }
+  } catch {
+    res.status(401).json({ error: "Unauthorized" });
+  }
 };

@@ -87,7 +87,10 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
   };
 
   return (
-    <div className="bg-primary-800 rounded-lg shadow-lg overflow-hidden border border-primary-700">
+    <div
+      id="leaderboard"
+      className="bg-primary-800 rounded-lg shadow-lg overflow-hidden border border-primary-700"
+    >
       <div className="p-6 bg-gradient-to-r from-primary-700 to-primary-600">
         <h2 className="text-2xl font-bold text-white">X.com KOL Leaderboard</h2>
         <p className="text-gray-300 mt-2">

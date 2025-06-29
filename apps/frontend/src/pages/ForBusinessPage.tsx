@@ -10,6 +10,7 @@ export default function ForBusinessPage() {
       }}
       description="Forget fleeting trends. Our platform is designed to connect your projects with Key Opinion Leaders who generate lasting utility and results."
       ctaText="Get Started"
+      bottomImage="/images/screenshot.webp"
       ctaHref="/#"
       gridOptions={{
         angle: 65,

@@ -20,10 +20,7 @@ function ClientLayout() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (!user) return setUser({ isAuthenticated: false });
-
-    fetch(`/api/auth/me?user=${user}`)
+    fetch(`/api/auth/me`)
       .then(async (res) => {
         if (!res.ok) throw new Error("Not authenticated");
         const data = await res.json();

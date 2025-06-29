@@ -44,7 +44,7 @@ const RetroGrid = ({
       )}
       style={gridStyles}
     >
-      <div className="absolute inset-0 [transform:rotateX(var(--grid-angle))]">
+      <div className="absolute top-100% [transform:rotateX(var(--grid-angle))]">
         <div className="animate-grid [background-image:linear-gradient(to_right,var(--light-line)_1px,transparent_0),linear-gradient(to_bottom,var(--light-line)_1px,transparent_0)] [background-repeat:repeat] [background-size:var(--cell-size)_var(--cell-size)] [height:300vh] [inset:0%_0px] [margin-left:-200%] [transform-origin:100%_0_0] [width:600vw] dark:[background-image:linear-gradient(to_right,var(--dark-line)_1px,transparent_0),linear-gradient(to_bottom,var(--dark-line)_1px,transparent_0)]" />
       </div>
       <div className="absolute inset-0 bg-gradient-to-t from-white to-transparent to-90% dark:from-black" />
@@ -64,7 +64,7 @@ const ForBusinessCard = React.forwardRef<HTMLDivElement, ForBusinessCardProps>(
       description = "Forget fleeting trends. Our platform connects your projects with Key Opinion Leaders who generate lasting utility and results.",
       ctaText = "Get Started",
       ctaHref = "#",
-      bottomImage = "/images/screenshot.webp",
+      bottomImage,
       gridOptions,
       ...props
     },
@@ -73,7 +73,7 @@ const ForBusinessCard = React.forwardRef<HTMLDivElement, ForBusinessCardProps>(
     return (
       <div className={cn("relative", className)} ref={ref} {...props}>
         {/* Fallback gradient background adapted to theme */}
-        <div className="absolute top-0 z-[0] h-screen w-screen bg-[#0B1120] bg-[radial-gradient(ellipse_20%_80%_at_50%_-20%,rgba(255,234,138,0.05),rgba(255,255,255,0))] dark:bg-[radial-gradient(ellipse_20%_80%_at_50%_-20%,rgba(255,214,102,0.08),rgba(255,255,255,0))]" />
+        <div className="absolute top-0 z-[0] h-screen w-screen bg-[radial-gradient(ellipse_20%_80%_at_50%_-20%,rgba(255,234,138,0.05),rgba(255,255,255,0))] dark:bg-[radial-gradient(ellipse_20%_80%_at_50%_-20%,rgba(255,214,102,0.08),rgba(255,255,255,0))]" />
         <section className="relative max-w-full mx-auto z-1">
           <RetroGrid {...gridOptions} />
           <div className="max-w-screen-xl z-10 mx-auto px-4 py-28 gap-12 md:px-8">

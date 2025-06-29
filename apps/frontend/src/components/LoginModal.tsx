@@ -1,5 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Twitter, User, X } from "lucide-react";
+import { Twitter, X } from "lucide-react";
 import React, { Fragment, useState } from "react";
 
 interface LoginModalProps {
@@ -58,21 +58,20 @@ const LoginModal: React.FC<LoginModalProps> = ({
     if (step === "method") {
       return (
         <div className="mt-6 space-y-4">
-          <button
+          {/* <button
             onClick={() => setStep("email")}
             className="w-full flex items-center justify-center px-4 py-2 border border-primary-600 shadow-sm text-sm font-medium rounded-md text-gray-300 bg-primary-700 hover:bg-primary-600"
           >
             <User className="h-5 w-5 mr-2" />
             Continue with Email
-          </button>
+          </button> */}
 
-          <button
-            onClick={() => setStep("twitter")}
-            className="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary-900 bg-accent-500 hover:bg-accent-600"
-          >
-            <Twitter className="h-5 w-5 mr-2" />
-            Continue with Twitter
-          </button>
+          <a href="/api/auth/twitter">
+            <button className="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary-900 bg-accent-500 hover:bg-accent-600">
+              <Twitter className="h-5 w-5 mr-2" />
+              Continue with Twitter
+            </button>
+          </a>
         </div>
       );
     }
