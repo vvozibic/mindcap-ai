@@ -6,6 +6,9 @@ const prisma = new PrismaClient();
 
 export const getAllProjects = async (_: Request, res: Response) => {
   const projects = await prisma.project.findMany({
+    where: {
+      featured: false,
+    },
     select: {
       id: true,
       name: true,
@@ -26,8 +29,42 @@ export const getAllProjects = async (_: Request, res: Response) => {
       twitter: true,
       createdAt: true,
       updatedAt: true,
+      featured: true,
     },
-    orderBy: [{ featured: "desc" }, { marketCap: "desc" }],
+    orderBy: [{ marketCap: "desc" }],
+  });
+
+  res.json(projects);
+};
+
+export const getFeaturedProjects = async (_: Request, res: Response) => {
+  const projects = await prisma.project.findMany({
+    where: {
+      featured: true,
+    },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      avatarUrl: true,
+      category: true,
+      categories: true,
+      website: true,
+      description: true,
+      marketCap: true,
+      launchDate: true,
+      mindshare: true,
+      kolAttention: true,
+      engagement: true,
+      trustScore: true,
+      rewardPoolUsd: true,
+      rewardRank: true,
+      twitter: true,
+      createdAt: true,
+      updatedAt: true,
+      featured: true,
+    },
+    orderBy: [{ marketCap: "desc" }],
   });
 
   res.json(projects);

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { FeaturedProjects } from "../components/FeaturedProjects";
 import ProjectDetailOverlay from "../components/ProjectDetailOverlay";
+import { Skeleton } from "../components/Skeleton";
 import { Project } from "../types";
 
 interface ProjectsPageProps {
@@ -15,11 +17,19 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({
   const [isDetailOverlayOpen, setIsDetailOverlayOpen] = useState(false);
 
   const [projects, setProjects] = useState<Project[]>([]);
+  const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
 
   useEffect(() => {
     fetch("/api/projects")
       .then((res) => res.json())
       .then(setProjects)
+      .catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/projects/featured")
+      .then((res) => res.json())
+      .then(setFeaturedProjects)
       .catch(console.error);
   }, []);
 
@@ -34,6 +44,10 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <FeaturedProjects
+        projects={featuredProjects}
+        handleOpenProject={(p) => handleProjectClick(p)}
+      />
       <div className="text-center mb-8">
         <h1 className="text-3xl font-extrabold text-gray-100 sm:text-4xl">
           Projects
@@ -44,6 +58,16 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        {!projects.length && (
+          <>
+            <Skeleton height="150px" />
+            <Skeleton height="150px" />
+            <Skeleton height="150px" />
+            <Skeleton height="150px" />
+            <Skeleton height="150px" />
+            <Skeleton height="150px" />
+          </>
+        )}
         {projects.map((project) => (
           <div
             key={project.id}

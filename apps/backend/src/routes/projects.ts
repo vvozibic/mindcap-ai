@@ -3,6 +3,7 @@ import {
   createProject,
   deleteProject,
   getAllProjects,
+  getFeaturedProjects,
   getProject,
   updateProject,
 } from "../controllers/projects";
@@ -10,6 +11,7 @@ import {
 export const projectRoutes = express.Router();
 
 projectRoutes.get("/", getAllProjects);
+projectRoutes.get("/featured", getFeaturedProjects);
 projectRoutes.get("/:id", getProject);
 projectRoutes.post("/", createProject);
 projectRoutes.put("/:id", updateProject);
