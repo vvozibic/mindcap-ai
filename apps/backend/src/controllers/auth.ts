@@ -86,6 +86,8 @@ export const getMe = async (req: Request, res: Response) => {
     });
     const user = await userInfo.json();
 
+    console.log(user);
+
     if (user && user.data.username) {
       let userData = await prisma.user.findFirst({
         where: { username: user.data.username },
@@ -94,7 +96,9 @@ export const getMe = async (req: Request, res: Response) => {
     } else {
       res.status(401).json({ error: "Unauthorized" });
     }
-  } catch {
+  } catch (e) {
+    console.log("Auth error:", e);
+
     res.status(401).json({ error: "Unauthorized" });
   }
 };
