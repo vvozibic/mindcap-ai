@@ -81,9 +81,12 @@ export const loginWithTwitter = async (req: Request, res: Response) => {
 
 export const getMe = async (req: Request, res: Response) => {
   try {
-    const userInfo = await fetch("https://api.twitter.com/2/users/me", {
-      headers: { Authorization: `Bearer ${req.userToken}` },
-    });
+    const userInfo = await fetch(
+      "https://api.twitter.com/2/users/me?user.fields=id,name,username,profile_image_url",
+      {
+        headers: { Authorization: `Bearer ${req.userToken}` },
+      }
+    );
     const user = await userInfo.json();
 
     console.log(user);

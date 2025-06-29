@@ -41,9 +41,9 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
           /> */}
           <div className="ml-4">
             <h2 className="text-xl font-bold text-white">
-              {user.email || user.twitterHandle}
+              {user.email || user.username}
             </h2>
-            <p className="text-gray-300">{user.email || user.twitterHandle}</p>
+            <p className="text-gray-300">{user.email || user.username}</p>
           </div>
         </div>
       </div>

@@ -25,7 +25,7 @@ export async function getAndSaveUser(screenName: string, skipIfExists = true) {
 
   try {
     if (skipIfExists) {
-      const exists = await prisma.influencer.findUnique({
+      const exists = await prisma.user.findUnique({
         where: { username },
         select: { id: true },
       });
@@ -50,14 +50,14 @@ export async function getAndSaveUser(screenName: string, skipIfExists = true) {
     );
 
     await prisma.user.upsert({
-      where: { twitterHandle: username },
+      where: { username },
       update: {
-        username: data.name,
+        username: data.screen_name,
         avatarUrl: data.avatar,
         platform: "twitter",
       },
       create: {
-        username: data.name,
+        username: data.screen_name,
         avatarUrl: data.avatar,
         platform: "twitter",
       },

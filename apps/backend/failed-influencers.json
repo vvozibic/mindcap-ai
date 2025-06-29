@@ -33,4 +33,24 @@
     "handle": "cryptolalit151",
     "error": "{\"message\":\"User not found.\"}"
   }
+][
+  {
+    "handle": "vlad_blow",
+    "error": "\nInvalid `prisma.user.findUnique()` invocation in\n/Users/vvozibic/projects/mindcap-ai/apps/backend/src/components/getAndSaveUser.ts:28:40\n\n  25 \n  26 try {\n  27   if (skipIfExists) {\n→ 28     const exists = await prisma.user.findUnique({\n           where: {\n             username: \"vlad_blow\",\n         ?   id?: Int,\n         ?   email?: String,\n         ?   twitterHandle?: String,\n         ?   AND?: UserWhereInput | UserWhereInput[],\n         ?   OR?: UserWhereInput[],\n         ?   NOT?: UserWhereInput | UserWhereInput[],\n         ?   createdAt?: DateTimeFilter | DateTime,\n         ?   updatedAt?: DateTimeFilter | DateTime,\n         ?   avatarUrl?: StringNullableFilter | String | Null,\n         ?   platform?: StringNullableFilter | String | Null\n           },\n           select: {\n             id: true\n           }\n         })\n\nArgument `where` of type UserWhereUniqueInput needs at least one of `id`, `email` or `twitterHandle` arguments. Available options are marked with ?."
+  }
+][
+  {
+    "handle": "vlad_blow",
+    "error": "\nInvalid `prisma.user.upsert()` invocation in\n/Users/vvozibic/projects/mindcap-ai/apps/backend/src/components/getAndSaveUser.ts:52:23\n\n  49     .then((res) => res.data)\n  50 );\n  51 \n→ 52 await prisma.user.upsert(\nUnique constraint failed on the fields: (`username`)"
+  }
+][
+  {
+    "handle": "vlad_blow",
+    "error": "\nInvalid `prisma.user.upsert()` invocation in\n/Users/vvozibic/projects/mindcap-ai/apps/backend/src/components/getAndSaveUser.ts:52:23\n\n  49     .then((res) => res.data)\n  50 );\n  51 \n→ 52 await prisma.user.upsert(\nUnique constraint failed on the fields: (`username`)"
+  }
+][
+  {
+    "handle": "vlad_blow",
+    "error": "\nInvalid `prisma.user.upsert()` invocation in\n/Users/vvozibic/projects/mindcap-ai/apps/backend/src/components/getAndSaveUser.ts:52:23\n\n  49     .then((res) => res.data)\n  50 );\n  51 \n→ 52 await prisma.user.upsert(\nUnique constraint failed on the fields: (`username`)"
+  }
 ]

@@ -33,8 +33,8 @@ function ClientLayout() {
     setUser({ ...user, isAuthenticated: true });
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
     setUser({ isAuthenticated: false });
   };
 

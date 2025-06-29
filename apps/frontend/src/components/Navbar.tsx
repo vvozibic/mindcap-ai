@@ -80,9 +80,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
           <div className="hidden md:block">
             {user.isAuthenticated ? (
               <div className="flex items-center space-x-4">
-                <span className="text-sm">
-                  {user.email || user.twitterHandle}
-                </span>
+                <span className="text-sm">{user.email || user.username}</span>
                 <button
                   onClick={onLogout}
                   className="text-sm text-red-400 hover:text-red-500"

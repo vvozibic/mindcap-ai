@@ -11,6 +11,7 @@ import {
   loginWithTwitter,
 } from "../controllers/auth";
 import { authenticateToken } from "../middleware/auth";
+import { authTwitter } from "../middleware/authTwitter";
 
 const authRoutes = express.Router();
 
@@ -28,7 +29,7 @@ authRoutes.get("/admin/me", authenticateToken, (req, res) => {
 
 authRoutes.post("/login/email", loginWithEmail);
 authRoutes.post("/login/twitter", loginWithTwitter);
-authRoutes.get("/me", getMe);
+authRoutes.get("/me", authTwitter, getMe);
 
 const clientId = process.env.TWITTER_CLIENT_ID!;
 const clientSecret = process.env.TWITTER_CLIENT_SECRET!;
@@ -91,23 +92,35 @@ authRoutes.get("/callback/twitter", async (req, res) => {
     return res.status(401).json({ error: "OAuth failed", detail: data });
   }
 
-  const userResponse = await fetch("https://api.twitter.com/2/users/me", {
-    headers: {
-      Authorization: `Bearer ${data?.access_token}`,
-    },
-  });
+  const userResponse = await fetch(
+    "https://api.twitter.com/2/users/me?user.fields=id,name,username,profile_image_url",
+    {
+      headers: {
+        Authorization: `Bearer ${data?.access_token}`,
+      },
+    }
+  );
 
   const userData: any = await userResponse.json();
 
   await getAndSaveUser(userData?.data?.username);
 
-  res.cookie("twitter_token", data.access_token, {
+  res.cookie("twitter_token", data?.access_token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
   });
 
   res.redirect("/");
+});
+
+authRoutes.post("/logout", (req, res) => {
+  res.clearCookie("twitter_token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+  });
+
+  res.status(200).json({ message: "Logged out" });
 });
 
 export { authRoutes };
