@@ -107,7 +107,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
               <tr>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
+                  className="pt-3 pr-0 pb-3 pl-6 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
                   onClick={() => handleSort("followersCountNumeric")}
                 >
                   <div className="flex items-center">
@@ -313,9 +313,9 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                   }`}
                   onClick={() => handleInfluencerClick(kol)}
                 >
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="pt-3 pr-0 pb-3 pl-6 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-200">
-                      #{index}
+                      #{index + 1}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -327,7 +327,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                           alt={kol.name}
                         />
                       </div>
-                      <div className="ml-4">
+                      <div className="ml-4 max-w-[300px] text-wrap">
                         <div className="text-sm font-medium text-gray-200">
                           {kol.name}
                         </div>
