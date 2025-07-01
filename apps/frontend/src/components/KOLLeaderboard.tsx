@@ -12,7 +12,7 @@ function withMindshare(influencers: Influencer[]) {
   return influencers.map((i) => ({
     ...i,
     mindshare:
-      totalScore > 0 ? +((i.kolScore / totalScore) * 100).toFixed(3) : 0,
+      totalScore > 0 ? +((i.kolScore / totalScore) * 100).toFixed(2) : 0,
   }));
 }
 

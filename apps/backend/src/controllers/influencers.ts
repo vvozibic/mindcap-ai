@@ -40,7 +40,7 @@ export const getInfluencers = async (_req: Request, res: Response) => {
       updatedAt: true,
     },
     orderBy: {
-      followersCountNumeric: "desc",
+      kolScore: "desc",
     },
   });
   res.json(influencers);
