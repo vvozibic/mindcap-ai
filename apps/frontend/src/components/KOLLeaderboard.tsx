@@ -12,7 +12,7 @@ function withMindshare(influencers: Influencer[]) {
   return influencers.map((i) => ({
     ...i,
     mindshare:
-      totalScore > 0 ? +((i.kolScore / totalScore) * 100).toFixed(2) : 0,
+      totalScore > 0 ? +((i.kolScore / totalScore) * 100).toFixed(3) : 0,
   }));
 }
 
@@ -167,11 +167,11 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort("followers")}
+                  onClick={() => handleSort("followersCountNumeric")}
                 >
                   <div className="flex items-center relative">
                     Followers
-                    {sortField === "followers" &&
+                    {sortField === "followersCountNumeric" &&
                       (sortDirection === "asc" ? (
                         <ArrowUp className="h-4 w-4 ml-1" />
                       ) : (
@@ -362,22 +362,20 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
 
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-200">
-                      {kol.smartFollowers || "–"}
+                      {kol.smartFollowers}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-200">
-                      {kol.followersCountNumeric || "–"}
+                      {kol.followersCountNumeric}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-200">
-                      {kol.kolScore || "–"}
-                    </div>
+                    <div className="text-sm text-gray-200">{kol.kolScore}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-200 font-medium">
-                      {`${kol.mindshare}%` || "–"}
+                      {`${kol.mindshare}%`}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

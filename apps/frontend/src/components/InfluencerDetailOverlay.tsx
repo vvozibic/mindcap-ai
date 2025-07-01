@@ -86,20 +86,20 @@ const getInfluencerDetailData = (
     averageLikesTrend: "up",
     postingFrequency: `~${Number(
       kol?.tweetsCountNumeric / daysBetween(kol.twitterRegisterDate, new Date())
-    ).toFixed(0)}/day`,
+    )?.toFixed(0)}/day`,
     likes: kol?.totalLikes,
     comments: kol?.totalComments,
     retwets: kol?.totalRetweets,
     aiGeneratedContent: 0,
     avgCommentsPerPost: Number(
       kol?.totalComments / kol?.tweetsCountNumeric || 0
-    ).toFixed(4),
+    )?.toFixed(4),
     avgRetweetsPerPost: Number(
       kol?.totalRetweets / kol?.tweetsCountNumeric || 0
-    ).toFixed(4),
+    )?.toFixed(4),
     avgEngagementPerPost: Number(
       kol?.engagementRate / kol?.tweetsCountNumeric || 0
-    ).toFixed(4),
+    )?.toFixed(4),
     engagementRate: kol?.engagementRate,
     twitterRegisterDate: new Date(kol.twitterRegisterDate).toLocaleDateString(),
     profileUrl: kol?.profileUrl || "",
@@ -195,7 +195,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                             Biography
                           </h5>
                           <p className="text-gray-400">
-                            {detailData.biography}
+                            {detailData?.biography}
                           </p>
                         </div>
                       </div>
@@ -213,7 +213,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                               Followers
                             </h6>
                             <p className="text-lg font-bold text-gray-200">
-                              {detailData.followers}
+                              {detailData?.followers}
                             </p>
                           </div>
                         </div>
@@ -239,13 +239,13 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                               Business Account
                             </h6>
                             <p className="text-gray-200">
-                              {detailData.isBusinessAccount ? "Yes" : "No"}
+                              {detailData?.isBusinessAccount ? "Yes" : "No"}
                             </p>
                           </div>
                         </div>
 
                         <div className="flex items-center">
-                          {detailData.accountStatus === "Active" ? (
+                          {detailData?.accountStatus === "Active" ? (
                             <CheckCircle className="h-5 w-5 text-status-green" />
                           ) : (
                             <AlertCircle className="h-5 w-5 text-status-yellow" />
@@ -255,7 +255,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                               Account Status
                             </h6>
                             <p className="text-gray-200">
-                              {detailData.accountStatus}
+                              {detailData?.accountStatus}
                             </p>
                           </div>
                         </div>
@@ -268,7 +268,9 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                     <div className="bg-primary-700 rounded-lg p-4 mb-6">
                       <div className="flex items-center mb-3">
                         <div className="h-2 w-2 rounded-full bg-green-500 mr-2"></div>
-                        <p className="text-gray-300">{detailData.syncStatus}</p>
+                        <p className="text-gray-300">
+                          {detailData?.syncStatus}
+                        </p>
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
@@ -277,7 +279,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                             Last Sync
                           </h6>
                           <p className="text-gray-300">
-                            {detailData.lastSync || "Soon"}
+                            {detailData?.lastSync || "Soon"}
                           </p>
                         </div>
 
@@ -286,7 +288,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                             Next Sync
                           </h6>
                           <p className="text-gray-300">
-                            {detailData.nextSync || "Soon"}
+                            {detailData?.nextSync || "Soon"}
                           </p>
                         </div>
                       </div>
@@ -299,7 +301,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                           Registered
                         </h6>
                         <p className="text-gray-300">
-                          {detailData.twitterRegisterDate}
+                          {detailData?.twitterRegisterDate}
                         </p>
                       </div>
                     </div>
@@ -356,7 +358,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                         </h5>
                         <div className="flex items-baseline">
                           <p className="text-xl font-bold text-gray-200">
-                            {detailData.totalPosts}
+                            {detailData?.totalPosts}
                           </p>
                           <span className="ml-2 text-xs text-gray-400">
                             Lifetime
@@ -376,9 +378,9 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                           </h6>
                           <div className="flex items-center">
                             <p className="text-lg font-bold text-gray-200">
-                              {detailData.engagement.toFixed(2)}%
+                              {detailData?.engagement?.toFixed(2)}%
                             </p>
-                            {detailData.engagementTrend === "up" && (
+                            {detailData?.engagementTrend === "up" && (
                               <TrendingUp className="h-4 w-4 ml-1 text-status-green" />
                             )}
                           </div>
@@ -390,9 +392,9 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                           </h6>
                           <div className="flex items-center">
                             <p className="text-lg font-bold text-gray-200">
-                              {detailData.averageLikes.toLocaleString()}
+                              {detailData?.averageLikes?.toLocaleString()}
                             </p>
-                            {detailData.averageLikesTrend === "up" && (
+                            {detailData?.averageLikesTrend === "up" && (
                               <TrendingUp className="h-4 w-4 ml-1 text-status-green" />
                             )}
                           </div>
@@ -403,7 +405,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                             Posting Frequency
                           </h6>
                           <p className="text-lg font-bold text-gray-200">
-                            {detailData.postingFrequency}
+                            {detailData?.postingFrequency}
                           </p>
                         </div>
                       </div>
@@ -420,7 +422,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                             Likes
                           </p>
                           <p className="text-lg font-bold text-gray-200">
-                            {detailData.likes}
+                            {detailData?.likes}
                           </p>
                         </div>
 
@@ -430,7 +432,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                             Comments
                           </p>
                           <p className="text-lg font-bold text-gray-200">
-                            {detailData.comments}
+                            {detailData?.comments}
                           </p>
                         </div>
 
@@ -440,7 +442,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                             Retweets
                           </p>
                           <p className="text-lg font-bold text-gray-200">
-                            {detailData.retwets}
+                            {detailData?.retwets}
                           </p>
                         </div>
                       </div>
@@ -453,7 +455,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                               AI Generated Content
                             </h6>
                             <p className="text-gray-200">
-                              {detailData.aiGeneratedContent}%
+                              {detailData?.aiGeneratedContent}%
                             </p>
                           </div>
                         </div>
@@ -473,7 +475,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                             Avg. Comments/Post
                           </p>
                           <p className="text-gray-200 font-medium">
-                            {detailData.avgCommentsPerPost}
+                            {detailData?.avgCommentsPerPost}
                           </p>
                         </div>
 
@@ -482,7 +484,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                             Avg. Retweets/Post
                           </p>
                           <p className="text-gray-200 font-medium">
-                            {detailData.avgRetweetsPerPost}
+                            {detailData?.avgRetweetsPerPost}
                           </p>
                         </div>
 
@@ -491,7 +493,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                             Avg. Engagement/Post
                           </p>
                           <p className="text-gray-200 font-medium">
-                            {detailData.avgEngagementPerPost}
+                            {detailData?.avgEngagementPerPost}
                           </p>
                         </div>
 
@@ -500,7 +502,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                             Engagement Rate
                           </p>
                           <p className="text-gray-200 font-medium">
-                            {detailData.engagementRate.toFixed(2)}%
+                            {detailData?.engagementRate?.toFixed(2)}%
                           </p>
                         </div>
                       </div>

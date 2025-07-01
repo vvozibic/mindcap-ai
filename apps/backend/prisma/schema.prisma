@@ -108,6 +108,36 @@ model Influencer {
   @@index([createdAt])
 }
 
+model Narrative {
+  id                     String   @id @default(cuid())
+  narrativeId           String   @unique
+  name                  String
+  slug                  String
+  description           String?
+  projectCount          Int
+  totalViews            Float
+  totalPosts            Int
+
+  marketCapUsd          Float
+  marketCapChange24h    Float
+  marketCapChange7d     Float
+  marketCapChange30d    Float
+  marketCapChange90d    Float
+
+  mindsharePercent      Float
+  mindshareChange24h    Float
+  mindshareChange7d     Float
+  mindshareChange30d    Float
+  mindshareChange90d    Float
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([id])
+  @@index([narrativeId])
+  @@index([name])
+}
+
 model Mention {
   id             String     @id @default(cuid())
   projectId      String

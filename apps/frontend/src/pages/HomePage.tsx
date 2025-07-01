@@ -1,6 +1,7 @@
 import React from "react";
 import { ForBusinessCard } from "../components/ForBusinessCard";
 import KOLLeaderboard from "../components/KOLLeaderboard";
+import NarrativesTreemap from "../components/Narratives";
 
 interface HomePageProps {}
 
@@ -24,7 +25,9 @@ const HomePage: React.FC<HomePageProps> = () => {
           darkLineColor: "#2a2a2a",
         }}
       />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-1 sm:px-4 lg:px-8 py-8">
+        <NarrativesTreemap />
+
         <KOLLeaderboard />
 
         <div className="mt-12 bg-primary-800 rounded-lg shadow-lg p-6 border border-primary-700">

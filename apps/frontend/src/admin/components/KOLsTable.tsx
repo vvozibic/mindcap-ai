@@ -1,4 +1,4 @@
-import { Edit, Plus, Trash2, User } from "lucide-react";
+import { Edit, Plus, RefreshCw, Trash2, User } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Influencer } from "../../types";
 import KOLForm from "./KOLForm";
@@ -8,6 +8,7 @@ const KOLsTable: React.FC = () => {
   const [kols, setKols] = useState<Influencer[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [currentKOLId, setCurrentKOLId] = useState<string | null>(null);
+  const [enrichInProgress, setEnrichInProgress] = useState("");
 
   useEffect(() => {
     fetch("/api/influencers")
@@ -29,6 +30,29 @@ const KOLsTable: React.FC = () => {
   const handleDelete = async (id: string) => {
     await fetch(`/api/influencers/${id}`, { method: "DELETE" });
     setKols((prev) => prev.filter((k) => k.id !== id));
+  };
+
+  const handleEnrich = async (username: string) => {
+    const token = localStorage.getItem("token");
+    setEnrichInProgress(username);
+    const res = await fetch("/api/influencers/enrich", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ username }),
+    });
+
+    if (res.ok) {
+      setEnrichInProgress("");
+      alert("Successfully enrich" + username);
+    } else {
+      setEnrichInProgress("");
+      const err = await res.json();
+      alert("Failed to enrich:" + err);
+      console.error("Failed to enrich:", err);
+    }
   };
 
   const handleSuccess = () => {
@@ -120,6 +144,18 @@ const KOLsTable: React.FC = () => {
                   <div className="text-sm text-gray-500">{kol.expertise}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <button
+                    title="Enrich infl from APIs"
+                    onClick={() => handleEnrich(kol.username)}
+                    className="text-indigo-600 hover:text-indigo-900 mr-3"
+                  >
+                    <RefreshCw
+                      className={`h-5 w-5 ${
+                        enrichInProgress === kol.username && "animate-spin"
+                      } ${enrichInProgress && "cursor-not-allowed"}`}
+                    />
+                  </button>
+
                   <button
                     onClick={() => handleEdit(kol.id)}
                     className="text-indigo-600 hover:text-indigo-900 mr-3"

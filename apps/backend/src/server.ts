@@ -8,6 +8,7 @@ import path from "path";
 import { authRoutes } from "./routes/auth";
 import { influencerRoutes } from "./routes/influencers";
 import { mentionRoutes } from "./routes/mentions";
+import narrativesRoutes from "./routes/narratives";
 import { projectRoutes } from "./routes/projects";
 import { usersRoutes } from "./routes/users";
 
@@ -24,6 +25,7 @@ app.use("/api/influencers", influencerRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/mentions", mentionRoutes);
 app.use("/api/users", usersRoutes);
+app.use("/api/narratives", narrativesRoutes);
 
 if (isDev) {
   app.use(

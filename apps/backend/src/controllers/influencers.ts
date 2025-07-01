@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
+import { enrichInfluencer } from "../components/influencers/enrichInfluencer";
 const prisma = new PrismaClient();
 
 export const getInfluencers = async (_req: Request, res: Response) => {
@@ -96,4 +97,16 @@ export const deleteInfluencer = async (req: Request, res: Response) => {
   });
 
   res.status(200).json({ message: "Project and related mentions deleted" });
+};
+
+export const adminEnrichInfluencer = async (req: Request, res: Response) => {
+  const { username } = req.body;
+
+  try {
+    await enrichInfluencer(username);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to enrich influencer" });
+  }
 };

@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import axios from "axios";
 import fs from "fs/promises";
-import { retryWithDelay } from "./retryWithDelay";
+import { retryWithDelay } from "../retryWithDelay";
 
 const prisma = new PrismaClient();
 
@@ -20,7 +20,7 @@ export type TweetScoutResponse = {
   verified: boolean;
 };
 
-export async function getAndSaveUser(screenName: string, skipIfExists = true) {
+export async function enrichUser(screenName: string, skipIfExists = true) {
   const username = screenName.toLowerCase();
 
   try {
@@ -63,7 +63,7 @@ export async function getAndSaveUser(screenName: string, skipIfExists = true) {
       },
     });
 
-    console.log(`✅ Saved: ${username}`);
+    console.log(`✅ User saved: ${username}`);
   } catch (err: any) {
     const message = err?.response?.data || err?.message || "Unknown error";
     console.error(`❌ Failed: ${username} —`, message);

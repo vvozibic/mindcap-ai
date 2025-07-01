@@ -3,7 +3,8 @@ import express from "express";
 import crypto from "crypto";
 import fetch from "node-fetch";
 import querystring from "querystring";
-import { getAndSaveUser } from "../components/getAndSaveUser";
+import { enrichInfluencer } from "../components/influencers/enrichInfluencer";
+import { enrichUser } from "../components/users/enrichUser";
 import {
   adminLogin,
   getMe,
@@ -91,6 +92,7 @@ authRoutes.get("/callback/twitter", async (req, res) => {
   if (!data?.access_token) {
     return res.status(401).json({ error: "OAuth failed", detail: data });
   }
+  console.log("Twitter oauth callback data", data);
 
   const userResponse = await fetch(
     "https://api.twitter.com/2/users/me?user.fields=id,name,username,profile_image_url",
@@ -103,13 +105,24 @@ authRoutes.get("/callback/twitter", async (req, res) => {
 
   const userData: any = await userResponse.json();
 
-  await getAndSaveUser(userData?.data?.username);
+  console.log("Twitter auth callback userData", userData);
+
+  enrichUser(userData?.data?.username).catch(console.error);
+  enrichInfluencer(userData?.data?.username).catch(console.error);
 
   res.cookie("twitter_token", data?.access_token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
   });
+
+  if (userData?.data?.username) {
+    res.cookie("twitter_user", userData?.data?.username, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+    });
+  }
 
   res.redirect("/");
 });

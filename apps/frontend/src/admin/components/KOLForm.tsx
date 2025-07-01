@@ -91,7 +91,7 @@ const InfluencerForm: React.FC<InfluencerFormProps> = ({
       ? `/api/influencers/${influencerId}`
       : "/api/influencers";
 
-    const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem("token");
 
     const res = await fetch(url, {
       method,

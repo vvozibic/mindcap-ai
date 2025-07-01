@@ -8,12 +8,16 @@ export const authTwitter = (
 ) => {
   const cookies = req.headers.cookie ? cookie.parse(req.headers.cookie) : {};
   const token = cookies.twitter_token;
+  const user = cookies.twitter_user;
 
   if (!token) {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
   // Можно также проверить токен через Twitter API, если нужно.
-  req.userToken = token; // Если хочешь использовать дальше
+  // @ts-ignore
+  req.twitterToken = token;
+  // @ts-ignore
+  req.twitterUser = user;
   next();
 };
