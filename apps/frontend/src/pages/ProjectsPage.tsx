@@ -50,7 +50,7 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({
       />
       <div className="text-center mb-8">
         <h1 className="text-3xl font-extrabold text-gray-100 sm:text-4xl">
-          Projects
+          Top Global Mindshare
         </h1>
         <p className="mt-3 max-w-2xl mx-auto text-xl text-gray-400 sm:mt-4">
           Explore top Web3 projects and their attention metrics

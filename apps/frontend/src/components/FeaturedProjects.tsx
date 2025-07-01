@@ -75,9 +75,9 @@ export const FeaturedProjects = ({
         {/* Content */}
         <div className="relative z-10 text-center">
           <h1 className="text-3xl md:text-4xl font-bold mb-6">
-            <span className="text-white">Featured</span>{" "}
+            <span className="text-white">Projects</span>{" "}
             <span className="bg-gradient-to-r from-[#F7CE68] to-[#FBAB7E] text-transparent bg-clip-text">
-              Projects
+              Arena
             </span>
           </h1>
 

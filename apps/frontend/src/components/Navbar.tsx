@@ -42,7 +42,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
                     : "text-gray-300 hover:bg-primary-600 hover:text-white"
                 }`}
               >
-                X.com KOL Leaderboard
+                Minds Leaderboard
               </Link>
               <Link
                 to="/projects"
@@ -64,7 +64,15 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
               >
                 My Social Card
               </Link>
-              <Link
+              <div className="relative flex flex-col items-center group">
+                <span className="absolute bottom-[-5px] text-[10px] text-gray-500 hidden md:block group-hover:block">
+                  Coming soon
+                </span>
+                <span className="px-3 py-2 rounded-md text-sm font-medium text-gray-500 cursor-not-allowed">
+                  TikTok Mindshare
+                </span>
+              </div>
+              {/* <Link
                 to="/for-business"
                 className={`px-3 py-2 rounded-md text-sm font-medium ${
                   isActive("/for-business")
@@ -73,7 +81,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
                 }`}
               >
                 For Business
-              </Link>
+              </Link> */}
             </div>
           </div>
 
@@ -127,7 +135,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
               }`}
               onClick={() => setIsMenuOpen(false)}
             >
-              X.com KOL Leaderboard
+              Minds Leaderboard
             </Link>
             <Link
               to="/projects"
@@ -151,7 +159,13 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
             >
               My Social Card
             </Link>
-            <Link
+            <div className="flex justify-between items-center px-3 py-2 text-gray-500">
+              <span className="text-base font-medium cursor-not-allowed">
+                TikTok Mindshare
+              </span>
+              <span className="text-xs text-gray-400">Coming soon</span>
+            </div>
+            {/* <Link
               to="/for-business"
               className={`block px-3 py-2 rounded-md text-base font-medium ${
                 isActive("/for-business")
@@ -161,7 +175,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
               onClick={() => setIsMenuOpen(false)}
             >
               For Business
-            </Link>
+            </Link> */}
           </div>
           <div className="pt-4 pb-3 border-t border-primary-600">
             {user.isAuthenticated ? (
