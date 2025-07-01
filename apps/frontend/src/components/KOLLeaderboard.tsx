@@ -6,6 +6,16 @@ import { TableSkeleton } from "./TableSkeleton";
 
 interface KOLLeaderboardProps {}
 
+function withMindshare(influencers: Influencer[]) {
+  const totalScore = influencers.reduce((sum, i) => sum + i.kolScore, 0);
+
+  return influencers.map((i) => ({
+    ...i,
+    mindshare:
+      totalScore > 0 ? +((i.kolScore / totalScore) * 100).toFixed(2) : 0,
+  }));
+}
+
 type SortField =
   | "followersCountNumeric"
   | "mindshare"
@@ -44,7 +54,9 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
     }
   };
 
-  const sortedKOLs = [...kols].sort((a, b) => {
+  const influencers = withMindshare(kols);
+
+  const sortedKOLs = [...influencers].sort((a, b) => {
     const aValue = a[sortField];
     const bValue = b[sortField];
 
@@ -77,7 +89,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
   };
 
   const tooltips = {
-    mindshare: "Overall attention score based on multiple factors",
+    mindshare: "Overall mindshare based on AI",
     pow: "Quantity of relevant posts",
     poi: "Originality and depth of content",
     poe: "Engagement quality based on reputable influence",
@@ -208,7 +220,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                   onClick={() => handleSort("mindshare")}
                 >
                   <div className="flex items-center relative">
-                    Mindshare
+                    AI score
                     {sortField === "mindshare" &&
                       (sortDirection === "asc" ? (
                         <ArrowUp className="h-4 w-4 ml-1" />
@@ -364,8 +376,8 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500 font-medium">
-                      {kol.mindshare || "Soon"}
+                    <div className="text-sm text-gray-200 font-medium">
+                      {`${kol.mindshare}%` || "–"}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
