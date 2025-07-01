@@ -66,6 +66,7 @@ const ForBusinessCard = React.forwardRef<HTMLDivElement, ForBusinessCardProps>(
       ctaHref = "#",
       bottomImage,
       gridOptions,
+      children,
       ...props
     },
     ref
@@ -76,8 +77,8 @@ const ForBusinessCard = React.forwardRef<HTMLDivElement, ForBusinessCardProps>(
         <div className="absolute top-0 z-[0] h-screen w-screen bg-[radial-gradient(ellipse_20%_80%_at_50%_-20%,rgba(255,214,102,0.08),rgba(255,255,255,0))]" />
         <section className="relative max-w-full mx-auto z-1">
           <RetroGrid {...gridOptions} />
-          <div className="max-w-screen-xl z-10 mx-auto px-4 py-28 gap-12 md:px-8">
-            <div className="space-y-5 max-w-3xl leading-0 lg:leading-5 mx-auto text-center">
+          <div className="max-w-screen-xl z-10 mx-auto px-1 sm:px-4 lg:px-8 py-8 gap-12 md:px-8">
+            <div className="space-y-5 max-w-3xl leading-0 lg:leading-5 px-4 py-28 mx-auto text-center">
               <h1 className="text-sm text-gray-400 group font-geist mx-auto px-5 py-2 bg-gradient-to-tr to-transparent from-zinc-300/5 via-gray-400/5 border-[2px] border-white/5 rounded-3xl w-fit">
                 {title}
                 <ChevronRight className="inline w-4 h-4 ml-2 group-hover:translate-x-1 duration-300" />
@@ -103,6 +104,7 @@ const ForBusinessCard = React.forwardRef<HTMLDivElement, ForBusinessCardProps>(
                 </span>
               </div>
             </div>
+            {children}
             {bottomImage && (
               <div className="mt-32 mx-3 relative z-10">
                 <img

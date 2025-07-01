@@ -60,14 +60,16 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
     const aValue = a[sortField];
     const bValue = b[sortField];
 
-    if (sortDirection === "asc" && aValue && bValue) {
-      return aValue > bValue ? 1 : -1;
-    } else {
-      if (aValue && bValue) {
-        return aValue < bValue ? 1 : -1;
-      }
+    // Сначала обработка null/undefined
+    if (aValue == null && bValue == null) return 0;
+    if (aValue == null) return 1; // null идёт в конец
+    if (bValue == null) return -1;
 
-      return 1; // If one is null, place it at the end
+    // Теперь сравнение по значению
+    if (sortDirection === "asc") {
+      return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+    } else {
+      return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
     }
   });
 

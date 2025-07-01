@@ -90,7 +90,7 @@ const NarrativesTreemap: React.FC = () => {
       <div className="flex flex-col lg:flex-row gap-2 mt-4">
         <div className="lg:w-1/2 w-full">
           {!narratives.length && <TableSkeleton />}
-          {narratives.length && (
+          {Boolean(narratives.length) && (
             <NarrativeList
               data={filteredNarratives}
               selectedFilter={selectedFilter}
