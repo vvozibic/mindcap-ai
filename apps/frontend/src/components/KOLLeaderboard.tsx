@@ -1,6 +1,7 @@
 import { ArrowDown, ArrowUp, Info } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Influencer } from "../types";
+import { daysBetween } from "../utils/daysBetween";
 import InfluencerDetailOverlay from "./InfluencerDetailOverlay";
 import { TableSkeleton } from "./TableSkeleton";
 
@@ -24,12 +25,13 @@ type SortField =
   | "poe"
   | "smartFollowers"
   | "followers"
+  | "engagementRate"
+  | "avgLikes"
+  | "postingFrequency"
   | "kolScore";
 
 const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
-  const [sortField, setSortField] = useState<SortField>(
-    "followersCountNumeric"
-  );
+  const [sortField, setSortField] = useState<SortField>("kolScore");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [tooltipVisible, setTooltipVisible] = useState<string | null>(null);
   const [selectedInfluencer, setSelectedInfluencer] =
@@ -56,22 +58,29 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
 
   const influencers = withMindshare(kols);
 
-  const sortedKOLs = [...influencers].sort((a, b) => {
-    const aValue = a[sortField];
-    const bValue = b[sortField];
+  const sortedKOLs = [...influencers]
+    .map((i) => ({
+      ...i,
+      postingFrequency: Number(
+        i?.tweetsCountNumeric / daysBetween(i.twitterRegisterDate, new Date())
+      )?.toFixed(0),
+    }))
+    .sort((a, b) => {
+      const aValue = a[sortField];
+      const bValue = b[sortField];
 
-    // Сначала обработка null/undefined
-    if (aValue == null && bValue == null) return 0;
-    if (aValue == null) return 1; // null идёт в конец
-    if (bValue == null) return -1;
+      // Сначала обработка null/undefined
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return 1; // null идёт в конец
+      if (bValue == null) return -1;
 
-    // Теперь сравнение по значению
-    if (sortDirection === "asc") {
-      return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
-    } else {
-      return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
-    }
-  });
+      // Теперь сравнение по значению
+      if (sortDirection === "asc") {
+        return +aValue > +bValue ? 1 : +aValue < +bValue ? -1 : 0;
+      } else {
+        return +aValue < +bValue ? 1 : +aValue > +bValue ? -1 : 0;
+      }
+    });
 
   const showTooltip = (id: string) => {
     setTooltipVisible(id);
@@ -92,9 +101,9 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
 
   const tooltips = {
     mindshare: "Overall mindshare based on AI",
-    pow: "Quantity of relevant posts",
-    poi: "Originality and depth of content",
-    poe: "Engagement quality based on reputable influence",
+    avgLikes: "Average likes",
+    engagementRate: "Engagement rate",
+    postingFrequency: "Posts by day",
     smartFollowers: "Weighted followercount based on quality and engagement",
     followers: "Raw follower count",
     moneyScore: "Financial reputation score",
@@ -244,11 +253,11 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort("pow")}
+                  onClick={() => handleSort("engagementRate")}
                 >
                   <div className="flex items-center relative">
-                    PoW
-                    {sortField === "pow" &&
+                    Engagement
+                    {sortField === "engagementRate" &&
                       (sortDirection === "asc" ? (
                         <ArrowUp className="h-4 w-4 ml-1" />
                       ) : (
@@ -256,12 +265,12 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                       ))}
                     <Info
                       className="h-4 w-4 ml-1 text-gray-500 cursor-help"
-                      onMouseEnter={() => showTooltip("pow")}
+                      onMouseEnter={() => showTooltip("engagementRate")}
                       onMouseLeave={hideTooltip}
                     />
-                    {tooltipVisible === "pow" && (
+                    {tooltipVisible === "engagementRate" && (
                       <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
-                        {tooltips.pow || "Soon"}
+                        {tooltips.engagementRate || "Soon"}
                       </div>
                     )}
                   </div>
@@ -269,11 +278,11 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort("poi")}
+                  onClick={() => handleSort("avgLikes")}
                 >
                   <div className="flex items-center relative">
-                    PoI
-                    {sortField === "poi" &&
+                    Avg. likes
+                    {sortField === "avgLikes" &&
                       (sortDirection === "asc" ? (
                         <ArrowUp className="h-4 w-4 ml-1" />
                       ) : (
@@ -281,12 +290,12 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                       ))}
                     <Info
                       className="h-4 w-4 ml-1 text-gray-500 cursor-help"
-                      onMouseEnter={() => showTooltip("poi")}
+                      onMouseEnter={() => showTooltip("avgLikes")}
                       onMouseLeave={hideTooltip}
                     />
-                    {tooltipVisible === "poi" && (
+                    {tooltipVisible === "avgLikes" && (
                       <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
-                        {tooltips.poi || "Soon"}
+                        {tooltips.avgLikes || "Soon"}
                       </div>
                     )}
                   </div>
@@ -294,11 +303,11 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort("poe")}
+                  onClick={() => handleSort("postingFrequency")}
                 >
                   <div className="flex items-center relative">
-                    PoE
-                    {sortField === "poe" &&
+                    Posting Frequency
+                    {sortField === "postingFrequency" &&
                       (sortDirection === "asc" ? (
                         <ArrowUp className="h-4 w-4 ml-1" />
                       ) : (
@@ -306,12 +315,12 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                       ))}
                     <Info
                       className="h-4 w-4 ml-1 text-gray-500 cursor-help"
-                      onMouseEnter={() => showTooltip("poe")}
+                      onMouseEnter={() => showTooltip("postingFrequency")}
                       onMouseLeave={hideTooltip}
                     />
-                    {tooltipVisible === "poe" && (
+                    {tooltipVisible === "postingFrequency" && (
                       <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
-                        {tooltips.poe || "Soon"}
+                        {tooltips.postingFrequency || "Soon"}
                       </div>
                     )}
                   </div>
@@ -381,18 +390,20 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">
-                      {kol.pow || "Soon"}
+                    <div className="text-sm text-gray-200">
+                      {kol?.engagementRate
+                        ? `${kol?.engagementRate?.toFixed(2)}%`
+                        : "-"}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">
-                      {kol.poi || "Soon"}
-                    </div>
+                    <div className="text-sm text-gray-200">{kol?.avgLikes}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">
-                      {kol.poe || "Soon"}
+                    <div className="text-sm text-gray-200">
+                      {kol?.postingFrequency
+                        ? `${kol?.postingFrequency}/day`
+                        : "-"}
                     </div>
                   </td>
                 </tr>
