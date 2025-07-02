@@ -1,7 +1,45 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { enrichInfluencer } from "../components/influencers/enrichInfluencer";
+
 const prisma = new PrismaClient();
+
+const recalculateMindshareForInfluencers = async () => {
+  const influencers = await prisma.influencer.findMany({
+    select: {
+      id: true,
+      kolScore: true,
+      smartFollowers: true,
+      followersCountNumeric: true,
+    },
+  });
+
+  const totalScore = influencers.reduce((sum, i) => sum + (i.kolScore || 0), 0);
+
+  // Простой батч по 10 штук
+  const batchSize = 10;
+
+  for (let i = 0; i < influencers.length; i += batchSize) {
+    const batch = influencers.slice(i, i + batchSize);
+    await Promise.all(
+      batch.map((i) => {
+        const score = i.kolScore || 0;
+        const mindsharePercent =
+          totalScore > 0 ? +((score / totalScore) * 100).toFixed(2) : 0;
+
+        const smartFollowersPercent =
+          i.followersCountNumeric && i.followersCountNumeric > 0
+            ? +((i.smartFollowers / i.followersCountNumeric) * 100).toFixed(2)
+            : 0;
+
+        return prisma.influencer.update({
+          where: { id: i.id },
+          data: { mindsharePercent, smartFollowersPercent },
+        });
+      })
+    );
+  }
+};
 
 export const getInfluencers = async (_req: Request, res: Response) => {
   const influencers = await prisma.influencer.findMany({
@@ -30,7 +68,8 @@ export const getInfluencers = async (_req: Request, res: Response) => {
       expertise: true,
       bio: true,
       profileUrl: true,
-      mindshare: true,
+      mindsharePercent: true,
+      smartFollowersPercent: true,
       pow: true,
       poi: true,
       poe: true,
@@ -45,24 +84,6 @@ export const getInfluencers = async (_req: Request, res: Response) => {
   });
   res.json(influencers);
 };
-
-// export const getInfluencers = async (req: Request, res: Response) => {
-//   const { limit, offset } = getPaginationParams(req);
-
-//   const [items, total] = await prisma.$transaction([
-//     prisma.influencer.findMany({
-//       skip: offset,
-//       take: limit,
-//       orderBy: { followersCount: "desc" },
-//     }),
-//     prisma.influencer.count(),
-//   ]);
-
-//   res.json({
-//     items,
-//     meta: buildPaginationMeta(total, limit, offset),
-//   });
-// };
 
 export const getInfluencerById = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -80,6 +101,7 @@ export const getInfluencerByUsername = async (req: Request, res: Response) => {
 
 export const createInfluencer = async (req: Request, res: Response) => {
   const influencer = await prisma.influencer.create({ data: req.body });
+  await recalculateMindshareForInfluencers();
   res.status(201).json(influencer);
 };
 
@@ -89,6 +111,7 @@ export const updateInfluencer = async (req: Request, res: Response) => {
     where: { id },
     data: req.body,
   });
+  await recalculateMindshareForInfluencers();
   res.json(updated);
 };
 
@@ -103,6 +126,8 @@ export const deleteInfluencer = async (req: Request, res: Response) => {
     where: { id },
   });
 
+  await recalculateMindshareForInfluencers();
+
   res.status(200).json({ message: "Project and related mentions deleted" });
 };
 
@@ -111,6 +136,7 @@ export const adminEnrichInfluencer = async (req: Request, res: Response) => {
 
   try {
     await enrichInfluencer(username);
+    await recalculateMindshareForInfluencers();
     res.json({ success: true });
   } catch (err) {
     console.error(err);

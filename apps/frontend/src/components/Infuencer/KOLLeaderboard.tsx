@@ -7,7 +7,7 @@ import InfluencerDetailOverlay from "./InfluencerDetailOverlay";
 
 interface KOLLeaderboardProps {}
 
-function withMindshare(influencers: Influencer[]) {
+function withAdditionalData(influencers: Influencer[]) {
   const totalScore = influencers.reduce((sum, i) => sum + i.kolScore, 0);
 
   return influencers.map((i) => ({
@@ -56,7 +56,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
     }
   };
 
-  const influencers = withMindshare(kols);
+  const influencers = withAdditionalData(kols);
 
   const sortedKOLs = [...influencers]
     .map((i) => ({

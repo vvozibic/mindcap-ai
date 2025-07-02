@@ -21,6 +21,8 @@ export interface InfluencerDetailData {
   views: number;
   comments: number;
   retwets: number;
+  smartFollowersPercent: number;
+  smartFollowers: number;
   profileUrl: string;
   twitterRegisterDate: string;
   aiGeneratedContent: number;
@@ -60,6 +62,11 @@ export const getInfluencerDetailData = (
     comments: kol?.totalComments,
     retwets: kol?.totalRetweets,
     aiGeneratedContent: 0,
+    smartFollowers: +(kol?.smartFollowers || 0),
+    smartFollowersPercent: +(
+      (+(kol?.smartFollowers || 0) / kol?.followersCountNumeric) *
+      100
+    ).toFixed(2),
     avgCommentsPerPost: Number(
       kol?.totalComments / kol?.tweetsCountNumeric || 0
     )?.toFixed(4),

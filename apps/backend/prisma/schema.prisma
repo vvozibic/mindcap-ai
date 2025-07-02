@@ -37,7 +37,7 @@ model Project {
   launchDate    DateTime?
   marketCap     String?
   avatarUrl     String?
-  mindshare     String?
+  mindshare     Float    @default(0)
   kolAttention  String?
   engagement    String?
   trustScore    String?
@@ -73,6 +73,8 @@ model Influencer {
   expertise             String?
   profileUrl            String?
   mindshare             String?
+  mindsharePercent      Float    @default(0)
+  smartFollowersPercent Float    @default(0)
   pow                   String?
   poi                   String?
   poe                   String?

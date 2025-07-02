@@ -12,6 +12,8 @@ import {
   TrendingUp,
   User,
   UserCheck,
+  UserCog,
+  UserPlus,
   Users,
 } from "lucide-react";
 import React from "react";
@@ -93,6 +95,30 @@ const InfluencerDetails: React.FC<InfluencerDetailOverlayProps> = ({
                   </h6>
                   <p className="text-lg font-bold text-gray-200">
                     {detailData?.following || "0"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center">
+                <UserPlus className="h-5 w-5 text-accent-500" />
+                <div className="ml-3">
+                  <h6 className="text-xs font-medium text-gray-400">
+                    Smart Followers
+                  </h6>
+                  <p className="text-lg font-bold text-gray-200">
+                    {detailData?.smartFollowers || "0"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center">
+                <UserCog className="h-5 w-5 text-accent-500" />
+                <div className="ml-3">
+                  <h6 className="text-xs font-medium text-gray-400">
+                    Smart Followers Percent
+                  </h6>
+                  <p className="text-lg font-bold text-gray-200">
+                    {detailData?.smartFollowersPercent || "0"}%
                   </p>
                 </div>
               </div>
