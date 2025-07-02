@@ -64,9 +64,16 @@ export const getInfluencers = async (_req: Request, res: Response) => {
 //   });
 // };
 
-export const getInfluencer = async (req: Request, res: Response) => {
+export const getInfluencerById = async (req: Request, res: Response) => {
   const { id } = req.params;
   const proj = await prisma.influencer.findUnique({ where: { id } });
+  if (!proj) return res.status(404).json({ error: "Not found" });
+  res.json(proj);
+};
+
+export const getInfluencerByUsername = async (req: Request, res: Response) => {
+  const { username } = req.params;
+  const proj = await prisma.influencer.findUnique({ where: { username } });
   if (!proj) return res.status(404).json({ error: "Not found" });
   res.json(proj);
 };

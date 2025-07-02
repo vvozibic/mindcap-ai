@@ -1,13 +1,65 @@
 import { Award, Gift, Share2, TrendingUp, Users } from "lucide-react";
-import React from "react";
-import { User } from "../types";
+import React, { useEffect, useState } from "react";
+import { Influencer, User } from "../types";
+import InfluencerDetails from "./Infuencer/InfluencerDetails";
+import { getInfluencerDetailData } from "./Infuencer/utils";
+import { Skeleton } from "./Skeleton";
 
 interface SocialCardProps {
   user: User;
   onLogin: () => void;
 }
 
+async function fetchInfluencerByUsername(
+  username: string
+): Promise<Influencer | null> {
+  try {
+    const response = await fetch(`/api/influencers/user/${username}`);
+    if (!response.ok) throw new Error("Failed to fetch influencer");
+    const data: Influencer = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching influencer:", error);
+    return null;
+  }
+}
+
 const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
+  const [influencer, setInfuencer] = useState<Influencer | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (user?.username) {
+        const influencer = await fetchInfluencerByUsername(user?.username);
+        if (influencer) setInfuencer(influencer);
+      } else {
+        setFormData({
+          id: crypto.randomUUID(),
+          name: "",
+          username: "",
+          avatarUrl: "",
+          platform: "",
+          followers: "",
+          badges: "",
+          expertise: "",
+          bio: "",
+          profileUrl: "",
+          mindshare: "",
+          pow: "",
+          poi: "",
+          poe: "",
+          smartFollowers: "",
+          followersCount: "",
+          moneyScore: "",
+        });
+      }
+    };
+    fetchData();
+  }, [user]);
+  const detailData = getInfluencerDetailData(influencer);
+
+  if (!influencer || !detailData || !user) return <Skeleton />;
+
   if (!user.isAuthenticated) {
     return (
       <div className="bg-primary-800 rounded-lg shadow-lg p-8 max-w-2xl mx-auto text-center border border-primary-700">
@@ -30,7 +82,45 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
     );
   }
 
-  return (
+  return influencer && detailData ? (
+    <>
+      <InfluencerDetails influencer={influencer} />
+      <div className="mt-8 border-t border-primary-600 pt-6">
+        <h3 className="text-lg font-medium text-gray-200">
+          Improve Your Score
+        </h3>
+        <ul className="mt-3 space-y-3">
+          <li className="flex items-start">
+            <div className="flex-shrink-0">
+              <Users className="h-5 w-5 text-accent-500" />
+            </div>
+            <p className="ml-3 text-sm text-gray-400">
+              Engage with high-quality accounts to boost your Proof-of-Exchange
+              score
+            </p>
+          </li>
+          <li className="flex items-start">
+            <div className="flex-shrink-0">
+              <TrendingUp className="h-5 w-5 text-accent-500" />
+            </div>
+            <p className="ml-3 text-sm text-gray-400">
+              Create original, insightful content to increase your
+              Proof-of-Insight metric
+            </p>
+          </li>
+          <li className="flex items-start">
+            <div className="flex-shrink-0">
+              <Share2 className="h-5 w-5 text-accent-500" />
+            </div>
+            <p className="ml-3 text-sm text-gray-400">
+              Refer other influencers to earn additional rewards and boost your
+              ranking
+            </p>
+          </li>
+        </ul>
+      </div>
+    </>
+  ) : (
     <div className="bg-primary-800 rounded-lg shadow-lg overflow-hidden max-w-2xl mx-auto border border-primary-700">
       <div className="p-6 bg-gradient-to-r from-primary-700 to-primary-600">
         <div className="flex items-center">
@@ -47,7 +137,6 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
           </div>
         </div>
       </div>
-
       <div className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-primary-700 p-4 rounded-lg">

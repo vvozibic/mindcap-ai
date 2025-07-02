@@ -1,9 +1,9 @@
 import { ArrowDown, ArrowUp, Info } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { Influencer } from "../types";
-import { daysBetween } from "../utils/daysBetween";
+import { Influencer } from "../../types";
+import { daysBetween } from "../../utils/daysBetween";
+import { TableSkeleton } from "../TableSkeleton";
 import InfluencerDetailOverlay from "./InfluencerDetailOverlay";
-import { TableSkeleton } from "./TableSkeleton";
 
 interface KOLLeaderboardProps {}
 
@@ -31,7 +31,7 @@ type SortField =
   | "kolScore";
 
 const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
-  const [sortField, setSortField] = useState<SortField>("kolScore");
+  const [sortField, setSortField] = useState<SortField>("mindshare");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [tooltipVisible, setTooltipVisible] = useState<string | null>(null);
   const [selectedInfluencer, setSelectedInfluencer] =
@@ -153,6 +153,31 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
+                  onClick={() => handleSort("mindshare")}
+                >
+                  <div className="flex items-center relative">
+                    AI score
+                    {sortField === "mindshare" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowUp className="h-4 w-4 ml-1" />
+                      ) : (
+                        <ArrowDown className="h-4 w-4 ml-1" />
+                      ))}
+                    <Info
+                      className="h-4 w-4 ml-1 text-gray-500 cursor-help"
+                      onMouseEnter={() => showTooltip("mindshare")}
+                      onMouseLeave={hideTooltip}
+                    />
+                    {tooltipVisible === "mindshare" && (
+                      <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
+                        {tooltips.mindshare}
+                      </div>
+                    )}
+                  </div>
+                </th>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
                   onClick={() => handleSort("smartFollowers")}
                 >
                   <div className="flex items-center relative">
@@ -228,31 +253,6 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort("mindshare")}
-                >
-                  <div className="flex items-center relative">
-                    AI score
-                    {sortField === "mindshare" &&
-                      (sortDirection === "asc" ? (
-                        <ArrowUp className="h-4 w-4 ml-1" />
-                      ) : (
-                        <ArrowDown className="h-4 w-4 ml-1" />
-                      ))}
-                    <Info
-                      className="h-4 w-4 ml-1 text-gray-500 cursor-help"
-                      onMouseEnter={() => showTooltip("mindshare")}
-                      onMouseLeave={hideTooltip}
-                    />
-                    {tooltipVisible === "mindshare" && (
-                      <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
-                        {tooltips.mindshare}
-                      </div>
-                    )}
-                  </div>
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
                   onClick={() => handleSort("engagementRate")}
                 >
                   <div className="flex items-center relative">
@@ -275,7 +275,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                     )}
                   </div>
                 </th>
-                <th
+                {/* <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
                   onClick={() => handleSort("avgLikes")}
@@ -299,7 +299,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                       </div>
                     )}
                   </div>
-                </th>
+                </th> */}
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
@@ -370,6 +370,11 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                       </div>
                     </div>
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-200 font-medium">
+                      {`${kol.mindshare}%`}
+                    </div>
+                  </td>
 
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-200">
@@ -385,19 +390,11 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                     <div className="text-sm text-gray-200">{kol.kolScore}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-200 font-medium">
-                      {`${kol.mindshare}%`}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-200">
                       {kol?.engagementRate
                         ? `${kol?.engagementRate?.toFixed(2)}%`
                         : "-"}
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-200">{kol?.avgLikes}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-200">

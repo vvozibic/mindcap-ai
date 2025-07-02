@@ -1,6 +1,6 @@
 import React from "react";
 import { ForBusinessCard } from "../components/ForBusinessCard";
-import KOLLeaderboard from "../components/KOLLeaderboard";
+import KOLLeaderboard from "../components/Infuencer/KOLLeaderboard";
 import NarrativesTreemap from "../components/Narratives";
 
 interface HomePageProps {}
