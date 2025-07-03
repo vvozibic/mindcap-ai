@@ -472,7 +472,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                   Mindshare
                                 </h6>
                                 <p className="text-lg font-bold text-gray-200">
-                                  {project?.mindsharePercent?.toFixed(2)}
+                                  {project?.mindsharePercent?.toFixed(2)}%
                                 </p>
                               </div>
                             </div>
@@ -508,7 +508,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                   Posts
                                 </h6>
                                 <p className="text-lg font-bold text-gray-200">
-                                  {project?.totalViews?.toLocaleString()}
+                                  {project?.totalPosts?.toLocaleString()}
                                 </p>
                               </div>
                             </div>
