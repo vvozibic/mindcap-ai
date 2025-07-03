@@ -65,6 +65,8 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     const method = projectId ? "PUT" : "POST";
     const url = projectId ? `/api/p-projects/${projectId}` : "/api/p-projects";
 
+    delete formData?.narrativeLinks;
+
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
