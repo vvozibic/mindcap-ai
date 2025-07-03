@@ -16,8 +16,6 @@ async function enrichNarratives() {
 
     const { data: narratives } = await res.json();
 
-    console.log(narratives);
-
     if (!Array.isArray(narratives)) {
       throw new Error("Invalid narratives list");
     }

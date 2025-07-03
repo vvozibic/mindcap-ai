@@ -1,24 +1,24 @@
 import { Dialog, Transition } from "@headlessui/react";
 import {
-  Award,
   Clock,
   DollarSign,
   ExternalLink,
   Eye,
   Info,
-  Shield,
+  Newspaper,
   TrendingUp,
   Upload,
   Users,
   X,
 } from "lucide-react";
 import React, { Fragment, useState } from "react";
-import { Influencer, Project } from "../types";
+import { Influencer } from "../types";
+import { ProtokolsProject } from "./ProtokolsProject/types";
 
 interface ProjectDetailOverlayProps {
   isOpen: boolean;
   onClose: () => void;
-  project: Project | null;
+  project: ProtokolsProject | null;
   isAuthenticated: boolean;
   onLogin: () => void;
 }
@@ -472,7 +472,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                   Mindshare
                                 </h6>
                                 <p className="text-lg font-bold text-gray-200">
-                                  {project.mindshare}
+                                  {project?.mindsharePercent?.toFixed(2)}
                                 </p>
                               </div>
                             </div>
@@ -481,35 +481,53 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                               <Users className="h-5 w-5 text-accent-500" />
                               <div className="ml-3">
                                 <h6 className="text-xs font-medium text-gray-400">
-                                  Engagement Rate
+                                  Followers
                                 </h6>
                                 <p className="text-lg font-bold text-gray-200">
-                                  {project.engagement}%
+                                  {project?.followersCount?.toLocaleString()}
                                 </p>
                               </div>
                             </div>
 
                             <div className="flex items-center">
-                              <Award className="h-5 w-5 text-accent-500" />
+                              <Eye className="h-5 w-5 text-accent-500" />
                               <div className="ml-3">
                                 <h6 className="text-xs font-medium text-gray-400">
-                                  KOL Attention
+                                  Views
                                 </h6>
                                 <p className="text-lg font-bold text-gray-200">
-                                  {project.kolAttention}
+                                  {project?.totalViews?.toLocaleString()}
                                 </p>
                               </div>
                             </div>
 
                             <div className="flex items-center">
-                              <Shield className="h-5 w-5 text-accent-500" />
+                              <Newspaper className="h-5 w-5 text-accent-500" />
                               <div className="ml-3">
                                 <h6 className="text-xs font-medium text-gray-400">
-                                  Trust Score
+                                  Posts
                                 </h6>
                                 <p className="text-lg font-bold text-gray-200">
-                                  {project.trustScore}
+                                  {project?.totalViews?.toLocaleString()}
                                 </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center">
+                            <div className="mt-3">
+                              <h6 className="text-xs font-medium text-gray-400">
+                                Narratives
+                              </h6>
+                              <div className="flex gap-2 mt-2">
+                                {project?.narrativeLinks?.map((link, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="bg-primary-600 text-gray-100 text-xs px-2 py-0.5 rounded-full"
+                                  >
+                                    {link.narrative.name}
+                                  </span>
+                                ))}
                               </div>
                             </div>
                           </div>

@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import ForBusinessPage from "../pages/ForBusinessPage";
 import HomePage from "../pages/HomePage";
 import ProjectsPage from "../pages/ProjectsPage";
+import ProtokolsProjectsPage from "../pages/ProtokolsProjectPage";
 import SocialCardPage from "../pages/SocialCardPage";
 import { User } from "../types";
 
@@ -53,6 +54,15 @@ function ClientLayout() {
             path="/projects"
             element={
               <ProjectsPage
+                isAuthenticated={!!user.isAuthenticated}
+                onLogin={() => setIsLoginModalOpen(true)}
+              />
+            }
+          />
+          <Route
+            path="/protokols-projects"
+            element={
+              <ProtokolsProjectsPage
                 isAuthenticated={!!user.isAuthenticated}
                 onLogin={() => setIsLoginModalOpen(true)}
               />

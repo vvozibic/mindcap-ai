@@ -9,7 +9,7 @@ import { authRoutes } from "./routes/auth";
 import { influencerRoutes } from "./routes/influencers";
 import { mentionRoutes } from "./routes/mentions";
 import narrativesRoutes from "./routes/narratives";
-import { projectRoutes } from "./routes/projects";
+import { projectRoutes, protokolsProjectRoutes } from "./routes/projects";
 import { usersRoutes } from "./routes/users";
 
 dotenv.config();
@@ -23,6 +23,7 @@ const isDev = process.env.NODE_ENV !== "production";
 app.use("/api/auth", authRoutes);
 app.use("/api/influencers", influencerRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/p-projects", protokolsProjectRoutes);
 app.use("/api/mentions", mentionRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/narratives", narrativesRoutes);

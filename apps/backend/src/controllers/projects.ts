@@ -130,3 +130,92 @@ export const deleteProject = async (req: Request, res: Response) => {
 
   res.status(200).json({ message: "Project and related mentions deleted" });
 };
+
+// Narratives from protokols
+export const getAllProtokolsProjects = async (_: Request, res: Response) => {
+  const projects = await prisma.protokolsProject.findMany({
+    orderBy: { marketCap: "desc" },
+    include: {
+      narrativeLinks: {
+        select: {
+          projectMindsharePercent: true,
+          narrative: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              mindsharePercent: true,
+              marketCapUsd: true,
+              totalViews: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  res.json(projects);
+};
+
+export const getProtokolsProjectById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const project = await prisma.protokolsProject.findUnique({
+    where: { id },
+    include: {
+      narrativeLinks: {
+        select: {
+          projectMindsharePercent: true,
+          narrative: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              mindsharePercent: true,
+              marketCapUsd: true,
+              totalViews: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!project) return res.status(404).json({ error: "Not found" });
+  res.json(project);
+};
+
+export const createProtokolsProject = async (req: Request, res: Response) => {
+  try {
+    const project = await prisma.protokolsProject.create({ data: req.body });
+    res.status(201).json(project);
+  } catch (e: any) {
+    res.status(400).json({ error: e.message });
+  }
+};
+
+export const updateProtokolsProject = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const project = await prisma.protokolsProject.update({
+      where: { id },
+      data: req.body,
+    });
+    res.json(project);
+  } catch (e: any) {
+    res.status(400).json({ error: e.message });
+  }
+};
+
+export const deleteProtokolsProject = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  await prisma.narrativeToProtokolsProject.deleteMany({
+    where: { protokolsProjectId: id },
+  });
+
+  await prisma.protokolsProject.delete({
+    where: { id },
+  });
+
+  res.status(200).json({ message: "Project and related links deleted" });
+};

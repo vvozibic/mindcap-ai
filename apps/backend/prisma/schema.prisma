@@ -110,6 +110,49 @@ model Influencer {
   @@index([createdAt])
 }
 
+
+model ProtokolsProject {
+  id                  String   @id @default(uuid())
+  name                String
+  symbol              String
+  slug                String?       // можно сформировать из name или username
+  avatarUrl           String?       // twitter avatar
+  bannerUrl           String?       // если появится позже
+  description         String?
+  twitterUsername     String
+  twitterId           String
+  isVerified          Boolean
+  followersCount      Int
+  followingCount      Int
+  twitterCreatedAt    DateTime
+
+  coingeckoImageUrl   String?
+  marketCap           Float?
+  price               Float?
+  contractAddress     String?
+
+  totalViews          Int
+  totalPosts          Int
+
+  mindsharePercent    Float
+  mindshareChange24h  Float
+  mindshareChange7d   Float
+  mindshareChange30d  Float
+  mindshareChange90d  Float
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  narrativeLinks NarrativeToProtokolsProject[]
+
+  @@unique([twitterId])
+  @@index([slug])
+  @@index([twitterUsername])
+  @@index([mindsharePercent])
+  @@index([marketCap])
+  @@index([createdAt])
+}
+
 model Narrative {
   id                     String   @id @default(cuid())
   narrativeId           String   @unique
@@ -135,10 +178,29 @@ model Narrative {
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
+  projectLinks NarrativeToProtokolsProject[]
+
   @@index([id])
   @@index([narrativeId])
   @@index([name])
 }
+
+model NarrativeToProtokolsProject {
+  id                  String            @id @default(uuid())
+  narrativeId         String
+  protokolsProjectId  String
+  projectMindsharePercent Float @default(0)
+
+  narrative           Narrative         @relation(fields: [narrativeId], references: [id])
+  protokolsProject    ProtokolsProject  @relation(fields: [protokolsProjectId], references: [id])
+
+  createdAt           DateTime          @default(now())
+
+  @@unique([narrativeId, protokolsProjectId])
+  @@index([narrativeId])
+  @@index([protokolsProjectId])
+}
+
 
 model Mention {
   id             String     @id @default(cuid())
