@@ -1,8 +1,8 @@
 import { ArrowDown, ArrowUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { ProtokolsProject } from "../../types";
 import { formatNumber } from "../../utils/formatNumber";
 import ProjectDetailOverlay from "../ProjectDetailOverlay";
-import { ProtokolsProject } from "./types";
 
 const ProtokolsProjectsTable: React.FC = () => {
   const [projects, setProjects] = useState<ProtokolsProject[]>([]);

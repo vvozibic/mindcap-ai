@@ -1,18 +1,19 @@
 import { Edit, Plus, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { Project } from "../../types";
+import { ProtokolsProject } from "../../types";
+import { formatNumber } from "../../utils/formatNumber";
 import ProjectForm from "./ProjectForm";
 import { TableSkeleton } from "./TableSkeleton";
 
 interface ProjectsTableProps {}
 
 const ProjectsTable: React.FC<ProjectsTableProps> = ({}) => {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<ProtokolsProject[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/projects")
+    fetch("/api/p-projects")
       .then((res) => res.json())
       .then(setProjects)
       .catch(console.error);
@@ -29,12 +30,12 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({}) => {
   };
 
   const handleDelete = async (id: string) => {
-    await fetch(`/api/projects/${id}`, { method: "DELETE" });
+    await fetch(`/api/p-projects/${id}`, { method: "DELETE" });
     setProjects((prev) => prev.filter((p) => p.id !== id));
   };
 
   const handleSuccess = () => {
-    fetch("/api/projects")
+    fetch("/api/p-projects")
       .then((res) => res.json())
       .then(setProjects)
       .finally(() => setIsFormOpen(false));
@@ -65,16 +66,22 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({}) => {
                 Name
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Category
+                Twitter
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Website
+                Mindshare
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Followers
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Views
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Market Cap
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Launch Date
+                Price
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
@@ -85,35 +92,28 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({}) => {
           <tbody className="bg-white divide-y divide-gray-200">
             {projects.map((project) => (
               <tr key={project.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">
-                    {project.name}
-                  </div>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {project.name}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">
-                    {project.category}
-                  </div>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  @{project.twitterUsername}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <a
-                    href={project.website || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-indigo-600 hover:text-indigo-900"
-                  >
-                    {project.website}
-                  </a>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {project.mindsharePercent?.toFixed(2)}%
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">
-                    {project.marketCap}
-                  </div>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {project.followersCount?.toLocaleString()}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">
-                    {project.launchDate}
-                  </div>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {project.totalViews?.toLocaleString()}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {project.marketCap
+                    ? `$${formatNumber(project.marketCap)}`
+                    : "-"}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {project.price ? `$${project.price.toFixed(2)}` : "-"}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button

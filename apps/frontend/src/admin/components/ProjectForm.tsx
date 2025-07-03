@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { Project } from "../../types";
+import { ProtokolsProject } from "../../types";
 
 interface ProjectFormProps {
   projectId: string | null;
@@ -8,68 +8,67 @@ interface ProjectFormProps {
   onCancel: () => void;
 }
 
+const defaultProject: Partial<ProtokolsProject> = {
+  id: "",
+  name: "",
+  slug: "",
+  symbol: "",
+  avatarUrl: "",
+  description: "",
+  twitterUsername: "",
+  followersCount: 0,
+  totalViews: 0,
+  totalPosts: 0,
+  mindsharePercent: 0,
+  marketCap: 0,
+  price: 0,
+  featured: false,
+};
+
 const ProjectForm: React.FC<ProjectFormProps> = ({
   projectId,
   onSuccess,
   onCancel,
 }) => {
-  const [formData, setFormData] = useState<Project>({
-    id: "",
-    name: "",
-    slug: "",
-    avatarUrl: "",
-    category: "",
-    website: "",
-    description: "",
-    marketCap: "",
-    launchDate: "",
-    mindshare: "",
-    kolAttention: "",
-    engagement: "",
-    trustScore: "",
-    rewardPoolUsd: "",
-    rewardRank: "",
-    twitter: "",
-  });
+  const [formData, setFormData] =
+    useState<Partial<ProtokolsProject>>(defaultProject);
 
   useEffect(() => {
-    const fetchProjectById = async (id: string) => {
-      try {
-        const res = await fetch(`/api/projects/${id}`);
-        if (!res.ok) throw new Error("Failed to fetch project");
-        const data = await res.json();
-        setFormData(data);
-      } catch (err) {
-        console.error("Error fetching project:", err);
-      }
-    };
-
     if (projectId) {
-      fetchProjectById(projectId);
+      fetch(`/api/p-projects/${projectId}`)
+        .then((res) => res.json())
+        .then((data) => setFormData(data))
+        .catch((err) => console.error("Error fetching project:", err));
     } else {
-      setFormData((prev) => ({ ...prev, id: crypto.randomUUID() }));
+      setFormData({ ...defaultProject, id: crypto.randomUUID() });
     }
   }, [projectId]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]:
+        type === "number"
+          ? parseFloat(value)
+          : name === "featured" || name === "hidden"
+          ? e.target instanceof HTMLInputElement && e.target.checked
+          : value,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const method = projectId ? "PUT" : "POST";
-    const url = projectId ? `/api/projects/${projectId}` : "/api/projects";
+    const url = projectId ? `/api/p-projects/${projectId}` : "/api/p-projects";
 
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...formData,
-        featured: formData?.featured === "true" ? true : false,
-      }),
+      body: JSON.stringify(formData),
     });
 
     if (res.ok) {
@@ -97,30 +96,198 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         onSubmit={handleSubmit}
         className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"
       >
-        {Object.entries(formData)
-          .filter(([key]) => key !== "createdAt" && key !== "updatedAt")
-          .map(([key, value]) =>
-            key === "id" ? null : (
-              <div key={key}>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {key.charAt(0).toUpperCase() + key.slice(1)}
-                </label>
-                <input
-                  name={key}
-                  disabled={typeof value === "object" && value !== null}
-                  value={
-                    typeof value === "object" && value !== null
-                      ? JSON.stringify(value)
-                      : value || ""
-                  }
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
-                />
-              </div>
-            )
-          )}
+        {/* Name */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Name
+          </label>
+          <input
+            name="name"
+            value={formData.name || ""}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md text-gray-900"
+          />
+        </div>
 
-        <div className="flex justify-end space-x-3">
+        {/* Slug */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Slug
+          </label>
+          <input
+            name="slug"
+            value={formData.slug || ""}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md text-gray-900"
+          />
+        </div>
+
+        {/* Slug */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Symbol
+          </label>
+          <input
+            name="symbol"
+            value={formData.symbol || ""}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md text-gray-900"
+          />
+        </div>
+
+        {/* Twitter Username */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Twitter Username
+          </label>
+          <input
+            name="twitterUsername"
+            value={formData.twitterUsername || ""}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md text-gray-900"
+          />
+        </div>
+
+        {/* Website */}
+        {/* <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Website
+          </label>
+          <input
+            name="website"
+            value={formData.website || ""}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md text-gray-900"
+          />
+        </div> */}
+
+        {/* Avatar URL */}
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Avatar URL
+          </label>
+          <input
+            name="avatarUrl"
+            value={formData.avatarUrl || ""}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md text-gray-900"
+          />
+        </div>
+
+        {/* Description */}
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Description
+          </label>
+          <textarea
+            name="description"
+            value={formData.description || ""}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md text-gray-900"
+          />
+        </div>
+
+        {/* Numeric Fields */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Followers Count
+          </label>
+          <input
+            type="number"
+            name="followersCount"
+            value={formData.followersCount || 0}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md text-gray-900"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Total Views
+          </label>
+          <input
+            type="number"
+            name="totalViews"
+            value={formData.totalViews || 0}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md text-gray-900"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Total Posts
+          </label>
+          <input
+            type="number"
+            name="totalPosts"
+            value={formData.totalPosts || 0}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md text-gray-900"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Market Cap
+          </label>
+          <input
+            type="number"
+            name="marketCap"
+            value={formData.marketCap || 0}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md text-gray-900"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Price
+          </label>
+          <input
+            type="number"
+            name="price"
+            step="0.0001"
+            value={formData.price || 0}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md text-gray-900"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Mindshare %
+          </label>
+          <input
+            type="number"
+            name="mindsharePercent"
+            step="0.01"
+            value={formData.mindsharePercent || 0}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md text-gray-900"
+          />
+        </div>
+
+        {/* Featured / Hidden */}
+        <div className="flex items-center space-x-2 mt-2">
+          <input
+            type="checkbox"
+            name="featured"
+            checked={!!formData.featured}
+            onChange={handleChange}
+          />
+          <label className="text-sm text-gray-700">Featured</label>
+          <input
+            type="checkbox"
+            name="hidden"
+            checked={!!formData.hidden}
+            onChange={handleChange}
+          />
+          <label className="text-sm text-gray-700">Hidden</label>
+        </div>
+
+        {/* Submit / Cancel */}
+        <div className="md:col-span-2 flex justify-end space-x-3 mt-4">
           <button
             type="button"
             onClick={onCancel}

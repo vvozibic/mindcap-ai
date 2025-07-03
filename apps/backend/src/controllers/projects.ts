@@ -157,6 +157,37 @@ export const getAllProtokolsProjects = async (_: Request, res: Response) => {
   res.json(projects);
 };
 
+export const getFeaturedProtokolsProjects = async (
+  _: Request,
+  res: Response
+) => {
+  const projects = await prisma.protokolsProject.findMany({
+    where: {
+      featured: true,
+    },
+    include: {
+      narrativeLinks: {
+        select: {
+          projectMindsharePercent: true,
+          narrative: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              mindsharePercent: true,
+              marketCapUsd: true,
+              totalViews: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: [{ marketCap: "desc" }],
+  });
+
+  res.json(projects);
+};
+
 export const getProtokolsProjectById = async (req: Request, res: Response) => {
   const { id } = req.params;
   const project = await prisma.protokolsProject.findUnique({

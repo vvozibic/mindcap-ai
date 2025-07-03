@@ -1,35 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { DollarSign, TrendingUp, Users, X } from "lucide-react";
 import React, { Fragment } from "react";
-
-interface Narrative {
-  projectMindsharePercent: number;
-  narrative: {
-    id: string;
-    name: string;
-    slug: string;
-    mindsharePercent: number;
-    marketCapUsd: number;
-    totalViews: number;
-  };
-}
-
-interface ProtokolsProject {
-  id: string;
-  name: string;
-  symbol: string;
-  avatarUrl?: string;
-  description?: string;
-  twitterUsername: string;
-  twitterId: string;
-  isVerified: boolean;
-  followersCount: number;
-  totalViews: number;
-  marketCap?: number;
-  price?: number;
-  mindsharePercent: number;
-  narrativeLinks?: Narrative[];
-}
+import { ProtokolsProject } from "../../types";
 
 interface ProjectDetailOverlayProps {
   isOpen: boolean;

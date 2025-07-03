@@ -27,7 +27,7 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({
   }, []);
 
   useEffect(() => {
-    fetch("/api/projects/featured")
+    fetch("/api/p-projects/featured")
       .then((res) => res.json())
       .then(setFeaturedProjects)
       .catch(console.error);

@@ -120,25 +120,28 @@ model ProtokolsProject {
   bannerUrl           String?       // если появится позже
   description         String?
   twitterUsername     String
-  twitterId           String
-  isVerified          Boolean
-  followersCount      Int
-  followingCount      Int
-  twitterCreatedAt    DateTime
+  twitterId           String?
+  isVerified          Boolean?
+  followersCount      Int?
+  followingCount      Int?
+  twitterCreatedAt    DateTime?
 
   coingeckoImageUrl   String?
   marketCap           Float?
   price               Float?
   contractAddress     String?
 
-  totalViews          Int
-  totalPosts          Int
+  featured            Boolean @default(false)
+  hidden              Boolean @default(false)
 
-  mindsharePercent    Float
-  mindshareChange24h  Float
-  mindshareChange7d   Float
-  mindshareChange30d  Float
-  mindshareChange90d  Float
+  totalViews          Int?
+  totalPosts          Int?
+
+  mindsharePercent    Float?
+  mindshareChange24h  Float?
+  mindshareChange7d   Float?
+  mindshareChange30d  Float?
+  mindshareChange90d  Float?
 
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt

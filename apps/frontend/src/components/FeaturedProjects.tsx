@@ -96,7 +96,11 @@ export const FeaturedProjects = ({
               >
                 <div className="flex items-center">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#FFE87C]/20 to-[#3B82F6]/20 flex items-center justify-center mr-3">
-                    <img src={project.avatarUrl || ""} alt={project.name} />
+                    <img
+                      className="h-10 w-10 rounded-full"
+                      src={project.avatarUrl || ""}
+                      alt={project.name}
+                    />
                   </div>
                   <div>
                     <h3 className="font-medium text-white">{project.name}</h3>
