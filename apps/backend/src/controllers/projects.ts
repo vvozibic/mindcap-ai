@@ -188,6 +188,66 @@ export const getFeaturedProtokolsProjects = async (
 
   res.json(projects);
 };
+export const getPaginatedProtokolsProjects = async (
+  req: Request,
+  res: Response
+) => {
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 20;
+  const sortField = (req.query.sortField as string) || "marketCap";
+  const sortDirection =
+    (req.query.sortDirection as string) === "asc" ? "asc" : "desc";
+  const skip = (page - 1) * limit;
+
+  // Валидация допустимых полей сортировки
+  const allowedSortFields = [
+    "marketCap",
+    "price",
+    "mindsharePercent",
+    "followersCount",
+    "totalViews",
+  ];
+
+  const safeSortField = allowedSortFields.includes(sortField as any)
+    ? (sortField as (typeof allowedSortFields)[number])
+    : "mindsharePercent";
+
+  const [total, projects] = await Promise.all([
+    prisma.protokolsProject.count(),
+    prisma.protokolsProject.findMany({
+      skip,
+      take: limit,
+      orderBy: {
+        [safeSortField]: sortDirection,
+      },
+      include: {
+        narrativeLinks: {
+          select: {
+            projectMindsharePercent: true,
+            narrative: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                mindsharePercent: true,
+                marketCapUsd: true,
+                totalViews: true,
+              },
+            },
+          },
+        },
+        rewardPools: true,
+      },
+    }),
+  ]);
+
+  res.json({
+    data: projects,
+    total,
+    page,
+    limit,
+  });
+};
 
 export const getProtokolsProjectById = async (req: Request, res: Response) => {
   const { id } = req.params;

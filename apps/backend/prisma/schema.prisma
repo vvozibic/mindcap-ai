@@ -92,7 +92,7 @@ model Influencer {
   avgLikes              Int?
   avgViews              Int?
   engagementRate        Float?
-  kolScore              Int?
+  kolScore              Int?      @default(0)
   protokolsJsonRaw      Json?
   totalPosts            Int?
   smartFollowers        Int?
@@ -149,6 +149,10 @@ model ProtokolsProject {
   @@index([mindsharePercent])
   @@index([marketCap])
   @@index([createdAt])
+  @@index([followersCount])
+  @@index([totalViews])
+  @@index([price])
+  @@index([featured, mindsharePercent])
 }
 
 model RewardPool {

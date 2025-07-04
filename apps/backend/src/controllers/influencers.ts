@@ -85,6 +85,87 @@ export const getInfluencers = async (_req: Request, res: Response) => {
   res.json(influencers);
 };
 
+export const getPaginatedInfluencers = async (req: Request, res: Response) => {
+  const limit = parseInt(req.query.limit as string) || 20;
+  const page = parseInt(req.query.page as string) || 1;
+  const skip = (page - 1) * limit;
+
+  const sortField = (req.query.sortField as string) || "kolScore";
+  const sortDirection =
+    (req.query.sortDirection as string) === "asc" ? "asc" : "desc";
+
+  // Поддерживаем только допустимые поля сортировки
+  const allowedSortFields = [
+    "followersCountNumeric",
+    "mindsharePercent",
+    "pow",
+    "poi",
+    "poe",
+    "smartFollowers",
+    "engagementRate",
+    "avgLikes",
+    "tweetsCountNumeric",
+    "kolScore",
+  ] as const;
+
+  const safeSortField = allowedSortFields.includes(sortField as any)
+    ? (sortField as (typeof allowedSortFields)[number])
+    : "kolScore";
+
+  const [total, data] = await Promise.all([
+    prisma.influencer.count(),
+    prisma.influencer.findMany({
+      skip,
+      take: limit,
+      orderBy: {
+        [safeSortField]: sortDirection,
+      },
+      select: {
+        id: true,
+        name: true,
+        badges: true,
+        username: true,
+        avatarUrl: true,
+        platform: true,
+        followingsNumeric: true,
+        followersCountNumeric: true,
+        smartFollowers: true,
+        tweetsCountNumeric: true,
+        avgLikes: true,
+        avgViews: true,
+        engagementRate: true,
+        kolScore: true,
+        totalPosts: true,
+        totalLikes: true,
+        totalReplies: true,
+        totalRetweets: true,
+        totalViews: true,
+        totalComments: true,
+        twitterRegisterDate: true,
+        expertise: true,
+        bio: true,
+        profileUrl: true,
+        mindsharePercent: true,
+        smartFollowersPercent: true,
+        pow: true,
+        poi: true,
+        poe: true,
+        moneyScore: true,
+        verified: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    }),
+  ]);
+
+  res.json({
+    data,
+    total,
+    page,
+    limit,
+  });
+};
+
 export const getInfluencerById = async (req: Request, res: Response) => {
   const { id } = req.params;
   const proj = await prisma.influencer.findUnique({ where: { id } });

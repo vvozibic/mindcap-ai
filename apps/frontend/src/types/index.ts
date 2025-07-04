@@ -59,7 +59,7 @@ export interface Influencer {
   totalRetweets: number;
   twitterRegisterDate: string;
 
-  mindshare?: string | null;
+  mindshare?: number | null;
   pow?: string | null;
   poi?: string | null;
   poe?: string | null;
