@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ProtokolsProject, RewardPool } from "../../types";
 
 interface RewardPoolFormProps {
@@ -33,6 +33,35 @@ const RewardPoolForm: React.FC<RewardPoolFormProps> = ({
   allProjects,
 }) => {
   const [formData, setFormData] = useState<Partial<RewardPool>>(defaultPool);
+  const [loading, setLoading] = useState(false);
+  const [loadingUpdate, setLoadingUpdate] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (rewardPoolId) {
+      setLoading(true);
+      fetch(`/api/reward-pools/${rewardPoolId}`)
+        .then((res) => {
+          if (!res.ok) throw new Error("Failed to fetch project");
+          return res.json();
+        })
+        .then((data) => {
+          const filtered = Object.keys(defaultPool).reduce((acc, key) => {
+            acc[key as keyof RewardPool] = data[key as keyof RewardPool];
+            return acc;
+          }, {} as Partial<RewardPool>);
+          setFormData(filtered);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Error fetching project:", err);
+          setError("Failed to load project data.");
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setFormData({ ...defaultPool, id: crypto.randomUUID() });
+    }
+  }, [rewardPoolId]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -53,16 +82,30 @@ const RewardPoolForm: React.FC<RewardPoolFormProps> = ({
       ? `/api/reward-pools/${rewardPoolId}`
       : "/api/reward-pools";
 
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...formData,
-        deadline: new Date(formData.deadline || "").toISOString(),
-      }),
-    });
+    setLoadingUpdate(true);
+    setError(null);
 
-    if (res.ok) onSuccess();
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          deadline: new Date(formData.deadline || "").toISOString(),
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to submit the form.");
+      }
+
+      onSuccess();
+    } catch (err) {
+      console.error("Submission error:", err);
+      setError("Failed to submit the form.");
+    } finally {
+      setLoadingUpdate(false);
+    }
   };
 
   return (
@@ -78,6 +121,14 @@ const RewardPoolForm: React.FC<RewardPoolFormProps> = ({
           <X className="h-5 w-5" />
         </button>
       </div>
+
+      {(loading || loadingUpdate) && (
+        <div className="text-sm text-blue-500 mb-2">
+          {loading ? "Loading data..." : "Submitting..."}
+        </div>
+      )}
+
+      {error && <div className="text-sm text-red-600 mb-2">{error}</div>}
 
       <form
         onSubmit={handleSubmit}
