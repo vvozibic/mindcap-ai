@@ -20,14 +20,6 @@ const ProtokolsProjectsTable: React.FC = () => {
   const [featuredProjects, setFeaturedProjects] = useState<ProtokolsProject[]>(
     []
   );
-
-  useEffect(() => {
-    fetch("/api/projects")
-      .then((res) => res.json())
-      .then(setProjects)
-      .catch(console.error);
-  }, []);
-
   useEffect(() => {
     fetch("/api/p-projects/featured")
       .then((res) => res.json())
