@@ -3,6 +3,7 @@ import UsersTable from "./components/ClientsTable";
 import KOLsTable from "./components/KOLsTable";
 import Navbar from "./components/Navbar";
 import ProjectsTable from "./components/ProjectsTable";
+import RewardPoolTable from "./components/RewardPoolTable";
 
 function App() {
   const [activeTab, setActiveTab] = useState("projects");
@@ -17,6 +18,7 @@ function App() {
             {activeTab === "projects" && "Crypto Projects Management"}
             {activeTab === "kols" && "Influencers Management"}
             {activeTab === "users" && "Users"}
+            {activeTab === "reward-pools" && "Reward Pools"}
           </h1>
           <p className="mt-2 text-sm text-gray-600">
             {activeTab === "projects" &&
@@ -30,6 +32,7 @@ function App() {
         {activeTab === "projects" && <ProjectsTable />}
         {activeTab === "kols" && <KOLsTable />}
         {activeTab === "users" && <UsersTable />}
+        {activeTab === "reward-pools" && <RewardPoolTable />}
       </main>
 
       <footer className="bg-white border-t mt-auto py-4">

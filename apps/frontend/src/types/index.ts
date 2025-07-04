@@ -96,6 +96,33 @@ export type Narrative = {
   };
 };
 
+export type RewardPoolStatus = "active" | "upcoming" | "closed";
+
+export interface RewardPool {
+  id: string;
+  title: string;
+  description: string;
+  deadline: string; // ISO string
+  status: RewardPoolStatus;
+  platforms: string[];
+
+  reward: string; // "$2/1K views"
+  rewardRate: number; // 2
+  rewardUnit: string; // "1K views"
+
+  totalAmountUsd: number;
+  paidOutUsd: number;
+  campaignTargetViews: number;
+
+  participantsCount: number;
+  completedCount: number;
+
+  requirements: string[]; // ["Minimum 5 minutes video length", ...]
+
+  project: ProtokolsProject;
+  projectId: string;
+}
+
 export interface ProtokolsProject {
   id: string;
   name: string;
@@ -103,6 +130,8 @@ export interface ProtokolsProject {
   featured: boolean;
   hidden: boolean;
   slug?: string;
+  stage?: string;
+  website?: string;
   avatarUrl?: string;
   description?: string;
   twitterUsername: string;
@@ -124,5 +153,6 @@ export interface ProtokolsProject {
   mindshareChange90d: number;
   createdAt: string;
   updatedAt: string;
+  rewardPools: RewardPool[];
   narrativeLinks?: Narrative[]; // Новое поле
 }

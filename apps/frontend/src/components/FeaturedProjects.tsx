@@ -1,13 +1,13 @@
 import { useEffect, useRef } from "react";
-import { Project } from "../types";
+import { ProtokolsProject } from "../types";
 import { Skeleton } from "./Skeleton";
 
 export const FeaturedProjects = ({
   projects,
   handleOpenProject,
 }: {
-  projects: Project[];
-  handleOpenProject: (p: Project) => void;
+  projects: ProtokolsProject[];
+  handleOpenProject: (p: ProtokolsProject, tab?: "overview" | "pools") => void;
 }) => {
   const topRef = useRef(null);
   const rightRef = useRef(null);
@@ -25,13 +25,21 @@ export const FeaturedProjects = ({
       const leftY = Math.cos(now * speed + Math.PI) * 100;
 
       if (topRef.current)
-        topRef.current.style.transform = `translateX(${topX}%)`;
+        (
+          topRef.current as HTMLDivElement
+        ).style.transform = `translateX(${topX}%)`;
       if (rightRef.current)
-        rightRef.current.style.transform = `translateY(${rightY}%)`;
+        (
+          rightRef.current as HTMLDivElement
+        ).style.transform = `translateY(${rightY}%)`;
       if (bottomRef.current)
-        bottomRef.current.style.transform = `translateX(${bottomX}%)`;
+        (
+          bottomRef.current as HTMLDivElement
+        ).style.transform = `translateX(${bottomX}%)`;
       if (leftRef.current)
-        leftRef.current.style.transform = `translateY(${leftY}%)`;
+        (
+          leftRef.current as HTMLDivElement
+        ).style.transform = `translateY(${leftY}%)`;
 
       requestAnimationFrame(animateBorder);
     };
@@ -75,9 +83,9 @@ export const FeaturedProjects = ({
         {/* Content */}
         <div className="relative z-10 text-center">
           <h1 className="text-3xl md:text-4xl font-bold mb-6">
-            <span className="text-white">Projects</span>{" "}
+            <span className="text-white">Featured</span>{" "}
             <span className="bg-gradient-to-r from-[#F7CE68] to-[#FBAB7E] text-transparent bg-clip-text">
-              Arena
+              Projects
             </span>
           </h1>
 
@@ -88,26 +96,54 @@ export const FeaturedProjects = ({
                 <Skeleton />
               </>
             )}
-            {projects.map((project: Project) => (
-              <div
-                key={project.id}
-                onClick={() => handleOpenProject(project)}
-                className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700 hover:border-[#f7e05a] transition-all cursor-pointer"
-              >
-                <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#FFE87C]/20 to-[#3B82F6]/20 flex items-center justify-center mr-3">
-                    <img
-                      className="h-10 w-10 rounded-full"
-                      src={project.avatarUrl || ""}
-                      alt={project.name}
-                    />
+            {projects.map((project) => {
+              const totalRewardPercent = project.rewardPools?.reduce(
+                (acc, pool) => acc + pool.totalAmountUsd,
+                0
+              );
+
+              return (
+                <div
+                  key={project.id}
+                  onClick={(e) => {
+                    handleOpenProject(project, "overview");
+                  }}
+                  className="bg-gray-900/60 backdrop-blur-sm rounded-xl p-4 border border-gray-700 hover:border-[#f7e05a] transition-all cursor-pointer"
+                >
+                  <div className="flex items-center mb-4">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#FFE87C]/20 to-[#3B82F6]/20 flex items-center justify-center mr-3">
+                      <img
+                        className="h-10 w-10 rounded-full"
+                        src={project.avatarUrl || ""}
+                        alt={project.name}
+                      />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-white">{project.name}</h3>
+                      <p className="text-sm text-gray-400">{project.stage}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-medium text-white">{project.name}</h3>
+
+                  <div className="flex items-center justify-between border-t border-gray-700 pt-3">
+                    <div>
+                      <p className="text-xs text-gray-400">Total Reward pool</p>
+                      <p className="text-accent-500 font-semibold text-left">
+                        $ {totalRewardPercent?.toFixed(2)}
+                      </p>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenProject(project, "pools");
+                      }}
+                      className="bg-accent-500 hover:bg-accent-600 text-primary-900 text-sm px-3 py-1 rounded-md"
+                    >
+                      View
+                    </button>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

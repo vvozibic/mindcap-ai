@@ -181,6 +181,7 @@ export const getFeaturedProtokolsProjects = async (
           },
         },
       },
+      rewardPools: true,
     },
     orderBy: [{ marketCap: "desc" }],
   });
@@ -208,6 +209,7 @@ export const getProtokolsProjectById = async (req: Request, res: Response) => {
           },
         },
       },
+      rewardPools: true,
     },
   });
 
@@ -230,6 +232,9 @@ export const updateProtokolsProject = async (req: Request, res: Response) => {
     const project = await prisma.protokolsProject.update({
       where: { id },
       data: req.body,
+      include: {
+        rewardPools: true,
+      },
     });
     res.json(project);
   } catch (e: any) {
@@ -242,6 +247,10 @@ export const deleteProtokolsProject = async (req: Request, res: Response) => {
 
   await prisma.narrativeToProtokolsProject.deleteMany({
     where: { protokolsProjectId: id },
+  });
+
+  await prisma.rewardPool.deleteMany({
+    where: { projectId: id },
   });
 
   await prisma.protokolsProject.delete({

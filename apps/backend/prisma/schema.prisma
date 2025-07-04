@@ -110,43 +110,38 @@ model Influencer {
   @@index([createdAt])
 }
 
-
 model ProtokolsProject {
   id                  String   @id @default(uuid())
   name                String
   symbol              String
-  slug                String?       // можно сформировать из name или username
-  avatarUrl           String?       // twitter avatar
-  bannerUrl           String?       // если появится позже
+  slug                String?
+  avatarUrl           String?
+  bannerUrl           String?
   description         String?
   twitterUsername     String
   twitterId           String?
   isVerified          Boolean?
+  stage               String?
   followersCount      Int?
   followingCount      Int?
   twitterCreatedAt    DateTime?
-
   coingeckoImageUrl   String?
   marketCap           Float?
   price               Float?
   contractAddress     String?
-
   featured            Boolean @default(false)
   hidden              Boolean @default(false)
-
   totalViews          Int?
   totalPosts          Int?
-
   mindsharePercent    Float?
   mindshareChange24h  Float?
   mindshareChange7d   Float?
   mindshareChange30d  Float?
   mindshareChange90d  Float?
-
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
-
-  narrativeLinks NarrativeToProtokolsProject[]
+  narrativeLinks      NarrativeToProtokolsProject[]
+  rewardPools         RewardPool[]
 
   @@unique([twitterId])
   @@index([slug])
@@ -156,32 +151,54 @@ model ProtokolsProject {
   @@index([createdAt])
 }
 
+model RewardPool {
+  id                   String   @id @default(cuid())
+  title                String
+  description          String
+  reward               String
+  rewardRate           Float?
+  rewardUnit           String?
+  deadline             DateTime
+  platforms            String[]
+  status               RewardPoolStatus
+  totalAmountUsd       Float
+  paidOutUsd           Float
+  campaignTargetViews  Int
+  participantsCount    Int
+  completedCount       Int
+  requirements         String[]
+  project              ProtokolsProject   @relation(fields: [projectId], references: [id])
+  projectId            String
+}
+
+enum RewardPoolStatus {
+  active
+  upcoming
+  closed
+}
+
 model Narrative {
   id                     String   @id @default(cuid())
-  narrativeId           String   @unique
-  name                  String
-  slug                  String
-  description           String?
-  projectCount          Int
-  totalViews            Float
-  totalPosts            Int
-
-  marketCapUsd          Float
-  marketCapChange24h    Float
-  marketCapChange7d     Float
-  marketCapChange30d    Float
-  marketCapChange90d    Float
-
-  mindsharePercent      Float
-  mindshareChange24h    Float
-  mindshareChange7d     Float
-  mindshareChange30d    Float
-  mindshareChange90d    Float
-
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-
-  projectLinks NarrativeToProtokolsProject[]
+  narrativeId            String   @unique
+  name                   String
+  slug                   String
+  description            String?
+  projectCount           Int
+  totalViews             Float
+  totalPosts             Int
+  marketCapUsd           Float
+  marketCapChange24h     Float
+  marketCapChange7d      Float
+  marketCapChange30d     Float
+  marketCapChange90d     Float
+  mindsharePercent       Float
+  mindshareChange24h     Float
+  mindshareChange7d      Float
+  mindshareChange30d     Float
+  mindshareChange90d     Float
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  projectLinks           NarrativeToProtokolsProject[]
 
   @@index([id])
   @@index([narrativeId])
@@ -189,21 +206,18 @@ model Narrative {
 }
 
 model NarrativeToProtokolsProject {
-  id                  String            @id @default(uuid())
-  narrativeId         String
-  protokolsProjectId  String
-  projectMindsharePercent Float @default(0)
-
-  narrative           Narrative         @relation(fields: [narrativeId], references: [id])
-  protokolsProject    ProtokolsProject  @relation(fields: [protokolsProjectId], references: [id])
-
-  createdAt           DateTime          @default(now())
+  id                      String   @id @default(uuid())
+  narrativeId             String
+  protokolsProjectId      String
+  projectMindsharePercent Float    @default(0)
+  narrative               Narrative         @relation(fields: [narrativeId], references: [id])
+  protokolsProject        ProtokolsProject  @relation(fields: [protokolsProjectId], references: [id])
+  createdAt               DateTime          @default(now())
 
   @@unique([narrativeId, protokolsProjectId])
   @@index([narrativeId])
   @@index([protokolsProjectId])
 }
-
 
 model Mention {
   id             String     @id @default(cuid())

@@ -39,6 +39,16 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
               KOLs
             </button>
             <button
+              onClick={() => setActiveTab("reward-pools")}
+              className={`px-4 py-2 mx-1 rounded-md text-sm font-medium transition-colors duration-150 ease-in-out ${
+                activeTab === "reward-pools"
+                  ? "bg-white text-indigo-600"
+                  : "text-white hover:bg-indigo-500"
+              }`}
+            >
+              Reward Pools
+            </button>
+            <button
               onClick={() => setActiveTab("users")}
               className={`px-4 py-2 mx-1 rounded-md text-sm font-medium transition-colors duration-150 ease-in-out ${
                 activeTab === "users"

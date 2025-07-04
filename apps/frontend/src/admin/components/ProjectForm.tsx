@@ -14,6 +14,7 @@ const defaultProject: Partial<ProtokolsProject> = {
   slug: "",
   symbol: "",
   avatarUrl: "",
+  stage: "",
   description: "",
   twitterUsername: "",
   followersCount: 0,
@@ -161,6 +162,19 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
             <input
               name="symbol"
               value={formData.symbol || ""}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-md text-gray-900"
+            />
+          </div>
+
+          {/* Stage */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Stage
+            </label>
+            <input
+              name="symbol"
+              value={formData.stage || ""}
               onChange={handleChange}
               className="w-full px-3 py-2 border rounded-md text-gray-900"
             />

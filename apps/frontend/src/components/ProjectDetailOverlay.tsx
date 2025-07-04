@@ -12,103 +12,87 @@ import {
   X,
 } from "lucide-react";
 import React, { Fragment, useState } from "react";
-import { Influencer } from "../types";
-import { ProtokolsProject } from "./ProtokolsProject/types";
+import { Influencer, ProtokolsProject, RewardPool } from "../types";
 
 interface ProjectDetailOverlayProps {
   isOpen: boolean;
   onClose: () => void;
   project: ProtokolsProject | null;
+  activeTab: "overview" | "pools";
+  setActiveTab: (t: "overview" | "pools") => void;
   isAuthenticated: boolean;
   onLogin: () => void;
 }
 
-interface ProjectPool {
-  id: string;
-  title: string;
-  description: string;
-  rewardType: "fixed" | "cpm";
-  rewardAmount: number; // Fixed amount or CPM rate
-  totalReward: number;
-  remainingReward: number;
-  deadline: string;
-  requirements: string[];
-  platforms: string[];
-  status: "active" | "completed" | "upcoming";
-  participantsCount: number;
-  completedCount: number;
-  estimatedViews?: number; // For CPM pools
-}
-
-// Mock project pools data
-const getProjectPools = (projectId: string): ProjectPool[] => {
-  return [
-    {
-      id: "1",
-      title: "Create a Video Review",
-      description:
-        "Create a comprehensive video review of our platform highlighting key features and benefits. You will earn $2 for every 1000 views your content receives.",
-      rewardType: "cpm",
-      rewardAmount: 2, // $2 per 1000 views (CPM)
-      totalReward: 10000,
-      remainingReward: 7500,
-      deadline: "2025-07-15",
-      requirements: [
-        "Minimum 5 minutes video length",
-        "Must cover core features",
-        "Include personal experience",
-        "Mention pros and cons",
-      ],
-      platforms: ["YouTube", "TikTok"],
-      status: "active",
-      participantsCount: 12,
-      completedCount: 5,
-      estimatedViews: 250000, // Estimated total views for the campaign
-    },
-    {
-      id: "2",
-      title: "Twitter Thread Campaign",
-      description:
-        "Create an educational Twitter thread explaining how our technology works and its advantages.",
-      rewardType: "fixed",
-      rewardAmount: 250,
-      totalReward: 5000,
-      remainingReward: 3750,
-      deadline: "2025-07-10",
-      requirements: [
-        "Minimum 10 tweets in thread",
-        "Include relevant hashtags",
-        "Explain technical concepts simply",
-        "Include at least one diagram or visual",
-      ],
-      platforms: ["Twitter"],
-      status: "active",
-      participantsCount: 8,
-      completedCount: 5,
-    },
-    {
-      id: "3",
-      title: "Community AMA Hosting",
-      description:
-        "Host an AMA session with your community about our project and its ecosystem.",
-      rewardType: "fixed",
-      rewardAmount: 750,
-      totalReward: 3000,
-      remainingReward: 1500,
-      deadline: "2025-07-20",
-      requirements: [
-        "Minimum 45 minutes session",
-        "At least 50 participants",
-        "Cover prepared questions",
-        "Record and share the session",
-      ],
-      platforms: ["Twitter Spaces", "Discord"],
-      status: "upcoming",
-      participantsCount: 2,
-      completedCount: 0,
-    },
-  ];
-};
+// // Mock project pools data
+// const getProjectPools = (projectId: string): ProjectPool[] => {
+//   return [
+//     {
+//       id: "1",
+//       title: "Create a Video Review",
+//       description:
+//         "Create a comprehensive video review of our platform highlighting key features and benefits. You will earn $2 for every 1000 views your content receives.",
+//       rewardType: "cpm",
+//       rewardAmount: 2, // $2 per 1000 views (CPM)
+//       totalReward: 10000,
+//       remainingReward: 7500,
+//       deadline: "2025-07-15",
+//       requirements: [
+//         "Minimum 5 minutes video length",
+//         "Must cover core features",
+//         "Include personal experience",
+//         "Mention pros and cons",
+//       ],
+//       platforms: ["YouTube", "TikTok"],
+//       status: "active",
+//       participantsCount: 12,
+//       completedCount: 5,
+//       estimatedViews: 250000, // Estimated total views for the campaign
+//     },
+//     {
+//       id: "2",
+//       title: "Twitter Thread Campaign",
+//       description:
+//         "Create an educational Twitter thread explaining how our technology works and its advantages.",
+//       rewardType: "fixed",
+//       rewardAmount: 250,
+//       totalReward: 5000,
+//       remainingReward: 3750,
+//       deadline: "2025-07-10",
+//       requirements: [
+//         "Minimum 10 tweets in thread",
+//         "Include relevant hashtags",
+//         "Explain technical concepts simply",
+//         "Include at least one diagram or visual",
+//       ],
+//       platforms: ["Twitter"],
+//       status: "active",
+//       participantsCount: 8,
+//       completedCount: 5,
+//     },
+//     {
+//       id: "3",
+//       title: "Community AMA Hosting",
+//       description:
+//         "Host an AMA session with your community about our project and its ecosystem.",
+//       rewardType: "fixed",
+//       rewardAmount: 750,
+//       totalReward: 3000,
+//       remainingReward: 1500,
+//       deadline: "2025-07-20",
+//       requirements: [
+//         "Minimum 45 minutes session",
+//         "At least 50 participants",
+//         "Cover prepared questions",
+//         "Record and share the session",
+//       ],
+//       platforms: ["Twitter Spaces", "Discord"],
+//       status: "upcoming",
+//       participantsCount: 2,
+//       completedCount: 0,
+//     },
+//   ];
+// };
 
 // Get top KOLs for a project (mock data)
 const getTopKOLsForProject = (projectId: string): Influencer[] => {
@@ -122,11 +106,12 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
   isOpen,
   onClose,
   project,
+  activeTab,
+  setActiveTab,
   isAuthenticated,
   onLogin,
 }) => {
-  const [activeTab, setActiveTab] = useState<"overview" | "pools">("overview");
-  const [selectedPool, setSelectedPool] = useState<ProjectPool | null>(null);
+  const [selectedPool, setSelectedPool] = useState<RewardPool | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submissionUrl, setSubmissionUrl] = useState<string>("");
   const [submissionNotes, setSubmissionNotes] = useState<string>("");
@@ -135,10 +120,10 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
 
   if (!project) return null;
 
-  const projectPools = getProjectPools(project.id);
+  const projectPools = project.rewardPools || [];
   const topKOLs = getTopKOLsForProject(project.id);
 
-  const handlePoolSelect = (pool: ProjectPool) => {
+  const handlePoolSelect = (pool: RewardPool) => {
     setSelectedPool(pool);
     setEstimatedViews("");
   };
@@ -267,22 +252,24 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                     >
                       Project Overview
                     </button>
-                    <button
-                      onClick={() => setActiveTab("pools")}
-                      className={`${
-                        activeTab === "pools"
-                          ? "border-accent-500 text-accent-500"
-                          : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300"
-                      } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center`}
-                    >
-                      Project Pools
-                      <span className="ml-2 bg-primary-600 text-accent-500 py-0.5 px-2 rounded-full text-xs">
-                        {
-                          projectPools.filter((p) => p.status === "active")
-                            .length
-                        }
-                      </span>
-                    </button>
+                    {Boolean(projectPools.length) && (
+                      <button
+                        onClick={() => setActiveTab("pools")}
+                        className={`${
+                          activeTab === "pools"
+                            ? "border-accent-500 text-accent-500"
+                            : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300"
+                        } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center`}
+                      >
+                        Project Pools
+                        <span className="ml-2 bg-primary-600 text-accent-500 py-0.5 px-2 rounded-full text-xs">
+                          {
+                            projectPools.filter((p) => p.status === "active")
+                              .length
+                          }
+                        </span>
+                      </button>
+                    )}
                   </nav>
                 </div>
 
@@ -533,7 +520,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                           </div>
                         </div>
 
-                        <h5 className="text-md font-medium text-gray-300 mb-3">
+                        {/* <h5 className="text-md font-medium text-gray-300 mb-3">
                           About the Project
                         </h5>
                         <div className="bg-primary-700 rounded-lg p-4 mb-6">
@@ -548,7 +535,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                               ))}
                             </ul>
                           </div>
-                        </div>
+                        </div> */}
 
                         <h5 className="text-md font-medium text-gray-300 mb-3">
                           Social Channels
@@ -603,16 +590,20 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                   Total Reward Pool
                                 </h5>
                                 <p className="text-3xl font-bold text-white">
-                                  ${project?.rewardPoolUsd?.toLocaleString()}
+                                  {" "}
+                                  {project.rewardPools?.reduce(
+                                    (acc, pool) => acc + pool.totalAmountUsd,
+                                    0
+                                  )}
                                 </p>
                               </div>
                             </div>
-                            <div className="bg-primary-800 rounded-lg p-3">
+                            {/* <div className="bg-primary-800 rounded-lg p-3">
                               <p className="text-xs text-gray-400">Rank</p>
                               <p className="text-xl font-bold text-white">
                                 #{project.rewardRank}
                               </p>
-                            </div>
+                            </div> */}
                           </div>
 
                           <div className="mt-6">
@@ -632,9 +623,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                         {pool.title}
                                       </p>
                                       <p className="text-xs text-gray-400">
-                                        {pool.rewardType === "cpm"
-                                          ? `Reward: $${pool.rewardAmount} per 1,000 views (CPM)`
-                                          : `Reward: $${pool.rewardAmount} per submission`}
+                                        {pool.reward}
                                       </p>
                                     </div>
                                     <button
@@ -664,12 +653,14 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                               <li>Get rewarded based on performance</li>
                             </ol>
 
-                            <button
-                              onClick={() => setActiveTab("pools")}
-                              className="mt-4 w-full bg-accent-500 hover:bg-accent-600 text-primary-900 py-2 rounded-md text-sm font-medium"
-                            >
-                              View All Project Pools
-                            </button>
+                            {!!projectPools.length && (
+                              <button
+                                onClick={() => setActiveTab("pools")}
+                                className="mt-4 w-full bg-accent-500 hover:bg-accent-600 text-primary-900 py-2 rounded-md text-sm font-medium"
+                              >
+                                View All Project Pools
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -730,7 +721,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                 </span>
                               </div>
                             </div>
-                            <div className="text-right">
+                            {/* <div className="text-right">
                               {selectedPool.rewardType === "cpm" ? (
                                 <div>
                                   <p className="text-sm text-gray-400">
@@ -750,7 +741,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                   </p>
                                 </div>
                               )}
-                            </div>
+                            </div> */}
                           </div>
 
                           <div className="mt-6">
@@ -773,7 +764,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                 ))}
                               </ul>
 
-                              {selectedPool.rewardType === "cpm" && (
+                              {/* {selectedPool.rewardType === "cpm" && (
                                 <div className="mt-4 p-3 bg-primary-600 rounded-lg">
                                   <h5 className="text-sm font-medium text-gray-300 mb-2">
                                     Earnings Calculator
@@ -804,7 +795,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                     </span>
                                   </div>
                                 </div>
-                              )}
+                              )} */}
                             </div>
 
                             <div>
@@ -835,7 +826,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                     </span>
                                     <span className="text-white">
                                       $
-                                      {selectedPool.totalReward.toLocaleString()}
+                                      {selectedPool.totalAmountUsd.toLocaleString()}
                                     </span>
                                   </div>
                                   <div className="flex justify-between text-sm mb-1">
@@ -843,8 +834,9 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                       Remaining
                                     </span>
                                     <span className="text-white">
-                                      $
-                                      {selectedPool.remainingReward.toLocaleString()}
+                                      ${" "}
+                                      {selectedPool.totalAmountUsd -
+                                        selectedPool.paidOutUsd}
                                     </span>
                                   </div>
                                   <div className="flex justify-between text-sm">
@@ -862,9 +854,8 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                       className="bg-accent-500 h-2.5 rounded-full"
                                       style={{
                                         width: `${
-                                          (1 -
-                                            selectedPool.remainingReward /
-                                              selectedPool.totalReward) *
+                                          (selectedPool.paidOutUsd /
+                                            selectedPool.totalAmountUsd) *
                                           100
                                         }%`,
                                       }}
@@ -872,7 +863,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                   </div>
                                 </div>
 
-                                {selectedPool.rewardType === "cpm" &&
+                                {/* {selectedPool.rewardType === "cpm" &&
                                   selectedPool.estimatedViews && (
                                     <div className="mt-3">
                                       <div className="flex justify-between text-xs text-gray-400">
@@ -883,7 +874,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                         </span>
                                       </div>
                                     </div>
-                                  )}
+                                  )} */}
                               </div>
                             </div>
                           </div>
@@ -967,9 +958,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                     Ready to participate?
                                   </h4>
                                   <p className="text-sm text-gray-400">
-                                    {selectedPool.rewardType === "cpm"
-                                      ? "Submit your content and earn based on views"
-                                      : "Submit your content and earn rewards"}
+                                    Submit your content and earn rewards
                                   </p>
                                 </div>
                                 <button
@@ -1013,7 +1002,11 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                               Total Reward Pool
                             </p>
                             <p className="text-2xl font-bold text-white">
-                              ${project?.rewardPoolUsd?.toLocaleString()}
+                              $
+                              {project.rewardPools?.reduce(
+                                (acc, pool) => acc + pool.totalAmountUsd,
+                                0
+                              )}
                             </p>
                           </div>
                         </div>
@@ -1056,9 +1049,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                     Reward
                                   </p>
                                   <p className="text-lg font-bold text-white">
-                                    {pool.rewardType === "cpm"
-                                      ? `$${pool.rewardAmount}/1K views`
-                                      : `$${pool.rewardAmount}`}
+                                    {pool.reward}
                                   </p>
                                 </div>
                                 <div>
@@ -1099,7 +1090,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                 <div className="flex justify-between text-xs text-gray-400 mb-1">
                                   <span>Pool Progress</span>
                                   <span>
-                                    ${pool.remainingReward.toLocaleString()}{" "}
+                                    ${pool.totalAmountUsd - pool.paidOutUsd}{" "}
                                     remaining
                                   </span>
                                 </div>
@@ -1108,9 +1099,8 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                     className="bg-accent-500 h-2 rounded-full"
                                     style={{
                                       width: `${
-                                        (1 -
-                                          pool.remainingReward /
-                                            pool.totalReward) *
+                                        (pool.paidOutUsd /
+                                          pool.totalAmountUsd) *
                                         100
                                       }%`,
                                     }}

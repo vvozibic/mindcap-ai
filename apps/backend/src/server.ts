@@ -10,6 +10,7 @@ import { influencerRoutes } from "./routes/influencers";
 import { mentionRoutes } from "./routes/mentions";
 import narrativesRoutes from "./routes/narratives";
 import { projectRoutes, protokolsProjectRoutes } from "./routes/projects";
+import rewardPoolRoutes from "./routes/rewardPool";
 import { usersRoutes } from "./routes/users";
 
 dotenv.config();
@@ -27,6 +28,7 @@ app.use("/api/p-projects", protokolsProjectRoutes);
 app.use("/api/mentions", mentionRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/narratives", narrativesRoutes);
+app.use("/api/reward-pools", rewardPoolRoutes);
 
 if (isDev) {
   app.use(
