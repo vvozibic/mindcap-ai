@@ -12,6 +12,7 @@ import narrativesRoutes from "./routes/narratives";
 import { projectRoutes, protokolsProjectRoutes } from "./routes/projects";
 import rewardPoolRoutes from "./routes/rewardPool";
 import { usersRoutes } from "./routes/users";
+import { queuePageVisit } from "./utils/visits";
 
 dotenv.config();
 
@@ -68,6 +69,22 @@ if (!fs.existsSync(indexHtmlPath)) {
 }
 
 const PORT = Number(process.env.PORT) || 3001;
+
+app.use((req, res, next) => {
+  if (
+    req.method === "GET" &&
+    !req.path.startsWith("/api") &&
+    !req.path.includes(".") &&
+    req.headers.accept?.includes("text/html")
+  ) {
+    const ip =
+      req.headers["x-forwarded-for"]?.toString() ||
+      req.socket.remoteAddress ||
+      "unknown";
+    queuePageVisit(ip, req.path, req.headers["user-agent"]?.toString());
+  }
+  next();
+});
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Listening on ${PORT}`);

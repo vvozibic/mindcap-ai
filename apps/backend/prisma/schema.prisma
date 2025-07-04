@@ -236,3 +236,14 @@ model Mention {
   influencer     Influencer @relation(fields: [influencerId], references: [id], onDelete: Cascade)
   project        Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
+
+model PageVisit {
+  id        String   @id @default(cuid())
+  path      String
+  ip        String
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([path])
+  @@index([createdAt])
+}
