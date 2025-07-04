@@ -173,7 +173,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
               Stage
             </label>
             <input
-              name="symbol"
+              name="stage"
               value={formData.stage || ""}
               onChange={handleChange}
               className="w-full px-3 py-2 border rounded-md text-gray-900"
