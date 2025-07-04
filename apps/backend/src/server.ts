@@ -1,4 +1,5 @@
-// src/server.ts
+import "./utils/visits";
+
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";

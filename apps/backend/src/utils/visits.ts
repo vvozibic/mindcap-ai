@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
+
 interface VisitEntry {
   ip: string;
   path: string;
@@ -11,32 +12,41 @@ interface VisitEntry {
 const visitQueue: VisitEntry[] = [];
 const lastVisitCache = new Map<string, number>(); // key: `${ip}-${path}`
 
+/**
+ * Добавляет визит в очередь (не чаще 1 раза на 5 минут на ip+path)
+ */
 export function queuePageVisit(ip: string, path: string, userAgent?: string) {
   const key = `${ip}-${path}`;
   const now = Date.now();
   const last = lastVisitCache.get(key) || 0;
 
-  // 5 минутный лимит на логирование по IP+path
   if (now - last < 5 * 60 * 1000) return;
 
   lastVisitCache.set(key, now);
   visitQueue.push({ ip, path, userAgent, timestamp: now });
+
+  // Убери после отладки
+  console.log(`👁 Queued visit: ${ip} => ${path}`);
 }
 
-// Периодическая запись в БД (например, в express backend)
-setInterval(async () => {
+// 🔁 Интервал для записи данных в базу
+async function flushVisitQueue() {
   if (visitQueue.length === 0) return;
 
   const batch = [...visitQueue];
-  visitQueue.length = 0; // очищаем очередь
+  visitQueue.length = 0;
 
   try {
     await prisma.pageVisit.createMany({
       data: batch.map(({ ip, path, userAgent }) => ({ ip, path, userAgent })),
       skipDuplicates: true,
     });
+    console.log(`✅ Saved ${batch.length} visits`);
   } catch (err) {
-    console.error("Failed to insert page visits:", err);
-    // откат если надо: visitQueue.unshift(...batch)
+    console.error("❌ Failed to insert page visits:", err);
+    visitQueue.unshift(...batch);
   }
-}, 60 * 1000); // раз в минуту
+}
+
+// ⏱ Периодический запуск
+setInterval(flushVisitQueue, 60 * 1000); // каждую минуту
