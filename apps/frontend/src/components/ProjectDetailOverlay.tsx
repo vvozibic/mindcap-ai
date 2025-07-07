@@ -235,7 +235,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                     >
                       {project.name}
                     </Dialog.Title>
-                    {/* <p className="text-gray-300">{project.description}</p> */}
+                    <p className="text-gray-300">{project.description}</p>
                   </div>
                 </div>
 
