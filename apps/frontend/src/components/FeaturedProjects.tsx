@@ -119,8 +119,12 @@ export const FeaturedProjects = ({
                       />
                     </div>
                     <div>
-                      <h3 className="font-medium text-white">{project.name}</h3>
-                      <p className="text-sm text-gray-400">{project.stage}</p>
+                      <h3 className="font-medium text-white text-left">
+                        {project.name}
+                      </h3>
+                      <p className="text-sm text-gray-400 text-left">
+                        {project.stage}
+                      </p>
                     </div>
                   </div>
 
