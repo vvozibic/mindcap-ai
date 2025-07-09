@@ -58,8 +58,6 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
   }, [user]);
   const detailData = getInfluencerDetailData(influencer);
 
-  if (!influencer || !detailData || !user) return <Skeleton />;
-
   if (!user.isAuthenticated) {
     return (
       <div className="bg-primary-800 rounded-lg shadow-lg p-8 max-w-2xl mx-auto text-center border border-primary-700">
@@ -82,10 +80,12 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
     );
   }
 
+  if (!influencer || !detailData || !user) return <Skeleton />;
+
   return influencer && detailData ? (
     <>
       <InfluencerDetails influencer={influencer} />
-      <div className="mt-8 border-t border-primary-600 pt-6">
+      <div className="mt-8  pt-6">
         <h3 className="text-lg font-medium text-gray-200">
           Improve Your Score
         </h3>
@@ -198,7 +198,7 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
           </div> */}
         </div>
 
-        <div className="mt-8 border-t border-primary-600 pt-6">
+        <div className="mt-8 pt-6">
           <h3 className="text-lg font-medium text-gray-200">
             Improve Your Score
           </h3>

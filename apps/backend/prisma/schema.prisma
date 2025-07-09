@@ -103,6 +103,7 @@ model Influencer {
   totalViews            Int?
   twitterRegisterDate   String?
   mentions              Mention[]
+  projects              InfluencerToProtokolsProject[]
 
   @@index([followersCountNumeric])
   @@index([tweetsCountNumeric])
@@ -142,6 +143,7 @@ model ProtokolsProject {
   updatedAt           DateTime @updatedAt
   narrativeLinks      NarrativeToProtokolsProject[]
   rewardPools         RewardPool[]
+  influencers         InfluencerToProtokolsProject[]
 
   @@unique([twitterId])
   @@index([slug])
@@ -221,6 +223,19 @@ model NarrativeToProtokolsProject {
   @@unique([narrativeId, protokolsProjectId])
   @@index([narrativeId])
   @@index([protokolsProjectId])
+}
+
+model InfluencerToProtokolsProject {
+  id              String             @id @default(cuid())
+  influencerId    String
+  projectId       String
+
+  influencer      Influencer         @relation(fields: [influencerId], references: [id])
+  project         ProtokolsProject   @relation(fields: [projectId], references: [id])
+
+  @@unique([influencerId, projectId])
+  @@index([projectId])
+  @@index([influencerId])
 }
 
 model Mention {

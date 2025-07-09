@@ -18,7 +18,7 @@ export const Skeleton = ({ height = "74px" }) => {
   return (
     <div className="w-full animate-pulse overflow-hidden">
       <div className="">
-        <div className="w-full rounded-xl bg-gray-700" style={{ height }} />
+        <div className="w-full rounded-xl bg-primary-800" style={{ height }} />
       </div>
     </div>
   );

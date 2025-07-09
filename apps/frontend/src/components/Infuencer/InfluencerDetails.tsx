@@ -1,6 +1,5 @@
 import {
   AlertCircle,
-  Bot,
   Calendar,
   CheckCircle,
   ExternalLink,
@@ -304,7 +303,7 @@ const InfluencerDetails: React.FC<InfluencerDetailOverlayProps> = ({
               </div>
             </div>
 
-            <div className="mt-4 pt-4 border-t border-primary-600">
+            {/* <div className="mt-4 pt-4 border-t border-primary-700">
               <div className="flex items-center">
                 <Bot className="h-5 w-5 text-accent-500" />
                 <div className="ml-3">
@@ -316,7 +315,7 @@ const InfluencerDetails: React.FC<InfluencerDetailOverlayProps> = ({
                   </p>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
 
           <h5 className="text-md font-medium text-gray-300 mb-3">

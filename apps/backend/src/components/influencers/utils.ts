@@ -45,8 +45,18 @@ export function normalizeInfluencerData({
   scoutData: any;
   protocolsData: any;
 }) {
+  const smartFollowersPercent =
+    protocolsData?.smart_followers_count &&
+    scoutData?.followers_count &&
+    scoutData.followers_count > 0
+      ? +(
+          (protocolsData.smart_followers_count / scoutData.followers_count) *
+          100
+        ).toFixed(2)
+      : 0;
+
   return {
-    // tweetscout
+    // TweetScout
     username,
     name: scoutData?.name,
     bio: scoutData?.description,
@@ -63,14 +73,21 @@ export function normalizeInfluencerData({
     followingsNumeric: scoutData?.friends_count,
     businessAccount: false,
     twitterScoutJsonRaw: scoutData,
+    twitterRegisterDate: scoutData?.register_date || 0,
 
-    // protocols
-    kolScore: protocolsData?.kol_score,
-    smartFollowers: protocolsData?.smart_followers_count,
+    // Protokols
+    kolScore: protocolsData?.kol_score ?? 0,
+    smartFollowers: protocolsData?.smart_followers_count ?? 0,
+    smartFollowersPercent,
     engagementRate: protocolsData?.engagement_rate,
     avgViews: protocolsData?.avg_views,
     avgLikes: protocolsData?.avg_likes,
-    totalPosts: protocolsData?.total_posts,
+    totalPosts: protocolsData?.total_account_posts,
+    totalViews: protocolsData?.total_account_views,
+    totalLikes: protocolsData?.total_account_likes,
+    totalRetweets: protocolsData?.total_account_retweets,
+    totalReplies: protocolsData?.total_account_replies,
+    totalComments: protocolsData?.total_account_comments,
     protokolsJsonRaw: protocolsData,
   };
 }

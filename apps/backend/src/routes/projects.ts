@@ -8,6 +8,7 @@ import {
   getAllProtokolsProjects,
   getFeaturedProjects,
   getFeaturedProtokolsProjects,
+  getInfluencersByProject,
   getPaginatedProtokolsProjects,
   getProject,
   getProtokolsProjectById,
@@ -29,6 +30,7 @@ export const protokolsProjectRoutes = express.Router();
 protokolsProjectRoutes.get("/", getAllProtokolsProjects);
 protokolsProjectRoutes.get("/featured", getFeaturedProtokolsProjects);
 protokolsProjectRoutes.get("/paginate", getPaginatedProtokolsProjects);
+protokolsProjectRoutes.get("/:projectId/influencers", getInfluencersByProject);
 protokolsProjectRoutes.get("/:id", getProtokolsProjectById);
 protokolsProjectRoutes.post("/", createProtokolsProject);
 protokolsProjectRoutes.put("/:id", updateProtokolsProject);

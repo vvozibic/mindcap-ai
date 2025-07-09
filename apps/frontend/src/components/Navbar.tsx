@@ -177,7 +177,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
               For Business
             </Link> */}
           </div>
-          <div className="pt-4 pb-3 border-t border-primary-600">
+          <div className="pt-4 pb-3 border-t border-primary-700">
             {user.isAuthenticated ? (
               <div className="flex items-center px-5 justify-between">
                 <span className="text-base font-medium text-white">

@@ -1,3 +1,4 @@
+import defaultTheme from 'tailwindcss/defaultTheme';
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -7,22 +8,30 @@ export default {
   theme: {
     extend: {
       colors: {
-        // New color scheme based on screenshot
+        gray: {
+          ...defaultTheme.colors.gray,
+          400: "#73757d", // принудительно установить оригинальный цвет
+          500: "#73757d", // принудительно установить оригинальный цвет
+        },
         primary: {
-          900: "#0f1424", // Darkest blue (sidebar)
-          800: "#151a2d", // Dark blue (table rows)
-          700: "#1b2139", // Medium dark blue (table header)
-          600: "#232942", // Lighter blue (hover states)
-          500: "#2a3050", // Light blue accents
+          900: "#000000", // Full black background
+          800: "#171717", // Slightly lighter black (containers)
+          700: "#111111", // Hover state / borders
+          600: "#171717", // Hover state / borders
         },
         accent: {
-          500: "#f7e05a", // Yellow for buttons
-          600: "#e9d252", // Darker yellow for hover states
+          500: "#00ff99", // Neon green for main accents
+          600: "#00cc7a", // Darker green for hover states
+        },
+        text: {
+          primary: "#ffffff", // White text
+          secondary: "#73757d", // Muted gray text
+          muted: "#73757d", // Muted gray text
         },
         status: {
-          green: "#4ade80",
-          yellow: "#facc15",
-        }
+          green: "#22c55e", // Tailwind green-500
+          red: "#ef4444",   // Tailwind red-500
+        },
       },
     },
   },

@@ -277,6 +277,43 @@ export const getProtokolsProjectById = async (req: Request, res: Response) => {
   res.json(project);
 };
 
+export const getInfluencersByProject = async (req: Request, res: Response) => {
+  const { projectId } = req.params;
+
+  if (!projectId) {
+    return res.status(400).json({ error: "Missing projectId in params" });
+  }
+
+  try {
+    const influencers = await prisma.influencer.findMany({
+      where: {
+        projects: {
+          some: {
+            projectId,
+          },
+        },
+      },
+      select: {
+        id: true,
+        username: true,
+        name: true,
+        avatarUrl: true,
+        followersCountNumeric: true,
+        kolScore: true,
+        engagementRate: true,
+      },
+      orderBy: {
+        kolScore: "desc", // сортировка по весу, если нужно
+      },
+    });
+
+    res.json(influencers);
+  } catch (err) {
+    console.error("Failed to fetch influencers for project:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 export const createProtokolsProject = async (req: Request, res: Response) => {
   try {
     const project = await prisma.protokolsProject.create({ data: req.body });

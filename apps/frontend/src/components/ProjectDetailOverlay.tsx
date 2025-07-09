@@ -11,7 +11,7 @@ import {
   Users,
   X,
 } from "lucide-react";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Influencer, ProtokolsProject, RewardPool } from "../types";
 
 interface ProjectDetailOverlayProps {
@@ -22,6 +22,30 @@ interface ProjectDetailOverlayProps {
   setActiveTab: (t: "overview" | "pools") => void;
   isAuthenticated: boolean;
   onLogin: () => void;
+}
+
+export function useProjectInfluencers(projectId: string | null | undefined) {
+  const [influencers, setInfluencers] = useState<Influencer[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<null | string>(null);
+
+  useEffect(() => {
+    if (!projectId) return;
+
+    setLoading(true);
+    setError(null);
+
+    fetch(`/api/p-projects/${projectId}/influencers`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to load influencers");
+        return res.json();
+      })
+      .then(setInfluencers)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [projectId]);
+
+  return { influencers, loading, error };
 }
 
 // // Mock project pools data
@@ -118,10 +142,12 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
   const [estimatedViews, setEstimatedViews] = useState<string>("");
   const [tooltipVisible, setTooltipVisible] = useState<string | null>(null);
 
+  const { influencers, loading, error } = useProjectInfluencers(project?.id);
+
   if (!project) return null;
 
   const projectPools = project.rewardPools || [];
-  const topKOLs = getTopKOLsForProject(project.id);
+  const topKOLs = influencers;
 
   const handlePoolSelect = (pool: RewardPool) => {
     setSelectedPool(pool);
@@ -525,7 +551,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                         </h5>
                         <div className="bg-primary-700 rounded-lg p-4 mb-6">
                           <p className="text-gray-300">{project.description}</p>
-                          <div className="mt-4 pt-4 border-t border-primary-600">
+                          <div className="mt-4 pt-4 border-t border-primary-700">
                             <h6 className="text-sm font-medium text-gray-300 mb-2">
                               Categories
                             </h6>
@@ -581,7 +607,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                           Reward Pool
                         </h4>
 
-                        <div className="bg-primary-700 rounded-lg p-6 mb-6 border border-primary-600">
+                        <div className="bg-primary-700 rounded-lg p-6 mb-6 border border-primary-700">
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center">
                               <DollarSign className="h-8 w-8 text-accent-500" />
@@ -640,7 +666,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                             </div>
                           </div>
 
-                          <div className="mt-6 pt-6 border-t border-primary-600">
+                          <div className="mt-6 pt-6 border-t border-primary-700">
                             <h6 className="text-sm font-medium text-gray-300 mb-2">
                               How It Works
                             </h6>
@@ -690,7 +716,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                           Back to all pools
                         </button>
 
-                        <div className="bg-primary-700 rounded-lg p-6 mb-6 border border-primary-600">
+                        <div className="bg-primary-700 rounded-lg p-6 mb-6 border border-primary-700">
                           <div className="flex justify-between items-start">
                             <div>
                               <h3 className="text-xl font-bold text-white">
@@ -881,7 +907,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
 
                           {isAuthenticated ? (
                             isSubmitting ? (
-                              <div className="mt-6 pt-6 border-t border-primary-600">
+                              <div className="mt-6 pt-6 border-t border-primary-700">
                                 <h4 className="text-md font-medium text-gray-300 mb-4">
                                   Submit Your Content
                                 </h4>
@@ -952,7 +978,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                 </div>
                               </div>
                             ) : (
-                              <div className="mt-6 pt-6 border-t border-primary-600 flex justify-between items-center">
+                              <div className="mt-6 pt-6 border-t border-primary-700 flex justify-between items-center">
                                 <div>
                                   <h4 className="text-md font-medium text-gray-300">
                                     Ready to participate?
@@ -971,7 +997,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                               </div>
                             )
                           ) : (
-                            <div className="mt-6 pt-6 border-t border-primary-600">
+                            <div className="mt-6 pt-6 border-t border-primary-700">
                               <div className="bg-primary-600 p-4 rounded-lg text-center">
                                 <h4 className="text-md font-medium text-gray-300 mb-2">
                                   Sign in to participate
@@ -1015,7 +1041,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                           {projectPools.map((pool) => (
                             <div
                               key={pool.id}
-                              className="bg-primary-700 rounded-lg p-5 border border-primary-600 hover:border-accent-500 transition-colors cursor-pointer"
+                              className="bg-primary-700 rounded-lg p-5 border border-primary-700 hover:border-accent-500 transition-colors cursor-pointer"
                               onClick={() => handlePoolSelect(pool)}
                             >
                               <div className="flex justify-between items-start">
@@ -1112,7 +1138,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                         </div>
 
                         {!isAuthenticated && (
-                          <div className="mt-8 bg-primary-700 p-5 rounded-lg border border-primary-600 text-center">
+                          <div className="mt-8 bg-primary-700 p-5 rounded-lg border border-primary-700 text-center">
                             <h4 className="text-lg font-medium text-white mb-2">
                               Want to participate and earn rewards?
                             </h4>

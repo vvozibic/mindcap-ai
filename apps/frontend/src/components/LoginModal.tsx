@@ -60,7 +60,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
         <div className="mt-6 space-y-4">
           {/* <button
             onClick={() => setStep("email")}
-            className="w-full flex items-center justify-center px-4 py-2 border border-primary-600 shadow-sm text-sm font-medium rounded-md text-gray-300 bg-primary-700 hover:bg-primary-600"
+            className="w-full flex items-center justify-center px-4 py-2 border border-primary-700 shadow-sm text-sm font-medium rounded-md text-gray-300 bg-primary-700 hover:bg-primary-600"
           >
             <User className="h-5 w-5 mr-2" />
             Continue with Email
@@ -84,7 +84,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="your@email.com"
-            className="w-full px-3 py-2 rounded-md bg-primary-700 text-white placeholder-gray-400 border border-primary-600"
+            className="w-full px-3 py-2 rounded-md bg-primary-700 text-white placeholder-gray-400 border border-primary-700"
           />
           <button
             onClick={handleEmailLogin}
@@ -104,7 +104,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
             value={twitterHandle}
             onChange={(e) => setTwitterHandle(e.target.value)}
             placeholder="@yourhandle"
-            className="w-full px-3 py-2 rounded-md bg-primary-700 text-white placeholder-gray-400 border border-primary-600"
+            className="w-full px-3 py-2 rounded-md bg-primary-700 text-white placeholder-gray-400 border border-primary-700"
           />
           <button
             onClick={handleTwitterLogin}
