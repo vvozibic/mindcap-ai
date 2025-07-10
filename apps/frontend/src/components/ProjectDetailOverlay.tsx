@@ -4,7 +4,6 @@ import {
   DollarSign,
   ExternalLink,
   Eye,
-  Info,
   Newspaper,
   TrendingUp,
   Upload,
@@ -13,6 +12,7 @@ import {
 } from "lucide-react";
 import React, { Fragment, useEffect, useState } from "react";
 import { Influencer, ProtokolsProject, RewardPool } from "../types";
+import { daysBetween } from "../utils/daysBetween";
 
 interface ProjectDetailOverlayProps {
   isOpen: boolean;
@@ -23,6 +23,19 @@ interface ProjectDetailOverlayProps {
   isAuthenticated: boolean;
   onLogin: () => void;
 }
+
+type SortField =
+  | "followersCountNumeric"
+  | "mindshare"
+  | "pow"
+  | "poi"
+  | "poe"
+  | "smartFollowers"
+  | "followers"
+  | "engagementRate"
+  | "avgLikes"
+  | "postingFrequency"
+  | "kolScore";
 
 export function useProjectInfluencers(projectId: string | null | undefined) {
   const [influencers, setInfluencers] = useState<Influencer[]>([]);
@@ -147,7 +160,18 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
   if (!project) return null;
 
   const projectPools = project.rewardPools || [];
-  const topKOLs = influencers;
+  const topKOLs = influencers.map((i) => ({
+    ...i,
+    mindshare: i.kolScore
+      ? +(
+          (i.kolScore / influencers.reduce((sum, j) => sum + j.kolScore, 0)) *
+          100
+        ).toFixed(2)
+      : 0,
+    postingFrequency: Number(
+      i?.tweetsCountNumeric / daysBetween(i.twitterRegisterDate, new Date())
+    )?.toFixed(0),
+  }));
 
   const handlePoolSelect = (pool: RewardPool) => {
     setSelectedPool(pool);
@@ -203,11 +227,13 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
   };
 
   const tooltips = {
-    mindshare: "Overall attention score based on multiple factors",
-    pow: "Quantity of relevant posts",
-    poi: "Originality and depth of content",
-    poe: "Engagement quality based on reputable influence",
+    mindshare: "Overall mindshare based on AI",
+    avgLikes: "Average likes",
+    engagementRate: "Engagement rate",
+    postingFrequency: "Posts by day",
     smartFollowers: "Weighted followercount based on quality and engagement",
+    followers: "Raw follower count",
+    moneyScore: "Financial reputation score",
   };
 
   return (
@@ -248,7 +274,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                   </button>
                 </div>
 
-                <div className="flex items-center mb-6 pb-4 border-b border-primary-700">
+                <div className="flex items-center mb-1 pb-4 border-b border-primary-700">
                   <img
                     src={project?.avatarUrl || "/default-project-avatar.png"}
                     alt={project.name}
@@ -307,163 +333,109 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                         Top KOLs Engaging with {project.name}
                       </h5>
                       <div className="bg-primary-700 rounded-lg overflow-hidden">
-                        <div className="p-4 bg-primary-600">
-                          <h6 className="text-sm font-medium text-white">
-                            KOL Leaderboard
-                          </h6>
-                        </div>
                         <div className="overflow-x-auto">
-                          <table className="min-w-full divide-y divide-primary-600">
-                            <thead className="bg-primary-600">
-                              <tr>
-                                <th
-                                  scope="col"
-                                  className="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
-                                >
-                                  Rank
-                                </th>
-                                <th
-                                  scope="col"
-                                  className="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
-                                >
-                                  Influencer
-                                </th>
-                                <th
-                                  scope="col"
-                                  className="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider relative"
-                                >
-                                  <div className="flex items-center">
-                                    Mindshare
-                                    <Info
-                                      className="h-3 w-3 ml-1 text-gray-500 cursor-help"
-                                      onMouseEnter={() =>
-                                        showTooltip("mindshare")
-                                      }
-                                      onMouseLeave={hideTooltip}
-                                    />
-                                    {tooltipVisible === "mindshare" && (
-                                      <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
-                                        {tooltips.mindshare}
-                                      </div>
-                                    )}
-                                  </div>
-                                </th>
-                                <th
-                                  scope="col"
-                                  className="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider relative"
-                                >
-                                  <div className="flex items-center">
-                                    PoW
-                                    <Info
-                                      className="h-3 w-3 ml-1 text-gray-500 cursor-help"
-                                      onMouseEnter={() => showTooltip("pow")}
-                                      onMouseLeave={hideTooltip}
-                                    />
-                                    {tooltipVisible === "pow" && (
-                                      <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
-                                        {tooltips.pow}
-                                      </div>
-                                    )}
-                                  </div>
-                                </th>
-                                <th
-                                  scope="col"
-                                  className="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider relative"
-                                >
-                                  <div className="flex items-center">
-                                    PoI
-                                    <Info
-                                      className="h-3 w-3 ml-1 text-gray-500 cursor-help"
-                                      onMouseEnter={() => showTooltip("poi")}
-                                      onMouseLeave={hideTooltip}
-                                    />
-                                    {tooltipVisible === "poi" && (
-                                      <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
-                                        {tooltips.poi}
-                                      </div>
-                                    )}
-                                  </div>
-                                </th>
-                                <th
-                                  scope="col"
-                                  className="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider relative"
-                                >
-                                  <div className="flex items-center">
-                                    PoE
-                                    <Info
-                                      className="h-3 w-3 ml-1 text-gray-500 cursor-help"
-                                      onMouseEnter={() => showTooltip("poe")}
-                                      onMouseLeave={hideTooltip}
-                                    />
-                                    {tooltipVisible === "poe" && (
-                                      <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
-                                        {tooltips.poe}
-                                      </div>
-                                    )}
-                                  </div>
-                                </th>
-                                <th
-                                  scope="col"
-                                  className="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
-                                >
-                                  <div className="flex items-center">
+                          <div className="max-h-[300px] overflow-auto">
+                            <table className="min-w-full divide-y divide-primary-700">
+                              <thead className="bg-primary-700 sticky top-0 z-10">
+                                <tr>
+                                  <th className="pt-3 pr-0 pb-3 pl-6 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
+                                    Rank
+                                  </th>
+                                  <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
+                                    Influencer
+                                  </th>
+                                  <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
+                                    AI score
+                                  </th>
+                                  <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
                                     Smart Followers
-                                  </div>
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-primary-600">
-                              {topKOLs?.map((kol, index) => (
-                                <tr
-                                  key={kol.id}
-                                  className={
-                                    index % 2 === 0
-                                      ? "bg-primary-700"
-                                      : "bg-primary-600"
-                                  }
-                                >
-                                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
-                                    #{kol.rank}
-                                  </td>
-                                  <td className="px-4 py-2 whitespace-nowrap">
-                                    <div className="flex items-center">
-                                      <img
-                                        className="h-6 w-6 rounded-full"
-                                        src={
-                                          kol?.avatarUrl ||
-                                          "/default-avatar.png"
-                                        }
-                                        alt={kol.name}
-                                      />
-                                      <div className="ml-2">
-                                        <div className="text-sm font-medium text-gray-200">
-                                          {kol.name}
-                                        </div>
-                                        <div className="text-xs text-gray-400">
-                                          {kol.username}
+                                  </th>
+                                  <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
+                                    Followers
+                                  </th>
+                                  <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
+                                    Kol Score
+                                  </th>
+                                  <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
+                                    Engagement
+                                  </th>
+                                  <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
+                                    Posting Frequency
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody className="bg-primary-800 divide-y divide-primary-700">
+                                {topKOLs.map((kol, index) => (
+                                  <tr
+                                    key={kol.id}
+                                    className={`hover:bg-primary-600 cursor-pointer transition-colors duration-150 ${
+                                      index % 2 === 0
+                                        ? "bg-primary-800"
+                                        : "bg-primary-700"
+                                    }`}
+                                  >
+                                    <td className="pt-3 pr-0 pb-3 pl-6 whitespace-nowrap text-sm font-medium text-white">
+                                      #{index + 1}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                      <div className="flex items-center">
+                                        <img
+                                          className="h-10 w-10 rounded-full"
+                                          src={
+                                            kol.avatarUrl ||
+                                            "/default-avatar.png"
+                                          }
+                                          alt={kol.name}
+                                        />
+                                        <div className="ml-4 max-w-[300px]">
+                                          <div className="text-sm font-medium text-white">
+                                            {kol.name}
+                                          </div>
+                                          <div className="text-sm text-text-muted">
+                                            {kol.username}
+                                          </div>
+                                          <div className="flex mt-1 space-x-1">
+                                            {kol.badges
+                                              ?.split(",")
+                                              .map((badge, i) => (
+                                                <span
+                                                  key={i}
+                                                  className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-600 text-accent-500"
+                                                >
+                                                  {badge}
+                                                </span>
+                                              ))}
+                                          </div>
                                         </div>
                                       </div>
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
-                                    {kol.mindshare}
-                                  </td>
-                                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
-                                    {kol.pow}
-                                  </td>
-                                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
-                                    {kol.poi}
-                                  </td>
-                                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
-                                    {kol.poe}
-                                  </td>
-                                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
-                                    {kol.smartFollowers?.toLocaleString()}
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white font-medium">
+                                      {`${kol.mindshare}%`}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                                      {kol.smartFollowers}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                                      {kol.followersCountNumeric}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                                      {kol.kolScore}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                                      {kol?.engagementRate
+                                        ? `${kol.engagementRate.toFixed(2)}%`
+                                        : "-"}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                                      {kol?.postingFrequency
+                                        ? `${kol.postingFrequency}/day`
+                                        : "-"}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
                         </div>
                       </div>
                     </div>

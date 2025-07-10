@@ -32,26 +32,6 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
       if (user?.username) {
         const influencer = await fetchInfluencerByUsername(user?.username);
         if (influencer) setInfuencer(influencer);
-      } else {
-        setFormData({
-          id: crypto.randomUUID(),
-          name: "",
-          username: "",
-          avatarUrl: "",
-          platform: "",
-          followers: "",
-          badges: "",
-          expertise: "",
-          bio: "",
-          profileUrl: "",
-          mindshare: "",
-          pow: "",
-          poi: "",
-          poe: "",
-          smartFollowers: "",
-          followersCount: "",
-          moneyScore: "",
-        });
       }
     };
     fetchData();

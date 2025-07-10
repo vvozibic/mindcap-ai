@@ -301,6 +301,10 @@ export const getInfluencersByProject = async (req: Request, res: Response) => {
         followersCountNumeric: true,
         kolScore: true,
         engagementRate: true,
+        tweetsCountNumeric: true,
+        smartFollowers: true,
+        smartFollowersPercent: true,
+        twitterRegisterDate: true,
       },
       orderBy: {
         kolScore: "desc", // сортировка по весу, если нужно

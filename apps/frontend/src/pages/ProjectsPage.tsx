@@ -1,15 +1,9 @@
 import React from "react";
 import ProtokolsProjectsTable from "../components/ProtokolsProject/ProtokolsProjects";
 
-interface ProjectsPageProps {
-  isAuthenticated: boolean;
-  onLogin: () => void;
-}
+interface ProjectsPageProps {}
 
-const ProjectsPage: React.FC<ProjectsPageProps> = ({
-  isAuthenticated,
-  onLogin,
-}) => {
+const ProjectsPage: React.FC<ProjectsPageProps> = ({}) => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <ProtokolsProjectsTable />
