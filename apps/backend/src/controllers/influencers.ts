@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
-import { enrichInfluencer } from "../components/influencers/enrichInfluencer";
+import { enrichInfluencer } from "../components/kols/enrichInfluencer";
 
 const prisma = new PrismaClient();
 
@@ -69,6 +69,7 @@ export const getInfluencers = async (_req: Request, res: Response) => {
       bio: true,
       profileUrl: true,
       mindsharePercent: true,
+      mindshareNum: true,
       smartFollowersPercent: true,
       pow: true,
       poi: true,
@@ -146,6 +147,7 @@ export const getPaginatedInfluencers = async (req: Request, res: Response) => {
         bio: true,
         profileUrl: true,
         mindsharePercent: true,
+        mindshareNum: true,
         smartFollowersPercent: true,
         pow: true,
         poi: true,

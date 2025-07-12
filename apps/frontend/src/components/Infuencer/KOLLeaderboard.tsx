@@ -76,12 +76,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
 
   const influencers = kols.map((i) => ({
     ...i,
-    mindshare: i.kolScore
-      ? +(
-          (i.kolScore / kols.reduce((sum, j) => sum + j.kolScore, 0)) *
-          100
-        ).toFixed(2)
-      : 0,
+    mindshare: (i?.mindshareNum * 100).toFixed(2),
     postingFrequency: Number(
       i?.tweetsCountNumeric / daysBetween(i.twitterRegisterDate, new Date())
     )?.toFixed(0),
