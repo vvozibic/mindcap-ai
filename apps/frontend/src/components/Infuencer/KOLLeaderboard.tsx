@@ -108,12 +108,12 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
     <>
       <div
         id="leaderboard"
-        className={`bg-primary-800 rounded-lg shadow-lg overflow-hidden border border-primary-700 relative z-10 ${
+        className={`relative z-10 overflow-hidden rounded-xl border border-primary-700/40 bg-primary-800/30 backdrop-blur-sm shadow-[inset_0_0_0_1px_rgba(0,255,174,0.05),0_8px_20px_rgba(0,255,174,0.05)] transition-opacity duration-300 ${
           loading ? "opacity-80 pointer-events-none" : "opacity-100"
         }`}
       >
-        <div className="p-6 bg-gradient-to-r from-primary-700 to-primary-600">
-          <h2 className="text-2xl font-bold text-white">
+        <div className="p-6 border-b border-primary-700/30 bg-[radial-gradient(ellipse_60%_80%_at_50%_-10%,rgba(0,255,174,0.08),transparent)] backdrop-blur-sm">
+          <h2 className="text-2xl font-bold text-accent-500/75">
             Mindo AI Leaderboard
           </h2>
           <p className="text-gray-300 mt-2">
@@ -127,7 +127,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-primary-700">
-              <thead className="bg-primary-700">
+              <thead className="bg-primary-700/80">
                 <tr>
                   <th
                     scope="col"
@@ -170,7 +170,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                         onMouseLeave={hideTooltip}
                       />
                       {tooltipVisible === "mindshare" && (
-                        <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
+                        <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 border-primary-700/40 text-white rounded shadow-lg">
                           {tooltips.mindshare}
                         </div>
                       )}
@@ -195,7 +195,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                         onMouseLeave={hideTooltip}
                       />
                       {tooltipVisible === "smartFollowers" && (
-                        <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
+                        <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 border-primary-700/40 text-white rounded shadow-lg">
                           {tooltips.smartFollowers}
                         </div>
                       )}
@@ -220,7 +220,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                         onMouseLeave={hideTooltip}
                       />
                       {tooltipVisible === "followers" && (
-                        <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
+                        <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 border-primary-700/40 text-white rounded shadow-lg">
                           {tooltips.followers}
                         </div>
                       )}
@@ -245,7 +245,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                         onMouseLeave={hideTooltip}
                       />
                       {tooltipVisible === "moneyScore" && (
-                        <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
+                        <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 border-primary-700/40 text-white rounded shadow-lg">
                           {tooltips.moneyScore}
                         </div>
                       )}
@@ -270,7 +270,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                         onMouseLeave={hideTooltip}
                       />
                       {tooltipVisible === "engagementRate" && (
-                        <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
+                        <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 border-primary-700/40 text-white rounded shadow-lg">
                           {tooltips.engagementRate || "Soon"}
                         </div>
                       )}
@@ -320,7 +320,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                         onMouseLeave={hideTooltip}
                       />
                       {tooltipVisible === "postingFrequency" && (
-                        <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
+                        <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 border-primary-700/40 text-white rounded shadow-lg">
                           {tooltips.postingFrequency || "Soon"}
                         </div>
                       )}
@@ -328,17 +328,19 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-primary-800 divide-y divide-primary-700">
+              <tbody className="bg-primary-800/50 backdrop-blur-sm divide-y divide-primary-700/30">
                 {influencers.map((kol, index) => (
                   <tr
                     key={kol.id}
-                    className={`hover:bg-primary-600 group cursor-pointer transition-colors duration-300 ${
-                      index % 2 === 0 ? "bg-primary-800" : "bg-primary-700"
+                    className={`group cursor-pointer transition-colors duration-200 hover:bg-primary-900/35 hover:ring-1 hover:ring-accent-500/20 ${
+                      index % 2 === 0
+                        ? "bg-primary-800/40"
+                        : "bg-primary-700/60"
                     }`}
                     onClick={() => handleInfluencerClick(kol)}
                   >
                     <td className="pt-3 pr-0 pb-3 pl-6 whitespace-nowrap">
-                      <div className="text-sm font-medium text-accent-600">
+                      <div className="text-sm text-accent-500">
                         #{(page - 1) * limit + index + 1}
                       </div>
                     </td>

@@ -57,7 +57,7 @@ const NarrativeList: React.FC<NarrativeListProps> = ({
             onClick={() => onFilterChange(f as any)}
             className={`px-3 py-1 rounded text-sm font-medium ${
               selectedFilter === f
-                ? "bg-primary-600 text-white"
+                ? "bg-primary-600/80 text-white"
                 : "text-gray-400 hover:text-gray-300"
             }`}
           >
@@ -66,8 +66,8 @@ const NarrativeList: React.FC<NarrativeListProps> = ({
         ))}
       </div>
 
-      <div className="bg-primary-700 rounded-lg overflow-hidden">
-        <div className="p-3 bg-primary-600">
+      <div className="bg-primary-700/80 rounded-lg overflow-hidden">
+        <div className="p-3 bg-primary-600/80">
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 text-xs font-medium text-gray-400">
             <div className="flex items-center">
               Narrative <Info className="h-3 w-3 ml-1" />
@@ -114,15 +114,17 @@ const NarrativeList: React.FC<NarrativeListProps> = ({
                 onMouseEnter={() => onHover(n.id)}
                 onMouseLeave={() => onHover(null)}
                 onClick={() => onSelect(n.id)}
-                className={`grid grid-cols-3 sm:grid-cols-4 gap-2 p-3 text-sm border-l-2 cursor-pointer transition-colors duration-150 ${
+                className={`grid grid-cols-3 sm:grid-cols-4 gap-2 p-3 text-sm border-l-2 group cursor-pointer transition-colors duration-150 backdrop-blur-lg ${
                   isHovered || isSelected
-                    ? "bg-primary-500"
+                    ? "bg-primary-900/70"
                     : i % 2 === 0
-                    ? "bg-primary-700"
-                    : "bg-primary-600"
+                    ? "bg-primary-700/30"
+                    : "bg-primary-600/40"
                 } ${change > 0 ? "border-green-500" : "border-red-500"}`}
               >
-                <div className="text-gray-200 font-medium">{n.name}</div>
+                <div className="text-gray-200 font-medium group-hover:text-accent-500">
+                  {n.name}
+                </div>
                 <div className="text-gray-300">
                   {n.mindsharePercent.toFixed(2)}%
                 </div>

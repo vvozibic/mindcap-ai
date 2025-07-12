@@ -76,8 +76,8 @@ const NarrativesTreemap: React.FC = () => {
     });
 
   return (
-    <div className="relative z-1 bg-primary-800 rounded-lg shadow-lg pl-4 pt-4 pr-2 pb-4 mb-4">
-      <div className="flex justify-between items-center mb-4">
+    <div className="relative z-10 overflow-hidden rounded-xl border border-primary-700/40 bg-primary-800/30 backdrop-blur-sm shadow-[inset_0_0_0_1px_rgba(0,255,174,0.05),0_8px_20px_rgba(0,255,174,0.05)] p-4 mb-6">
+      <div className="flex justify-between items-center mb-4 px-2">
         <h2 className="text-2xl font-bold text-white">Narratives</h2>
         <div className="space-x-2">
           <FilterControls
