@@ -332,13 +332,13 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                 {influencers.map((kol, index) => (
                   <tr
                     key={kol.id}
-                    className={`hover:bg-primary-600 cursor-pointer transition-colors duration-150 ${
+                    className={`hover:bg-primary-600 group cursor-pointer transition-colors duration-300 ${
                       index % 2 === 0 ? "bg-primary-800" : "bg-primary-700"
                     }`}
                     onClick={() => handleInfluencerClick(kol)}
                   >
                     <td className="pt-3 pr-0 pb-3 pl-6 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-200">
+                      <div className="text-sm font-medium text-accent-600">
                         #{(page - 1) * limit + index + 1}
                       </div>
                     </td>
@@ -352,7 +352,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                           />
                         </div>
                         <div className="ml-4 max-w-[300px] text-wrap">
-                          <div className="text-sm font-medium text-gray-200">
+                          <div className="text-sm font-medium text-gray-200 group-hover:text-accent-500 transition-colors duration-300">
                             {kol.name}
                           </div>
                           <div className="text-sm text-gray-400">

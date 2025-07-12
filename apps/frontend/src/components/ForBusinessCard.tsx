@@ -73,7 +73,7 @@ const ForBusinessCard = React.forwardRef<HTMLDivElement, ForBusinessCardProps>(
     return (
       <div className={cn("relative", className)} ref={ref} {...props}>
         {/* Fallback gradient background adapted to theme */}
-        <div className="absolute top-0 z-[0] h-screen w-screen bg-[radial-gradient(ellipse_20%_80%_at_50%_-20%,rgba(255,214,102,0.08),rgba(255,255,255,0))]" />
+        <div className="absolute top-[-100px] z-[0] h-screen w-screen bg-[radial-gradient(ellipse_100%_70%_at_50%_-10%,#00ff9936,transparent)]" />
         <section className="relative max-w-full mx-auto z-1">
           <RetroGrid {...gridOptions} />
           <div className="max-w-screen-xl z-10 mx-auto px-1 sm:px-4 lg:px-8 py-8 gap-12 md:px-8">
