@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL_TEMP")
 }
 
 model AdminUser {
@@ -24,75 +24,122 @@ model User {
   updatedAt     DateTime @default(now())
   username      String?  @unique
   avatarUrl     String?
-  platform      String?
+  platform      String   @default("twitter")
 }
 
-model Project {
-  id            String    @id @default(cuid())
-  name          String
-  slug          String    @unique
-  description   String?
-  category      String?
-  website       String?
-  launchDate    DateTime?
-  marketCap     String?
-  avatarUrl     String?
-  mindshare     Float    @default(0)
-  kolAttention  String?
-  engagement    String?
-  trustScore    String?
-  discord       String?
-  twitter       String?
-  telegram      String?
-  rewardPoolUsd String?
-  rewardRank    String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now())
-  rawData       Json?
-  categories    String[]  @default([])
-  featured      Boolean   @default(false)
-  mentions      Mention[]
+model Narrative {
+  id           String  @id @default(cuid())
+  narrativeId  String  @unique
+  name         String
+  slug         String
+  description  String?
+  projectCount Int
 
-  @@index([marketCap])
-  @@index([slug])
+  totalViews Float
+  totalPosts Int
+
+  marketCapUsd       Float
+  marketCapChange24h Float
+  marketCapChange7d  Float
+  marketCapChange30d Float
+  marketCapChange90d Float
+
+  mindsharePercent   Float
+  mindshareChange24h Float
+  mindshareChange7d  Float
+  mindshareChange30d Float
+  mindshareChange90d Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  fetchedAt DateTime @default(now())
+
+  projectLinks      NarrativeToProject[]
+  narrativeSnapshot NarrativeSnapshot[]
+
+  @@index([id])
+  @@index([narrativeId])
+  @@index([name])
+}
+
+model NarrativeSnapshot {
+  id           String @id @default(cuid())
+  narrativeId  String
+  projectCount Int
+
+  totalViews Float
+  totalPosts Int
+
+  marketCapUsd       Float
+  marketCapChange24h Float
+  marketCapChange7d  Float
+  marketCapChange30d Float
+  marketCapChange90d Float
+
+  mindsharePercent   Float
+  mindshareChange24h Float
+  mindshareChange7d  Float
+  mindshareChange30d Float
+  mindshareChange90d Float
+
+  source    String // например: "Protokols", "Manual"
+  updatedBy String // например: "cron", "adminUserId", "system"
+
+  createdAt DateTime @default(now())
+
+  narrative Narrative @relation(fields: [narrativeId], references: [id])
+
+  @@index([narrativeId])
   @@index([createdAt])
-  @@index([category])
-  @@index([featured])
 }
 
-model Influencer {
-  id                    String    @id @default(cuid())
+model NarrativeToProject {
+  id                      String    @id @default(uuid())
+  narrativeId             String
+  projectId               String
+  projectMindsharePercent Float     @default(0)
+  narrative               Narrative @relation(fields: [narrativeId], references: [id])
+  project                 Project   @relation(fields: [projectId], references: [id])
+  createdAt               DateTime  @default(now())
+
+  @@unique([narrativeId, projectId])
+  @@index([narrativeId])
+  @@index([projectId])
+}
+
+model Kol {
+  id                    String         @id @default(cuid())
   name                  String
-  username              String    @unique
+  username              String         @unique
   badges                String?
   bio                   String?
   avatarUrl             String?
   platform              String?
-  businessAccount       Boolean   @default(false)
+  businessAccount       Boolean        @default(false)
   followings            String
   expertise             String?
   profileUrl            String?
   mindshare             String?
-  mindsharePercent      Float    @default(0)
-  smartFollowersPercent Float    @default(0)
+  mindsharePercent      Float          @default(0)
+  smartFollowersPercent Float          @default(0)
   pow                   String?
   poi                   String?
   poe                   String?
   followersCount        String
   moneyScore            String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @default(now())
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @default(now())
   bannerUrl             String?
   tweetsCount           String
-  verified              Boolean   @default(false)
+  verified              Boolean        @default(false)
   twitterScoutJsonRaw   Json?
-  followersCountNumeric Int?      @default(0)
-  followingsNumeric     Int?      @default(0)
-  tweetsCountNumeric    Int?      @default(0)
+  followersCountNumeric Int?           @default(0)
+  followingsNumeric     Int?           @default(0)
+  tweetsCountNumeric    Int?           @default(0)
   avgLikes              Int?
   avgViews              Int?
   engagementRate        Float?
-  kolScore              Int?      @default(0)
+  kolScore              Int?           @default(0)
   protokolsJsonRaw      Json?
   totalPosts            Int?
   smartFollowers        Int?
@@ -102,8 +149,7 @@ model Influencer {
   totalRetweets         Int?
   totalViews            Int?
   twitterRegisterDate   String?
-  mentions              Mention[]
-  projects              InfluencerToProtokolsProject[]
+  projects              KolToProject[]
 
   @@index([followersCountNumeric])
   @@index([tweetsCountNumeric])
@@ -111,39 +157,39 @@ model Influencer {
   @@index([createdAt])
 }
 
-model ProtokolsProject {
-  id                  String   @id @default(uuid())
-  name                String
-  symbol              String
-  slug                String?
-  avatarUrl           String?
-  bannerUrl           String?
-  description         String?
-  twitterUsername     String
-  twitterId           String?
-  isVerified          Boolean?
-  stage               String?
-  followersCount      Int?
-  followingCount      Int?
-  twitterCreatedAt    DateTime?
-  coingeckoImageUrl   String?
-  marketCap           Float?
-  price               Float?
-  contractAddress     String?
-  featured            Boolean @default(false)
-  hidden              Boolean @default(false)
-  totalViews          Int?
-  totalPosts          Int?
-  mindsharePercent    Float?
-  mindshareChange24h  Float?
-  mindshareChange7d   Float?
-  mindshareChange30d  Float?
-  mindshareChange90d  Float?
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-  narrativeLinks      NarrativeToProtokolsProject[]
-  rewardPools         RewardPool[]
-  influencers         InfluencerToProtokolsProject[]
+model Project {
+  id                 String               @id @default(uuid())
+  name               String
+  symbol             String
+  slug               String?
+  avatarUrl          String?
+  bannerUrl          String?
+  description        String?
+  twitterUsername    String
+  twitterId          String?
+  isVerified         Boolean?
+  stage              String?
+  followersCount     Int?
+  followingCount     Int?
+  twitterCreatedAt   DateTime?
+  coingeckoImageUrl  String?
+  marketCap          Float?
+  price              Float?
+  contractAddress    String?
+  featured           Boolean              @default(false)
+  hidden             Boolean              @default(false)
+  totalViews         Int?
+  totalPosts         Int?
+  mindsharePercent   Float?
+  mindshareChange24h Float?
+  mindshareChange7d  Float?
+  mindshareChange30d Float?
+  mindshareChange90d Float?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  narrativeLinks     NarrativeToProject[]
+  rewardPools        RewardPool[]
+  influencers        KolToProject[]
 
   @@unique([twitterId])
   @@index([slug])
@@ -158,23 +204,23 @@ model ProtokolsProject {
 }
 
 model RewardPool {
-  id                   String   @id @default(cuid())
-  title                String
-  description          String
-  reward               String
-  rewardRate           Float?
-  rewardUnit           String?
-  deadline             DateTime
-  platforms            String[]
-  status               RewardPoolStatus
-  totalAmountUsd       Float
-  paidOutUsd           Float
-  campaignTargetViews  Int
-  participantsCount    Int
-  completedCount       Int
-  requirements         String[]
-  project              ProtokolsProject   @relation(fields: [projectId], references: [id])
-  projectId            String
+  id                  String           @id @default(cuid())
+  title               String
+  description         String
+  reward              String
+  rewardRate          Float?
+  rewardUnit          String?
+  deadline            DateTime
+  platforms           String[]
+  status              RewardPoolStatus
+  totalAmountUsd      Float
+  paidOutUsd          Float
+  campaignTargetViews Int
+  participantsCount   Int
+  completedCount      Int
+  requirements        String[]
+  project             Project          @relation(fields: [projectId], references: [id])
+  projectId           String
 }
 
 enum RewardPoolStatus {
@@ -183,73 +229,17 @@ enum RewardPoolStatus {
   closed
 }
 
-model Narrative {
-  id                     String   @id @default(cuid())
-  narrativeId            String   @unique
-  name                   String
-  slug                   String
-  description            String?
-  projectCount           Int
-  totalViews             Float
-  totalPosts             Int
-  marketCapUsd           Float
-  marketCapChange24h     Float
-  marketCapChange7d      Float
-  marketCapChange30d     Float
-  marketCapChange90d     Float
-  mindsharePercent       Float
-  mindshareChange24h     Float
-  mindshareChange7d      Float
-  mindshareChange30d     Float
-  mindshareChange90d     Float
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
-  projectLinks           NarrativeToProtokolsProject[]
+model KolToProject {
+  id        String @id @default(cuid())
+  kolId     String
+  projectId String
 
-  @@index([id])
-  @@index([narrativeId])
-  @@index([name])
-}
+  kol     Kol     @relation(fields: [kolId], references: [id])
+  project Project @relation(fields: [projectId], references: [id])
 
-model NarrativeToProtokolsProject {
-  id                      String   @id @default(uuid())
-  narrativeId             String
-  protokolsProjectId      String
-  projectMindsharePercent Float    @default(0)
-  narrative               Narrative         @relation(fields: [narrativeId], references: [id])
-  protokolsProject        ProtokolsProject  @relation(fields: [protokolsProjectId], references: [id])
-  createdAt               DateTime          @default(now())
-
-  @@unique([narrativeId, protokolsProjectId])
-  @@index([narrativeId])
-  @@index([protokolsProjectId])
-}
-
-model InfluencerToProtokolsProject {
-  id              String             @id @default(cuid())
-  influencerId    String
-  projectId       String
-
-  influencer      Influencer         @relation(fields: [influencerId], references: [id])
-  project         ProtokolsProject   @relation(fields: [projectId], references: [id])
-
-  @@unique([influencerId, projectId])
+  @@unique([kolId, projectId])
   @@index([projectId])
-  @@index([influencerId])
-}
-
-model Mention {
-  id             String     @id @default(cuid())
-  projectId      String
-  influencerId   String
-  mindshare      String?
-  pow            String?
-  poi            String?
-  poe            String?
-  smartFollowers String?
-  createdAt      DateTime   @default(now())
-  influencer     Influencer @relation(fields: [influencerId], references: [id], onDelete: Cascade)
-  project        Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  @@index([kolId])
 }
 
 model PageVisit {
