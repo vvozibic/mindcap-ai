@@ -13,6 +13,7 @@ import {
 import React, { Fragment, useEffect, useState } from "react";
 import { Influencer, ProtokolsProject, RewardPool } from "../types";
 import { daysBetween } from "../utils/daysBetween";
+import XLogo from "./XLogo";
 
 interface ProjectDetailOverlayProps {
   isOpen: boolean;
@@ -979,10 +980,16 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                   rewards from this project pool.
                                 </p>
                                 <button
-                                  onClick={onLogin}
+                                  // onClick={onLogin}
                                   className="bg-accent-500 hover:bg-accent-600 text-primary-900 px-4 py-2 rounded-md text-sm font-medium"
                                 >
-                                  Sign In
+                                  <a
+                                    className="flex items-center justify-center"
+                                    href="/api/auth/twitter"
+                                  >
+                                    Login with{" "}
+                                    <XLogo className="h-4 w-4 ml-1" />
+                                  </a>
                                 </button>
                               </div>
                             </div>
@@ -1122,7 +1129,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                               onClick={onLogin}
                               className="bg-accent-500 hover:bg-accent-600 text-primary-900 px-6 py-2 rounded-md text-sm font-medium"
                             >
-                              Sign In to Participate
+                              Login with <XLogo /> to Participate
                             </button>
                           </div>
                         )}

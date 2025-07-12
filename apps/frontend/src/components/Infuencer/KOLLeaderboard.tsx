@@ -113,7 +113,9 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
         }`}
       >
         <div className="p-6 bg-gradient-to-r from-primary-700 to-primary-600">
-          <h2 className="text-2xl font-bold text-white">Minds Leaderboard</h2>
+          <h2 className="text-2xl font-bold text-white">
+            Mindo AI Leaderboard
+          </h2>
           <p className="text-gray-300 mt-2">
             Ranking the most influential voices in Web3 based on attention
             metrics

@@ -170,7 +170,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
                   className="text-lg font-medium leading-6 text-gray-200 text-center"
                 >
                   {step === "method"
-                    ? "Sign in to MindCapAI"
+                    ? "Sign in to MindoAI"
                     : step === "email"
                     ? "Enter your Email"
                     : "Enter your Twitter Handle"}

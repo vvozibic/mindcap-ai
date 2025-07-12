@@ -2,6 +2,7 @@ import { Menu, User, X, Zap } from "lucide-react";
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { User as UserType } from "../types";
+import XLogo from "./XLogo";
 
 interface NavbarProps {
   user: UserType;
@@ -28,7 +29,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <Zap className="h-8 w-8 text-accent-500" />
-              <span className="ml-2 text-xl font-bold">MindCap AI</span>
+              <span className="ml-2 text-xl font-bold">Mindo AI</span>
             </Link>
           </div>
 
@@ -42,7 +43,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
                     : "text-gray-300 hover:bg-primary-600 hover:text-white"
                 }`}
               >
-                Minds Leaderboard
+                Mindo AI Leaderboard
               </Link>
               <Link
                 to="/projects"
@@ -97,12 +98,14 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
                 </button>
               </div>
             ) : (
-              <button
-                onClick={onLogin}
-                className="bg-accent-500 hover:bg-accent-600 text-primary-900 px-4 py-2 rounded-md text-sm font-medium flex items-center"
-              >
+              <button className="bg-accent-500 hover:bg-accent-600 text-primary-900 px-4 py-2 rounded-md text-sm font-medium flex items-center">
                 <User className="h-4 w-4 mr-2" />
-                Sign In
+                <a
+                  className="flex items-center justify-center"
+                  href="/api/auth/twitter"
+                >
+                  Login with <XLogo className="h-4 w-4 ml-1" />
+                </a>
               </button>
             )}
           </div>
@@ -135,7 +138,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
               }`}
               onClick={() => setIsMenuOpen(false)}
             >
-              Minds Leaderboard
+              Mindo AI Leaderboard
             </Link>
             <Link
               to="/projects"
@@ -196,14 +199,19 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
             ) : (
               <div className="px-5">
                 <button
-                  onClick={() => {
-                    onLogin();
-                    setIsMenuOpen(false);
-                  }}
+                  // onClick={() => {
+                  //   onLogin();
+                  //   setIsMenuOpen(false);
+                  // }}
                   className="bg-accent-500 hover:bg-accent-600 text-primary-900 px-4 py-2 rounded-md text-sm font-medium w-full flex items-center justify-center"
                 >
                   <User className="h-4 w-4 mr-2" />
-                  Sign In
+                  <a
+                    className="flex items-center justify-center"
+                    href="/api/auth/twitter"
+                  >
+                    Login with <XLogo className="h-4 w-4 ml-1" />
+                  </a>
                 </button>
               </div>
             )}
