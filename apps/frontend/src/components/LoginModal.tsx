@@ -1,6 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Twitter, X } from "lucide-react";
+import { X } from "lucide-react";
 import React, { Fragment, useState } from "react";
+import XLogo from "./XLogo";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -68,8 +69,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
 
           <a href="/api/auth/twitter">
             <button className="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary-900 bg-accent-500 hover:bg-accent-600">
-              <Twitter className="h-5 w-5 mr-2" />
-              Continue with Twitter
+              Login with <XLogo className="h-4 w-4 ml-1" />
             </button>
           </a>
         </div>
@@ -178,7 +178,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
 
                 <div className="mt-2 text-sm text-gray-400 text-center">
                   {step === "method"
-                    ? "Choose how you want to log in"
+                    ? "Mindo analyzes your social mindshare and community impact from X to calculate your unified KOL Score"
                     : "We’ll use this to log you in and create your account"}
                 </div>
 

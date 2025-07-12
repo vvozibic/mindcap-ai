@@ -575,94 +575,98 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                       </div>
 
                       {/* Right Column - Reward Pool */}
-                      <div>
-                        <h4 className="text-lg font-medium text-gray-200 mb-4">
-                          Reward Pool
-                        </h4>
+                      {(project.rewardPools.length > 0 || project.featured) && (
+                        <div>
+                          <h4 className="text-lg font-medium text-gray-200 mb-4">
+                            Reward Pool
+                          </h4>
 
-                        <div className="bg-primary-700 rounded-lg p-6 mb-6 border border-primary-700">
-                          <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center">
-                              <DollarSign className="h-8 w-8 text-accent-500" />
-                              <div className="ml-3">
-                                <h5 className="text-sm font-medium text-gray-300">
-                                  Total Reward Pool
-                                </h5>
-                                <p className="text-3xl font-bold text-white">
-                                  {" "}
-                                  {project.rewardPools?.reduce(
-                                    (acc, pool) => acc + pool.totalAmountUsd,
-                                    0
-                                  )}
-                                </p>
+                          <div className="bg-primary-700 rounded-lg p-6 mb-6 border border-primary-700">
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center">
+                                <DollarSign className="h-8 w-8 text-accent-500" />
+                                <div className="ml-3">
+                                  <h5 className="text-sm font-medium text-gray-300">
+                                    Total Reward Pool
+                                  </h5>
+                                  <p className="text-3xl font-bold text-white">
+                                    {" "}
+                                    {project.rewardPools?.reduce(
+                                      (acc, pool) => acc + pool.totalAmountUsd,
+                                      0
+                                    )}
+                                  </p>
+                                </div>
                               </div>
-                            </div>
-                            {/* <div className="bg-primary-800 rounded-lg p-3">
+                              {/* <div className="bg-primary-800 rounded-lg p-3">
                               <p className="text-xs text-gray-400">Rank</p>
                               <p className="text-xl font-bold text-white">
                                 #{project.rewardRank}
                               </p>
                             </div> */}
-                          </div>
+                            </div>
 
-                          <div className="mt-6">
-                            <h6 className="text-sm font-medium text-gray-300 mb-3">
-                              Active Campaigns
-                            </h6>
-                            <div className="space-y-3">
-                              {projectPools
-                                .filter((pool) => pool.status === "active")
-                                .map((pool) => (
-                                  <div
-                                    key={pool.id}
-                                    className="bg-primary-600 rounded-lg p-3 flex justify-between items-center"
-                                  >
-                                    <div>
-                                      <p className="text-sm font-medium text-white">
-                                        {pool.title}
-                                      </p>
-                                      <p className="text-xs text-gray-400">
-                                        {pool.reward}
-                                      </p>
-                                    </div>
-                                    <button
-                                      onClick={() => {
-                                        setActiveTab("pools");
-                                        setSelectedPool(pool);
-                                      }}
-                                      className="bg-accent-500 hover:bg-accent-600 text-primary-900 text-xs px-3 py-1 rounded"
-                                    >
-                                      View Details
-                                    </button>
-                                  </div>
-                                ))}
+                            {!!projectPools?.length && (
+                              <div className="mt-6">
+                                <h6 className="text-sm font-medium text-gray-300 mb-3">
+                                  Active Campaigns
+                                </h6>
+                                <div className="space-y-3">
+                                  {projectPools
+                                    .filter((pool) => pool.status === "active")
+                                    .map((pool) => (
+                                      <div
+                                        key={pool.id}
+                                        className="bg-primary-600 rounded-lg p-3 flex justify-between items-center"
+                                      >
+                                        <div>
+                                          <p className="text-sm font-medium text-white">
+                                            {pool.title}
+                                          </p>
+                                          <p className="text-xs text-gray-400">
+                                            {pool.reward}
+                                          </p>
+                                        </div>
+                                        <button
+                                          onClick={() => {
+                                            setActiveTab("pools");
+                                            setSelectedPool(pool);
+                                          }}
+                                          className="bg-accent-500 hover:bg-accent-600 text-primary-900 text-xs px-3 py-1 rounded"
+                                        >
+                                          View Details
+                                        </button>
+                                      </div>
+                                    ))}
+                                </div>
+                              </div>
+                            )}
+
+                            <div className="mt-6 pt-6 border-t border-primary-700">
+                              <h6 className="text-sm font-medium text-gray-300 mb-2">
+                                How It Works
+                              </h6>
+                              <ol className="list-decimal list-inside text-gray-400 space-y-2">
+                                <li>Browse available project pools</li>
+                                <li>
+                                  Select a campaign that matches your skills
+                                </li>
+                                <li>Create and submit your content</li>
+                                <li>Get rewarded based on performance</li>
+                              </ol>
+
+                              {!!projectPools.length && (
+                                <button
+                                  onClick={() => setActiveTab("pools")}
+                                  className="mt-4 w-full bg-accent-500 hover:bg-accent-600 text-primary-900 py-2 rounded-md text-sm font-medium"
+                                >
+                                  View All Project Pools
+                                </button>
+                              )}
                             </div>
                           </div>
-
-                          <div className="mt-6 pt-6 border-t border-primary-700">
-                            <h6 className="text-sm font-medium text-gray-300 mb-2">
-                              How It Works
-                            </h6>
-                            <ol className="list-decimal list-inside text-gray-400 space-y-2">
-                              <li>Browse available project pools</li>
-                              <li>
-                                Select a campaign that matches your skills
-                              </li>
-                              <li>Create and submit your content</li>
-                              <li>Get rewarded based on performance</li>
-                            </ol>
-
-                            {!!projectPools.length && (
-                              <button
-                                onClick={() => setActiveTab("pools")}
-                                className="mt-4 w-full bg-accent-500 hover:bg-accent-600 text-primary-900 py-2 rounded-md text-sm font-medium"
-                              >
-                                View All Project Pools
-                              </button>
-                            )}
-                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   </div>
                 ) : (
@@ -980,16 +984,10 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                                   rewards from this project pool.
                                 </p>
                                 <button
-                                  // onClick={onLogin}
+                                  onClick={onLogin}
                                   className="bg-accent-500 hover:bg-accent-600 text-primary-900 px-4 py-2 rounded-md text-sm font-medium"
                                 >
-                                  <a
-                                    className="flex items-center justify-center"
-                                    href="/api/auth/twitter"
-                                  >
-                                    Login with{" "}
-                                    <XLogo className="h-4 w-4 ml-1" />
-                                  </a>
+                                  Login with <XLogo className="h-4 w-4 ml-1" />
                                 </button>
                               </div>
                             </div>

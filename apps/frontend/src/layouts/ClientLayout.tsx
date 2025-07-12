@@ -54,8 +54,8 @@ function ClientLayout() {
             path="/projects"
             element={
               <ProjectsPage
-                isAuthenticated={!!user.isAuthenticated}
-                onLogin={() => setIsLoginModalOpen(true)}
+              // isAuthenticated={!!user.isAuthenticated}
+              // onLogin={() => setIsLoginModalOpen(true)}
               />
             }
           />

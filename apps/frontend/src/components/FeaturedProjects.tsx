@@ -83,9 +83,9 @@ export const FeaturedProjects = ({
         {/* Content */}
         <div className="relative z-10 text-center">
           <h1 className="text-3xl md:text-4xl font-bold mb-6">
-            <span className="text-white">Featured</span>{" "}
+            <span className="text-white">Mindo</span>{" "}
             <span className="bg-accent-500 text-transparent bg-clip-text">
-              Projects
+              Arena
             </span>
           </h1>
 
@@ -108,7 +108,7 @@ export const FeaturedProjects = ({
                   onClick={() => handleOpenProject(project, "overview")}
                   className="bg-primary-900 backdrop-blur-sm rounded-xl p-4 border border-primary-700 hover:border-accent-500 transition-all cursor-pointer"
                 >
-                  <div className="flex items-center mb-4">
+                  <div className="flex items-center">
                     <div className="w-10 h-10 rounded-full bg-accent-500/10 flex items-center justify-center mr-3">
                       <img
                         className="h-10 w-10 rounded-full"
@@ -125,26 +125,30 @@ export const FeaturedProjects = ({
                       </p>
                     </div>
                   </div>
-
-                  <div className="flex items-center justify-between border-t border-primary-700 pt-3">
-                    <div>
-                      <p className="text-xs text-text-muted">
-                        Total Reward pool
-                      </p>
-                      <p className="text-accent-500 font-semibold text-left">
-                        $ {totalRewardPercent?.toFixed(2)}
-                      </p>
+                  <p className="text-sm text-text-muted text-left mt-2">
+                    {project.description}
+                  </p>
+                  {totalRewardPercent > 0 && (
+                    <div className="flex items-center justify-between border-t border-primary-700 pt-3">
+                      <div>
+                        <p className="text-xs text-text-muted">
+                          Total Reward pool
+                        </p>
+                        <p className="text-accent-500 font-semibold text-left">
+                          $ {totalRewardPercent?.toFixed(2)}
+                        </p>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenProject(project, "pools");
+                        }}
+                        className="bg-accent-500 hover:bg-accent-600 text-primary-900 text-sm px-3 py-1 rounded-md"
+                      >
+                        Earn
+                      </button>
                     </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOpenProject(project, "pools");
-                      }}
-                      className="bg-accent-500 hover:bg-accent-600 text-primary-900 text-sm px-3 py-1 rounded-md"
-                    >
-                      View
-                    </button>
-                  </div>
+                  )}
                 </div>
               );
             })}

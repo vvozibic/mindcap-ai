@@ -89,7 +89,12 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
           <div className="hidden md:block">
             {user.isAuthenticated ? (
               <div className="flex items-center space-x-4">
-                <span className="text-sm">{user.email || user.username}</span>
+                <Link
+                  to="/social-card"
+                  className={`px-3 py-2 rounded-md text-sm font-medium`}
+                >
+                  <span className="text-sm">{user.email || user.username}</span>
+                </Link>
                 <button
                   onClick={onLogout}
                   className="text-sm text-red-400 hover:text-red-500"
@@ -102,7 +107,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
                 <User className="h-4 w-4 mr-2" />
                 <a
                   className="flex items-center justify-center"
-                  href="/api/auth/twitter"
+                  onClick={onLogin}
                 >
                   Login with <XLogo className="h-4 w-4 ml-1" />
                 </a>
@@ -183,9 +188,17 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
           <div className="pt-4 pb-3 border-t border-primary-700">
             {user.isAuthenticated ? (
               <div className="flex items-center px-5 justify-between">
-                <span className="text-base font-medium text-white">
-                  {user.email || user.twitterHandle}
-                </span>
+                <Link
+                  to="/social-card"
+                  className={`block rounded-md text-base font-medium ${
+                    isActive("/social-card")
+                      ? "bg-primary-700 text-white"
+                      : "text-gray-300 hover:bg-primary-600 hover:text-white"
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {user.email || user.username}
+                </Link>
                 <button
                   onClick={() => {
                     onLogout();
@@ -199,10 +212,10 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
             ) : (
               <div className="px-5">
                 <button
-                  // onClick={() => {
-                  //   onLogin();
-                  //   setIsMenuOpen(false);
-                  // }}
+                  onClick={() => {
+                    onLogin();
+                    setIsMenuOpen(false);
+                  }}
                   className="bg-accent-500 hover:bg-accent-600 text-primary-900 px-4 py-2 rounded-md text-sm font-medium w-full flex items-center justify-center"
                 >
                   <User className="h-4 w-4 mr-2" />

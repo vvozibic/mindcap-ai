@@ -52,15 +52,10 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
           </p>
         </div>
         <button
-          // onClick={onLogin}
-          className="bg-accent-500 hover:bg-accent-600 text-primary-900 px-6 py-3 rounded-md text-sm font-medium"
+          onClick={onLogin}
+          className="flex items-center mx-auto bg-accent-500 hover:bg-accent-600 text-primary-900 px-6 py-3 rounded-md text-sm font-medium"
         >
-          <a
-            className="flex items-center justify-center"
-            href="/api/auth/twitter"
-          >
-            Login with <XLogo className="h-4 w-4 ml-1 mr-1" /> to View Your Card
-          </a>
+          Login with <XLogo className="h-4 w-4 ml-1 mr-1" /> to View Your Card
         </button>
       </div>
     );
