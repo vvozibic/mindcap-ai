@@ -1,7 +1,8 @@
-import { Menu, User, X, Zap } from "lucide-react";
+import { Menu, User, X } from "lucide-react";
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { User as UserType } from "../types";
+import { Logo } from "./Logo";
 import XLogo from "./XLogo";
 
 interface NavbarProps {
@@ -28,8 +29,9 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
-              <Zap className="h-8 w-8 text-accent-500" />
-              <span className="ml-2 text-xl font-bold">Mindo AI</span>
+              <div className="w-[100px]">
+                <Logo />
+              </div>
             </Link>
           </div>
 
