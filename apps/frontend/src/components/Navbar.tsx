@@ -41,7 +41,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
                 to="/"
                 className={`px-3 py-2 rounded-md text-sm font-medium ${
                   isActive("/")
-                    ? "bg-primary-700/40 text-white"
+                    ? "bg-primary-700/70 text-white"
                     : "text-gray-300 hover:bg-primary-600/50 hover:text-white"
                 }`}
               >
@@ -51,7 +51,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
                 to="/projects"
                 className={`px-3 py-2 rounded-md text-sm font-medium ${
                   isActive("/projects")
-                    ? "bg-primary-700/40 text-white"
+                    ? "bg-primary-700/70 text-white"
                     : "text-gray-300 hover:bg-primary-600/50 hover:text-white"
                 }`}
               >
@@ -61,7 +61,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
                 to="/social-card"
                 className={`px-3 py-2 rounded-md text-sm font-medium ${
                   isActive("/social-card")
-                    ? "bg-primary-700/40 text-white"
+                    ? "bg-primary-700/70 text-white"
                     : "text-gray-300 hover:bg-primary-600/50 hover:text-white"
                 }`}
               >
