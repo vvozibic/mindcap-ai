@@ -49,8 +49,8 @@ export const FeaturedProjects = ({
   }, []);
 
   return (
-    <div className="w-full flex items-center justify-center mb-10">
-      <div className="relative w-full border border-primary-700 rounded-2xl p-8 md:p-10 overflow-hidden shadow-2xl bg-primary-800/80">
+    <div className="w-full flex items-center justify-center">
+      <div className="relative w-full border border-primary-700/30 rounded-2xl p-8 md:p-10 overflow-hidden backdrop-blur-sm shadow-2xl bg-primary-800/50">
         {/* Animated Borders */}
         <div className="absolute top-0 left-0 w-full h-0.5 overflow-hidden">
           <div
@@ -106,7 +106,7 @@ export const FeaturedProjects = ({
                 <div
                   key={project.id}
                   onClick={() => handleOpenProject(project, "overview")}
-                  className="bg-primary-900 backdrop-blur-sm rounded-xl p-4 border border-primary-700 hover:border-accent-500 transition-all cursor-pointer"
+                  className="bg-primary-900/30 backdrop-blur-sm rounded-xl p-4 border border-primary-700 hover:border-accent-500/30 transition-all cursor-pointer"
                 >
                   <div className="flex items-center">
                     <div className="w-10 h-10 rounded-full bg-accent-500/10 flex items-center justify-center mr-3">

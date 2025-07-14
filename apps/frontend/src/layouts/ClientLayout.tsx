@@ -40,7 +40,8 @@ function ClientLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-primary-900 text-gray-100">
+    <div className="min-h-screen bg-primary-900 text-gray-100 relative">
+      <div className="absolute top-[-100px] z-[0] h-[150vh] w-screen bg-[radial-gradient(ellipse_100%_70%_at_50%_-10%,#00ff9936,transparent)]" />
       <Navbar
         user={user}
         onLogin={() => setIsLoginModalOpen(true)}

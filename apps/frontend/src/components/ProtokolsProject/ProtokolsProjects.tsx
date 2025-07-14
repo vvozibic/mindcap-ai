@@ -103,7 +103,7 @@ const ProtokolsProjectsTable: React.FC = () => {
         handleOpenProject={handleProjectClick}
       />
 
-      <div className="text-center mb-8">
+      <div className="text-center pt-10 mb-8 ">
         <h1 className="text-3xl font-extrabold text-gray-100 sm:text-4xl">
           Top Global Mindshare
         </h1>
@@ -116,13 +116,13 @@ const ProtokolsProjectsTable: React.FC = () => {
         <TableSkeleton />
       ) : (
         <div
-          className={`bg-primary-800 rounded-lg shadow-lg overflow-hidden border border-primary-700 relative z-10 ${
+          className={`max-w-7xl mx-auto rounded-xl overflow-hidden border border-primary-700/20 bg-primary-700/80 bg-[radial-gradient(ellipse_100%_80%_at_50%_-10%,rgba(0,255,174,0.09),transparent)] backdrop-blur-sm shadow-[inset_0_0_0_1px_rgba(0,255,174,0.05),0_8px_20px_rgba(0,255,174,0.05)] relative z-10 transition-opacity duration-300  ${
             loading ? "opacity-80 pointer-events-none" : "opacity-100"
           }`}
         >
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-primary-700">
-              <thead className="bg-primary-700">
+          <div className="overflow-x-auto relative">
+            <table className="min-w-full divide-y  divide-primary-700">
+              <thead className="bg-primary-700/70 backdrop-blur-sm  top-0 border-b border-primary-700/30">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
                     Project
@@ -189,11 +189,11 @@ const ProtokolsProjectsTable: React.FC = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-primary-800 divide-y divide-primary-700">
+              <tbody className="bg-primary-800/50 backdrop-blur-sm divide-y divide-primary-700/30">
                 {projects.map((proj) => (
                   <tr
                     key={proj.id}
-                    className="hover:bg-primary-600 transition-colors cursor-pointer"
+                    className="transition-colors cursor-pointer group hover:bg-primary-700/30 hover:ring-1 hover:ring-accent-500/20"
                     onClick={() => handleProjectClick(proj)}
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -204,7 +204,7 @@ const ProtokolsProjectsTable: React.FC = () => {
                           alt={proj.name}
                         />
                         <div>
-                          <div className="text-sm font-medium text-gray-200">
+                          <div className="text-sm font-medium text-gray-200 group-hover:text-accent-500 transition-colors duration-150">
                             {proj.name}
                           </div>
                           <div className="flex gap-2 flex-wrap align-center">

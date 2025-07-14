@@ -5,12 +5,12 @@ interface ProjectsPageProps {}
 
 const ProjectsPage: React.FC<ProjectsPageProps> = ({}) => {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl  px-4 sm:px-6 mx-auto mt-[-100px] pt-[150px] pb-[100px]">
       <ProtokolsProjectsTable />
 
-      <div className="mt-12 bg-primary-800 rounded-lg shadow-lg p-6 border border-primary-700">
+      <div className=" lg:px-8   mt-12 bg-primary-800 rounded-lg shadow-lg p-6 border border-primary-700/70">
         <h2 className="text-xl font-bold text-gray-100 mb-4">For Projects</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 backdrop-blur-sm">
           <div className="bg-primary-700 p-4 rounded-lg">
             <h3 className="font-medium text-gray-200">Gain KOL Attention</h3>
             <p className="mt-2 text-sm text-gray-400">

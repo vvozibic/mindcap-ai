@@ -41,7 +41,7 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
 
   if (!user.isAuthenticated) {
     return (
-      <div className="bg-primary-800 rounded-lg shadow-lg p-8 max-w-2xl mx-auto text-center border border-primary-700">
+      <div className="bg-primary-800/70 relative z-10 rounded-lg shadow-lg p-8 max-w-2xl mx-auto backdrop-blur-sm  text-center border border-primary-700/20">
         <div className="mb-6">
           <Award className="h-16 w-16 text-accent-500 mx-auto" />
           <h2 className="text-2xl font-bold mt-4 text-white">
