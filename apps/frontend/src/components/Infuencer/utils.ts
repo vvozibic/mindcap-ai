@@ -19,6 +19,8 @@ export interface InfluencerDetailData {
   postingFrequency: string;
   likes: number;
   views: number;
+  kolScore?: number;
+  mindshare?: number;
   comments: number;
   retwets: number;
   smartFollowersPercent: number;
@@ -54,6 +56,8 @@ export const getInfluencerDetailData = (
     engagementTrend: kol?.engagementRate > 0 ? "up" : "down",
     averageLikes: kol?.avgLikes,
     averageLikesTrend: "up",
+    kolScore: kol?.kolScore,
+    mindshare: kol?.mindshareNum,
     postingFrequency: `~${Number(
       kol?.tweetsCountNumeric / daysBetween(kol.twitterRegisterDate, new Date())
     )?.toFixed(0)}/day`,
