@@ -1,29 +1,7 @@
-import React, { useState } from "react";
-import ProjectDetailOverlay from "../components/ProjectDetailOverlay";
-import ProtokolsProjectsTable from "../components/ProtokolsProject/ProtokolsProjects";
-import { Project } from "../types";
+import React from "react";
+import ProtokolsProjectsTable from "../components/Projects/ProtokolsProjects";
 
-interface ProjectsPageProps {
-  isAuthenticated: boolean;
-  onLogin: () => void;
-}
-
-const ProtokolsProjectsPage: React.FC<ProjectsPageProps> = ({
-  isAuthenticated,
-  onLogin,
-}) => {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [isDetailOverlayOpen, setIsDetailOverlayOpen] = useState(false);
-
-  const handleProjectClick = (project: Project) => {
-    setSelectedProject(project);
-    setIsDetailOverlayOpen(true);
-  };
-
-  const closeDetailOverlay = () => {
-    setIsDetailOverlayOpen(false);
-  };
-
+const ProtokolsProjectsPage: React.FC = ({}) => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <ProtokolsProjectsTable />
@@ -64,16 +42,6 @@ const ProtokolsProjectsPage: React.FC<ProjectsPageProps> = ({
           </div>
         </div>
       </div>
-
-      {selectedProject && (
-        <ProjectDetailOverlay
-          isOpen={isDetailOverlayOpen}
-          onClose={closeDetailOverlay}
-          project={selectedProject}
-          isAuthenticated={isAuthenticated}
-          onLogin={onLogin}
-        />
-      )}
     </div>
   );
 };

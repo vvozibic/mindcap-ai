@@ -277,6 +277,37 @@ export const getProtokolsProjectById = async (req: Request, res: Response) => {
   res.json(project);
 };
 
+export const getProtokolsProjectBySlug = async (
+  req: Request,
+  res: Response
+) => {
+  const { slug } = req.params;
+  const project = await prisma.protokolsProject.findFirst({
+    where: { slug },
+    include: {
+      narrativeLinks: {
+        select: {
+          projectMindsharePercent: true,
+          narrative: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              mindsharePercent: true,
+              marketCapUsd: true,
+              totalViews: true,
+            },
+          },
+        },
+      },
+      rewardPools: true,
+    },
+  });
+
+  if (!project) return res.status(404).json({ error: "Not found" });
+  res.json(project);
+};
+
 export const getInfluencersByProject = async (req: Request, res: Response) => {
   const { projectId } = req.params;
 
@@ -300,6 +331,7 @@ export const getInfluencersByProject = async (req: Request, res: Response) => {
         avatarUrl: true,
         followersCountNumeric: true,
         kolScore: true,
+        mindshareNum: true,
         engagementRate: true,
         tweetsCountNumeric: true,
         smartFollowers: true,

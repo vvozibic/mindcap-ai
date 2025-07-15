@@ -59,6 +59,8 @@ export interface Influencer {
   totalRetweets: number;
   twitterRegisterDate: string;
 
+  postingFrequency?: string;
+
   mindshareNum: number;
   pow?: string | null;
   poi?: string | null;

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
-import { ProtokolsProject } from "../types";
-import { Skeleton } from "./Skeleton";
+import { ProtokolsProject } from "../../types";
+import { Skeleton } from "../Skeleton";
 
 export const FeaturedProjects = ({
   projects,

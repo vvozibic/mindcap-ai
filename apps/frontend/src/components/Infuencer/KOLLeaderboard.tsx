@@ -276,31 +276,6 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                       )}
                     </div>
                   </th>
-                  {/* <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort("avgLikes")}
-                >
-                  <div className="flex items-center relative">
-                    Avg. likes
-                    {sortField === "avgLikes" &&
-                      (sortDirection === "asc" ? (
-                        <ArrowUp className="h-4 w-4 ml-1" />
-                      ) : (
-                        <ArrowDown className="h-4 w-4 ml-1" />
-                      ))}
-                    <Info
-                      className="h-4 w-4 ml-1 text-gray-500 cursor-help"
-                      onMouseEnter={() => showTooltip("avgLikes")}
-                      onMouseLeave={hideTooltip}
-                    />
-                    {tooltipVisible === "avgLikes" && (
-                      <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 text-white rounded shadow-lg">
-                        {tooltips.avgLikes || "Soon"}
-                      </div>
-                    )}
-                  </div>
-                </th> */}
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"

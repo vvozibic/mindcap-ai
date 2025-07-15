@@ -1,12 +1,13 @@
 import { ArrowDown, ArrowUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ProtokolsProject } from "../../types";
 import { formatNumber } from "../../utils/formatNumber";
-import { FeaturedProjects } from "../FeaturedProjects";
 import Pagination from "../Pagination";
-import ProjectDetailOverlay from "../ProjectDetailOverlay";
 import { TableSkeleton } from "../TableSkeleton";
 import { usePaginatedData } from "../usePaginatedData";
+import { FeaturedProjects } from "./FeaturedProjects";
+import ProjectDetailOverlay from "./ProjectDetailOverlay";
 
 const fetchPaginatedProjects = async ({
   page,
@@ -43,6 +44,7 @@ const ProtokolsProjectsTable: React.FC = () => {
   const [featuredProjects, setFeaturedProjects] = useState<ProtokolsProject[]>(
     []
   );
+  const navigate = useNavigate();
 
   const {
     data: projects,
@@ -68,8 +70,8 @@ const ProtokolsProjectsTable: React.FC = () => {
     tab?: "overview" | "pools"
   ) => {
     if (tab) setActiveOverlayTab(tab);
-    setSelectedProject(project);
-    setIsModalOpen(true);
+
+    window.open(`/projects/${project.slug}`, "_blank");
   };
 
   const handleSort = (field: SortField) => {

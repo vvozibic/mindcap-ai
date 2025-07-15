@@ -12,6 +12,7 @@ import {
   getPaginatedProtokolsProjects,
   getProject,
   getProtokolsProjectById,
+  getProtokolsProjectBySlug,
   updateProject,
   updateProtokolsProject,
 } from "../controllers/projects";
@@ -32,6 +33,7 @@ protokolsProjectRoutes.get("/featured", getFeaturedProtokolsProjects);
 protokolsProjectRoutes.get("/paginate", getPaginatedProtokolsProjects);
 protokolsProjectRoutes.get("/:projectId/influencers", getInfluencersByProject);
 protokolsProjectRoutes.get("/:id", getProtokolsProjectById);
+protokolsProjectRoutes.get("/slug/:slug", getProtokolsProjectBySlug);
 protokolsProjectRoutes.post("/", createProtokolsProject);
 protokolsProjectRoutes.put("/:id", updateProtokolsProject);
 protokolsProjectRoutes.delete("/:id", deleteProtokolsProject);

@@ -66,9 +66,9 @@ const timelineData = [
 
 export function RadialOrbitalTimelineDemo() {
   return (
-    <div className="min-h-screen bg-black overflow-hidden">
-      <div className="container mx-auto px-6 py-10 lg:py-12">
-        <div className="grid lg:grid-cols-2 gap-0 items-center min-h-[80vh]">
+    <div className="min-h-[75vh] bg-black overflow-hidden">
+      <div className="container mx-auto px-6 py-8 lg:py-0">
+        <div className="grid lg:grid-cols-2 gap-0 items-center min-h-[75vh]">
           {/* Left Content */}
           <div className="space-y-8">
             <div className="space-y-6">
