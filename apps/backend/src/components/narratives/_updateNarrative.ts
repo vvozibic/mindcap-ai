@@ -1,4 +1,3 @@
-import { fetchNarrativesFromProtokols } from "@/lib/fetchers";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();

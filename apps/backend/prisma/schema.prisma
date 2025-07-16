@@ -87,7 +87,7 @@ model NarrativeSnapshot {
 
   createdAt DateTime @default(now())
 
-  narrative Narrative @relation(fields: [narrativeId], references: [id])
+  narrative Narrative @relation(fields: [narrativeId], references: [narrativeId])
 
   @@index([narrativeId])
   @@index([createdAt])
@@ -235,4 +235,12 @@ model KolToProject {
   projectId String
   kol       Kol     @relation(fields: [kolId], references: [id])
   project   Project @relation(fields: [projectId], references: [id])
+}
+
+model Log {
+  id        String   @id @default(cuid())
+  level     String // 'SUCCESS' | 'ERROR' | 'RETRY' | 'FATAL' | etc
+  message   String
+  url       String?
+  timestamp DateTime @default(now())
 }
