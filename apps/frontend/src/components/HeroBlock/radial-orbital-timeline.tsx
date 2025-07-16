@@ -256,7 +256,7 @@ export default function RadialOrbitalTimeline({
                   <Card className="absolute top-16 left-1/2 -translate-x-1/2 w-56 bg-black/90 backdrop-blur-lg border-white/30 shadow-xl shadow-white/10 overflow-visible">
                     <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-px h-2 bg-white/50"></div>
                     <CardHeader className="pb-2">
-                      <div className="flex justify-between items-center">
+                      {/* <div className="flex justify-between items-center">
                         <Badge
                           className={`px-2 text-xs ${getStatusStyles(
                             item.status
@@ -271,6 +271,7 @@ export default function RadialOrbitalTimeline({
                         <span className="text-xs font-mono text-white/50">
                           {item.date}
                         </span>
+                      </div> */}
                       </div>
                       <CardTitle className="text-sm mt-2">
                         {item.title}
