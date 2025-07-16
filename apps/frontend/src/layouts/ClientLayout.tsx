@@ -4,8 +4,8 @@ import LoginModal from "../components/LoginModal";
 import Navbar from "../components/Navbar";
 import ForBusinessPage from "../pages/ForBusinessPage";
 import HomePage from "../pages/HomePage";
+import ProjectPage from "../pages/ProjectPage";
 import ProjectsPage from "../pages/ProjectsPage";
-import ProtokolsProjectsPage from "../pages/ProtokolsProjectPage";
 import SocialCardPage from "../pages/SocialCardPage";
 import { User } from "../types";
 
@@ -40,7 +40,8 @@ function ClientLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-primary-900 text-gray-100">
+    <div className="min-h-screen bg-primary-900 text-gray-100 relative">
+      <div className="fixed top-[-100px] z-[0] h-[150vh] w-screen bg-[radial-gradient(ellipse_100%_70%_at_50%_-10%,#00ff9936,transparent)]" />
       <Navbar
         user={user}
         onLogin={() => setIsLoginModalOpen(true)}
@@ -50,24 +51,8 @@ function ClientLayout() {
       <main>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route
-            path="/projects"
-            element={
-              <ProjectsPage
-                isAuthenticated={!!user.isAuthenticated}
-                onLogin={() => setIsLoginModalOpen(true)}
-              />
-            }
-          />
-          <Route
-            path="/protokols-projects"
-            element={
-              <ProtokolsProjectsPage
-                isAuthenticated={!!user.isAuthenticated}
-                onLogin={() => setIsLoginModalOpen(true)}
-              />
-            }
-          />
+          <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/projects/:slug" element={<ProjectPage />} />
           <Route
             path="/social-card"
             element={

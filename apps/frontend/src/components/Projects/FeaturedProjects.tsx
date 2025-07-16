@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
-import { ProtokolsProject } from "../types";
-import { Skeleton } from "./Skeleton";
+import { ProtokolsProject } from "../../types";
+import { Skeleton } from "../Skeleton";
 
 export const FeaturedProjects = ({
   projects,
@@ -49,8 +49,8 @@ export const FeaturedProjects = ({
   }, []);
 
   return (
-    <div className="w-full flex items-center justify-center mb-10">
-      <div className="relative w-full border border-primary-700 rounded-2xl p-8 md:p-10 overflow-hidden shadow-2xl bg-primary-800/80">
+    <div className="w-full flex items-center justify-center">
+      <div className="relative w-full border border-primary-700/30 rounded-2xl p-8 md:p-10 overflow-hidden backdrop-blur-sm shadow-2xl bg-primary-800/50">
         {/* Animated Borders */}
         <div className="absolute top-0 left-0 w-full h-0.5 overflow-hidden">
           <div
@@ -83,9 +83,9 @@ export const FeaturedProjects = ({
         {/* Content */}
         <div className="relative z-10 text-center">
           <h1 className="text-3xl md:text-4xl font-bold mb-6">
-            <span className="text-white">Featured</span>{" "}
+            <span className="text-white">Mindo</span>{" "}
             <span className="bg-accent-500 text-transparent bg-clip-text">
-              Projects
+              Arena
             </span>
           </h1>
 
@@ -106,9 +106,9 @@ export const FeaturedProjects = ({
                 <div
                   key={project.id}
                   onClick={() => handleOpenProject(project, "overview")}
-                  className="bg-primary-900 backdrop-blur-sm rounded-xl p-4 border border-primary-700 hover:border-accent-500 transition-all cursor-pointer"
+                  className="bg-primary-900/30 backdrop-blur-sm rounded-xl p-4 border border-primary-700 hover:border-accent-500/30 transition-all cursor-pointer"
                 >
-                  <div className="flex items-center mb-4">
+                  <div className="flex items-center">
                     <div className="w-10 h-10 rounded-full bg-accent-500/10 flex items-center justify-center mr-3">
                       <img
                         className="h-10 w-10 rounded-full"
@@ -125,26 +125,30 @@ export const FeaturedProjects = ({
                       </p>
                     </div>
                   </div>
-
-                  <div className="flex items-center justify-between border-t border-primary-700 pt-3">
-                    <div>
-                      <p className="text-xs text-text-muted">
-                        Total Reward pool
-                      </p>
-                      <p className="text-accent-500 font-semibold text-left">
-                        $ {totalRewardPercent?.toFixed(2)}
-                      </p>
+                  <p className="text-sm text-text-muted text-left mt-2">
+                    {project.description}
+                  </p>
+                  {totalRewardPercent > 0 && (
+                    <div className="flex items-center justify-between border-t border-primary-700 pt-3">
+                      <div>
+                        <p className="text-xs text-text-muted">
+                          Total Reward pool
+                        </p>
+                        <p className="text-accent-500 font-semibold text-left">
+                          $ {totalRewardPercent?.toFixed(2)}
+                        </p>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenProject(project, "pools");
+                        }}
+                        className="bg-accent-500 hover:bg-accent-600 text-primary-900 text-sm px-3 py-1 rounded-md"
+                      >
+                        Earn
+                      </button>
                     </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOpenProject(project, "pools");
-                      }}
-                      className="bg-accent-500 hover:bg-accent-600 text-primary-900 text-sm px-3 py-1 rounded-md"
-                    >
-                      View
-                    </button>
-                  </div>
+                  )}
                 </div>
               );
             })}

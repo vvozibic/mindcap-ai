@@ -9,10 +9,10 @@ export const TableSkeleton: React.FC<{ rows?: number; columns?: number }> = ({
       <table className="w-full">
         <tbody>
           {Array.from({ length: rows }).map((_, rowIdx) => (
-            <tr key={rowIdx} className="border-t border-primary-800">
+            <tr key={rowIdx} className="border-t border-primary-600/70">
               {Array.from({ length: columns }).map((_, colIdx) => (
                 <td key={colIdx} className="px-6 py-4">
-                  <div className="h-4 w-full rounded bg-primary-800" />
+                  <div className="h-4 w-full rounded bg-primary-700/70" />
                 </td>
               ))}
             </tr>

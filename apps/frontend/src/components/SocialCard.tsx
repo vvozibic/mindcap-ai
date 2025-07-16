@@ -4,6 +4,7 @@ import { Influencer, User } from "../types";
 import InfluencerDetails from "./Infuencer/InfluencerDetails";
 import { getInfluencerDetailData } from "./Infuencer/utils";
 import { Skeleton } from "./Skeleton";
+import XLogo from "./XLogo";
 
 interface SocialCardProps {
   user: User;
@@ -40,7 +41,7 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
 
   if (!user.isAuthenticated) {
     return (
-      <div className="bg-primary-800 rounded-lg shadow-lg p-8 max-w-2xl mx-auto text-center border border-primary-700">
+      <div className="bg-primary-800/70 relative z-10 rounded-lg shadow-lg p-8 max-w-2xl mx-auto backdrop-blur-sm  text-center border border-primary-700/20">
         <div className="mb-6">
           <Award className="h-16 w-16 text-accent-500 mx-auto" />
           <h2 className="text-2xl font-bold mt-4 text-white">
@@ -52,9 +53,9 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
         </div>
         <button
           onClick={onLogin}
-          className="bg-accent-500 hover:bg-accent-600 text-primary-900 px-6 py-3 rounded-md text-sm font-medium"
+          className="flex items-center mx-auto bg-accent-500 hover:bg-accent-600 text-primary-900 px-6 py-3 rounded-md text-sm font-medium"
         >
-          Sign In to View Your Card
+          Login with <XLogo className="h-4 w-4 ml-1 mr-1" /> to View Your Card
         </button>
       </div>
     );

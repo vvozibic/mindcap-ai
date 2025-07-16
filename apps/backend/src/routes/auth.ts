@@ -3,7 +3,7 @@ import express from "express";
 import crypto from "crypto";
 import fetch from "node-fetch";
 import querystring from "querystring";
-import { enrichInfluencer } from "../components/influencers/enrichInfluencer";
+import { enrichInfluencer } from "../components/kols/enrichInfluencer";
 import { enrichUser } from "../components/users/enrichUser";
 import {
   adminLogin,

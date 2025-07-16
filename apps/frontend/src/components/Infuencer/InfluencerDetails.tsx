@@ -220,6 +220,22 @@ const InfluencerDetails: React.FC<InfluencerDetailOverlayProps> = ({
                 <span className="ml-2 text-xs text-gray-400">Lifetime</span>
               </div>
             </div>
+            <div className="ml-8">
+              <h5 className="text-sm font-medium text-gray-300">AI score</h5>
+              <div className="flex items-baseline">
+                <p className="text-xl font-bold text-gray-200">
+                  {Number((detailData?.mindshare || 0) * 100).toFixed(2)}%
+                </p>
+              </div>
+            </div>
+            <div className="ml-8">
+              <h5 className="text-sm font-medium text-gray-300">KOL score</h5>
+              <div className="flex items-baseline">
+                <p className="text-xl font-bold text-gray-200">
+                  {detailData?.kolScore}
+                </p>
+              </div>
+            </div>
           </div>
 
           <h5 className="text-md font-medium text-gray-300 mb-3">

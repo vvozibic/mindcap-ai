@@ -38,7 +38,7 @@ model Narrative {
   totalViews Float
   totalPosts Int
 
-  marketCapUsd       Float
+  totalMarketCapUsd  Float
   marketCapChange24h Float
   marketCapChange7d  Float
   marketCapChange30d Float
@@ -70,7 +70,7 @@ model NarrativeSnapshot {
   totalViews Float
   totalPosts Int
 
-  marketCapUsd       Float
+  totalMarketCapUsd  Float
   marketCapChange24h Float
   marketCapChange7d  Float
   marketCapChange30d Float
@@ -189,7 +189,7 @@ model Project {
   updatedAt          DateTime             @updatedAt
   narrativeLinks     NarrativeToProject[]
   rewardPools        RewardPool[]
-  influencers        KolToProject[]
+  kols               KolToProject[]
 
   @@unique([twitterId])
   @@index([slug])
@@ -230,25 +230,9 @@ enum RewardPoolStatus {
 }
 
 model KolToProject {
-  id        String @id @default(cuid())
+  id        String  @id @default(cuid())
   kolId     String
   projectId String
-
-  kol     Kol     @relation(fields: [kolId], references: [id])
-  project Project @relation(fields: [projectId], references: [id])
-
-  @@unique([kolId, projectId])
-  @@index([projectId])
-  @@index([kolId])
-}
-
-model PageVisit {
-  id        String   @id @default(cuid())
-  path      String
-  ip        String
-  userAgent String?
-  createdAt DateTime @default(now())
-
-  @@index([path])
-  @@index([createdAt])
+  kol       Kol     @relation(fields: [kolId], references: [id])
+  project   Project @relation(fields: [projectId], references: [id])
 }
