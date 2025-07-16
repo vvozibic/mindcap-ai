@@ -48,7 +48,7 @@ function ClientLayout() {
         onLogout={handleLogout}
       />
 
-      <main>
+      <main className="relative z-10">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/projects" element={<ProjectsPage />} />
