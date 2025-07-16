@@ -61,7 +61,7 @@ function ClientLayout() {
                 onLogin={() => setIsLoginModalOpen(true)}
               />
             }
-          />{" "}
+          />
           <Route path="/for-business" element={<ForBusinessPage />} />
         </Routes>
       </main>

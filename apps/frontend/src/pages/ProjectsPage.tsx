@@ -5,7 +5,7 @@ interface ProjectsPageProps {}
 
 const ProjectsPage: React.FC<ProjectsPageProps> = ({}) => {
   return (
-    <div className="max-w-7xl  px-4 sm:px-6 mx-auto mt-[-100px] pt-[150px] pb-[100px]">
+    <div className="max-w-7xl  px-4 sm:px-6 mx-auto py-[100px] relative z-10">
       <ProtokolsProjectsTable />
 
       <div className=" lg:px-8   mt-12 bg-primary-800 rounded-lg shadow-lg p-6 border border-primary-700/70">
