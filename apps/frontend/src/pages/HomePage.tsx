@@ -10,7 +10,7 @@ const HomePage: React.FC<HomePageProps> = () => {
     <>
       <HeroBlock />
 
-      <div className="max-w-7xl mx-auto mt-8">
+      <div className="max-w-7xl mx-auto mt-8 relative z-10">
         <NarrativesTreemap />
 
         <KOLLeaderboard />

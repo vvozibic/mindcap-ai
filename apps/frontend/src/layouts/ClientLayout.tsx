@@ -48,7 +48,7 @@ function ClientLayout() {
         onLogout={handleLogout}
       />
 
-      <main className="relative z-10">
+      <main>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/projects" element={<ProjectsPage />} />
@@ -61,7 +61,7 @@ function ClientLayout() {
                 onLogin={() => setIsLoginModalOpen(true)}
               />
             }
-          />{" "}
+          />
           <Route path="/for-business" element={<ForBusinessPage />} />
         </Routes>
       </main>
