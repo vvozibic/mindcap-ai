@@ -71,7 +71,7 @@ const ProtokolsProjectsTable: React.FC = () => {
   ) => {
     if (tab) setActiveOverlayTab(tab);
 
-    window.open(`/projects/${project.slug}`);
+    navigate(`/projects/${project.slug}`);
   };
 
   const handleSort = (field: SortField) => {
