@@ -11,27 +11,23 @@ export const getAllProjects = async (_: Request, res: Response) => {
     },
     select: {
       id: true,
-      name: true,
-      slug: true,
-      avatarUrl: true,
-      category: true,
-      categories: true,
-      website: true,
-      description: true,
-      marketCap: true,
-      launchDate: true,
+      twitterUsername: true,
+      twitterAvatarUrl: true,
+      twitterDescription: true,
+      coinMarketCap: true,
+      // launchDate: true,
       mindshare: true,
-      kolAttention: true,
-      engagement: true,
-      trustScore: true,
-      rewardPoolUsd: true,
-      rewardRank: true,
-      twitter: true,
+      // kolAttention: true,
+      // engagement: true,
+      // trustScore: true,
+      // rewardPoolUsd: true,
+      // rewardRank: true,
+      // twitter: true,
       createdAt: true,
       updatedAt: true,
       featured: true,
     },
-    orderBy: [{ marketCap: "desc" }],
+    orderBy: [{ coinMarketCap: "desc" }],
   });
 
   res.json(projects);
@@ -44,27 +40,22 @@ export const getFeaturedProjects = async (_: Request, res: Response) => {
     },
     select: {
       id: true,
-      name: true,
-      slug: true,
-      avatarUrl: true,
-      category: true,
-      categories: true,
-      website: true,
-      description: true,
-      marketCap: true,
-      launchDate: true,
+      twitterUsername: true,
+      twitterAvatarUrl: true,
+      twitterDescription: true,
+      coinMarketCap: true,
+      // launchDate: true,
       mindshare: true,
-      kolAttention: true,
-      engagement: true,
-      trustScore: true,
-      rewardPoolUsd: true,
-      rewardRank: true,
-      twitter: true,
+      // kolAttention: true,
+      // engagement: true,
+      // trustScore: true,
+      // rewardPoolUsd: true,
+      // rewardRank: true,
+      // twitter: true,
       createdAt: true,
       updatedAt: true,
-      featured: true,
     },
-    orderBy: [{ marketCap: "desc" }],
+    orderBy: [{ coinMarketCap: "desc" }],
   });
 
   res.json(projects);
@@ -120,9 +111,9 @@ export const updateProject = async (req: Request, res: Response) => {
 export const deleteProject = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  await prisma.mention.deleteMany({
-    where: { projectId: id },
-  });
+  // await prisma.mention.deleteMany({
+  //   where: { projectId: id },
+  // });
 
   await prisma.project.delete({
     where: { id },
@@ -133,19 +124,19 @@ export const deleteProject = async (req: Request, res: Response) => {
 
 // Narratives from protokols
 export const getAllProtokolsProjects = async (_: Request, res: Response) => {
-  const projects = await prisma.protokolsProject.findMany({
-    orderBy: { marketCap: "desc" },
+  const projects = await prisma.project.findMany({
+    orderBy: { coinMarketCap: "desc" },
     include: {
       narrativeLinks: {
         select: {
-          projectMindsharePercent: true,
+          mindsharePercent: true,
           narrative: {
             select: {
               id: true,
               name: true,
               slug: true,
               mindsharePercent: true,
-              marketCapUsd: true,
+              // marketCapUsd: true,
               totalViews: true,
             },
           },
@@ -161,21 +152,21 @@ export const getFeaturedProtokolsProjects = async (
   _: Request,
   res: Response
 ) => {
-  const projects = await prisma.protokolsProject.findMany({
+  const projects = await prisma.project.findMany({
     where: {
       featured: true,
     },
     include: {
       narrativeLinks: {
         select: {
-          projectMindsharePercent: true,
+          mindsharePercent: true,
           narrative: {
             select: {
               id: true,
               name: true,
               slug: true,
               mindsharePercent: true,
-              marketCapUsd: true,
+              // marketCapUsd: true,
               totalViews: true,
             },
           },
@@ -183,7 +174,7 @@ export const getFeaturedProtokolsProjects = async (
       },
       rewardPools: true,
     },
-    orderBy: [{ marketCap: "desc" }],
+    orderBy: [{ coinMarketCap: "desc" }],
   });
 
   res.json(projects);
@@ -203,18 +194,18 @@ export const getPaginatedProtokolsProjects = async (
   const allowedSortFields = [
     "marketCap",
     "price",
-    "mindsharePercent",
+    "mindshare",
     "followersCount",
     "totalViews",
   ];
 
   const safeSortField = allowedSortFields.includes(sortField as any)
     ? (sortField as (typeof allowedSortFields)[number])
-    : "mindsharePercent";
+    : "mindshare";
 
   const [total, projects] = await Promise.all([
-    prisma.protokolsProject.count(),
-    prisma.protokolsProject.findMany({
+    prisma.project.count(),
+    prisma.project.findMany({
       skip,
       take: limit,
       orderBy: {
@@ -223,14 +214,14 @@ export const getPaginatedProtokolsProjects = async (
       include: {
         narrativeLinks: {
           select: {
-            projectMindsharePercent: true,
+            mindsharePercent: true,
             narrative: {
               select: {
                 id: true,
                 name: true,
                 slug: true,
                 mindsharePercent: true,
-                marketCapUsd: true,
+                // marketCapUsd: true,
                 totalViews: true,
               },
             },
@@ -251,19 +242,19 @@ export const getPaginatedProtokolsProjects = async (
 
 export const getProtokolsProjectById = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const project = await prisma.protokolsProject.findUnique({
+  const project = await prisma.project.findUnique({
     where: { id },
     include: {
       narrativeLinks: {
         select: {
-          projectMindsharePercent: true,
+          mindsharePercent: true,
           narrative: {
             select: {
               id: true,
               name: true,
               slug: true,
               mindsharePercent: true,
-              marketCapUsd: true,
+              // marketCapUsd: true,
               totalViews: true,
             },
           },
@@ -281,20 +272,20 @@ export const getProtokolsProjectBySlug = async (
   req: Request,
   res: Response
 ) => {
-  const { slug } = req.params;
-  const project = await prisma.protokolsProject.findFirst({
-    where: { slug },
+  const { twitterUsername } = req.params;
+  const project = await prisma.project.findFirst({
+    where: { twitterUsername },
     include: {
       narrativeLinks: {
         select: {
-          projectMindsharePercent: true,
+          mindsharePercent: true,
           narrative: {
             select: {
               id: true,
               name: true,
               slug: true,
               mindsharePercent: true,
-              marketCapUsd: true,
+              // marketCapUsd: true,
               totalViews: true,
             },
           },
@@ -316,7 +307,7 @@ export const getInfluencersByProject = async (req: Request, res: Response) => {
   }
 
   try {
-    const influencers = await prisma.influencer.findMany({
+    const influencers = await prisma.kol.findMany({
       where: {
         projects: {
           some: {
@@ -331,7 +322,7 @@ export const getInfluencersByProject = async (req: Request, res: Response) => {
         avatarUrl: true,
         followersCountNumeric: true,
         kolScore: true,
-        mindshareNum: true,
+        mindshare: true,
         engagementRate: true,
         tweetsCountNumeric: true,
         smartFollowers: true,
@@ -352,7 +343,7 @@ export const getInfluencersByProject = async (req: Request, res: Response) => {
 
 export const createProtokolsProject = async (req: Request, res: Response) => {
   try {
-    const project = await prisma.protokolsProject.create({ data: req.body });
+    const project = await prisma.project.create({ data: req.body });
     res.status(201).json(project);
   } catch (e: any) {
     res.status(400).json({ error: e.message });
@@ -362,7 +353,7 @@ export const createProtokolsProject = async (req: Request, res: Response) => {
 export const updateProtokolsProject = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    const project = await prisma.protokolsProject.update({
+    const project = await prisma.project.update({
       where: { id },
       data: req.body,
       include: {
@@ -378,15 +369,15 @@ export const updateProtokolsProject = async (req: Request, res: Response) => {
 export const deleteProtokolsProject = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  await prisma.narrativeToProtokolsProject.deleteMany({
-    where: { protokolsProjectId: id },
+  await prisma.projectToNarrative.deleteMany({
+    where: { projectId: id },
   });
 
   await prisma.rewardPool.deleteMany({
     where: { projectId: id },
   });
 
-  await prisma.protokolsProject.delete({
+  await prisma.project.delete({
     where: { id },
   });
 

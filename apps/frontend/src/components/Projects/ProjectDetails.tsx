@@ -8,7 +8,7 @@ import {
   Users,
 } from "lucide-react";
 import React from "react";
-import { Influencer, ProtokolsProject, RewardPool } from "../../types";
+import { Kol, Project, RewardPool } from "../../types";
 import { Skeleton } from "../Skeleton";
 import { TableSkeleton } from "../TableSkeleton";
 import XLogo from "../XLogo";
@@ -17,13 +17,13 @@ interface ProjectDetailOverlayProps {
   isOpen: boolean;
   isModal?: boolean;
   onClose: () => void;
-  project: ProtokolsProject | null;
+  project: Project | null;
   activeTab: "overview" | "pools";
   setActiveTab: (t: "overview" | "pools") => void;
   isAuthenticated: boolean;
   onLogin: () => void;
   projectPools: RewardPool[];
-  topKOLs: Influencer[];
+  topKOLs: Kol[];
   handleBackToList: () => void;
   selectedPool: RewardPool | null;
   handlePoolSelect: (p: RewardPool) => void;
@@ -57,13 +57,15 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
     <>
       <div className="flex items-center mb-1 pb-4 border-b border-primary-700">
         <img
-          src={project?.avatarUrl || "/default-project-avatar.png"}
-          alt={project.name}
+          src={project?.twitterAvatarUrl || "/default-project-avatar.png"}
+          alt={project.twitterUsername}
           className="h-16 w-16 rounded-full border-2 border-accent-500"
         />
         <div className="ml-4">
-          <h3 className="text-xl font-bold text-white">{project.name}</h3>
-          <p className="text-gray-300">{project.description}</p>
+          <h3 className="text-xl font-bold text-white">
+            {project.twitterUsername}
+          </h3>
+          <p className="text-gray-300">{project.twitterDescription}</p>
         </div>
       </div>
 
@@ -115,7 +117,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                     Mindshare
                   </h6>
                   <p className="text-lg font-bold text-gray-200">
-                    {project?.mindsharePercent?.toFixed(2)}%
+                    {project?.mindshare?.toFixed(2)}%
                   </p>
                 </div>
               </div>
@@ -127,7 +129,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                     Followers
                   </h6>
                   <p className="text-lg font-bold text-gray-200">
-                    {project?.followersCount?.toLocaleString()}
+                    {project?.twitterFollowersCount?.toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -176,7 +178,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                           About the Project
                         </h5>
                         <div className="bg-primary-700 rounded-lg p-4 mb-6">
-                          <p className="text-gray-300">{project.description}</p>
+                          <p className="text-gray-300">{project.twitterDescription}</p>
                           <div className="mt-4 pt-4 border-t border-primary-700">
                             <h6 className="text-sm font-medium text-gray-300 mb-2">
                               Categories
@@ -195,12 +197,12 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
           <div className="bg-primary-700 rounded-lg p-4">
             <div className="grid grid-cols-2 gap-4">
               <a
-                href={project?.website || "/"}
+                href={`https://x.com/${project?.twitterUsername}` || "/"}
                 target="_blank"
                 className="flex items-center text-gray-300 hover:text-accent-500"
               >
                 <ExternalLink className="h-4 w-4 mr-2" />
-                Website
+                Profile X
               </a>
               {/* <a
                               href="#"
@@ -326,7 +328,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
           {Boolean(topKOLs?.length) && (
             <div className="col-span-2">
               <h5 className="text-lg font-medium text-gray-300 mb-3">
-                Top KOLs Engaging with {project.name}
+                Top KOLs Engaging with {project.twitterUsername}
               </h5>
               <div className="bg-primary-700 rounded-lg overflow-hidden">
                 <div className="overflow-x-auto">
@@ -386,10 +388,10 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                                 />
                                 <div className="ml-4 max-w-[300px]">
                                   <div className="text-sm font-medium text-white">
-                                    {kol.name}
+                                    {kol.username}
                                   </div>
                                   <div className="text-sm text-text-muted">
-                                    {kol.username}
+                                    {kol.name}
                                   </div>
                                   <div className="flex mt-1 space-x-1">
                                     {kol.badges?.split(",").map((badge, i) => (

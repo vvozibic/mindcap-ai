@@ -35,15 +35,18 @@ model Narrative {
   description  String?
   projectCount Int
 
+  // Activity
   totalViews Float
   totalPosts Int
 
+  // Market Cap
   totalMarketCapUsd  Float
   marketCapChange24h Float
   marketCapChange7d  Float
   marketCapChange30d Float
   marketCapChange90d Float
 
+  // Mindshare
   mindsharePercent   Float
   mindshareChange24h Float
   mindshareChange7d  Float
@@ -54,8 +57,10 @@ model Narrative {
   updatedAt DateTime @updatedAt
   fetchedAt DateTime @default(now())
 
-  projectLinks      NarrativeToProject[]
+  projectLinks ProjectToNarrative[]
+
   narrativeSnapshot NarrativeSnapshot[]
+  projectSnapshot   ProjectSnapshot[]
 
   @@index([id])
   @@index([narrativeId])
@@ -67,15 +72,18 @@ model NarrativeSnapshot {
   narrativeId  String
   projectCount Int
 
+  // Activity
   totalViews Float
   totalPosts Int
 
+  // Market Cap
   totalMarketCapUsd  Float
   marketCapChange24h Float
   marketCapChange7d  Float
   marketCapChange30d Float
   marketCapChange90d Float
 
+  // Mindshare
   mindsharePercent   Float
   mindshareChange24h Float
   mindshareChange7d  Float
@@ -93,18 +101,107 @@ model NarrativeSnapshot {
   @@index([createdAt])
 }
 
-model NarrativeToProject {
-  id                      String    @id @default(uuid())
-  narrativeId             String
-  projectId               String
-  projectMindsharePercent Float     @default(0)
-  narrative               Narrative @relation(fields: [narrativeId], references: [id])
-  project                 Project   @relation(fields: [projectId], references: [id])
-  createdAt               DateTime  @default(now())
+model ProjectToNarrative {
+  id          String @id @default(uuid())
+  narrativeId String
+  projectId   String
+
+  // Activity
+  totalViews Int
+  totalPosts Int
+
+  // Mindshare
+  mindsharePercent   Float
+  mindshareChange24h Float
+  mindshareChange7d  Float
+  mindshareChange30d Float
+  mindshareChange90d Float
+
+  narrative Narrative @relation(fields: [narrativeId], references: [id])
+  project   Project   @relation(fields: [projectId], references: [id])
+  createdAt DateTime  @default(now())
 
   @@unique([narrativeId, projectId])
   @@index([narrativeId])
   @@index([projectId])
+}
+
+model Project {
+  id    String  @id @default(uuid())
+  stage String?
+
+  featured Boolean @default(false)
+  hidden   Boolean @default(false)
+
+  // Mindshare (global mindshare calculate from narrative mindshare)
+  mindshare Float
+
+  // Twitter profile
+  twitterId              String
+  twitterUsername        String
+  twitterDisplayName     String
+  twitterAvatarUrl       String
+  twitterDescription     String
+  twitterDescriptionLink String?
+  twitterFollowersCount  Int
+  twitterFollowingCount  Int
+  twitterIsVerified      Boolean
+  twitterGoldBadge       Boolean?
+  twitterLang            String
+  twitterCreatedAt       DateTime
+
+  // Coin data
+  coinSymbol          String
+  coinMarketCap       Float
+  coinPrice           Float
+  coinContractAddress String?
+  coinName            String
+  coinImageUrl        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  fetchedAt DateTime @default(now())
+
+  projectSnapshot ProjectSnapshot[]
+  narrativeLinks  ProjectToNarrative[]
+  rewardPools     RewardPool[]
+  kols            KolToProject[]
+
+  @@unique([twitterId])
+  @@index([twitterUsername])
+  @@index([coinMarketCap])
+  @@index([createdAt])
+  @@index([twitterFollowersCount])
+  @@index([coinPrice])
+}
+
+model ProjectSnapshot {
+  id String @id @default(cuid())
+
+  // Activity
+  totalViews Int
+  totalPosts Int
+
+  // Mindshare
+  mindsharePercent   Float
+  mindshareChange24h Float
+  mindshareChange7d  Float
+  mindshareChange30d Float
+  mindshareChange90d Float
+
+  // Meta
+  source    String // например: "Protokols"
+  updatedBy String // например: "cron", "adminUserId", "system"
+  createdAt DateTime @default(now())
+
+  project   Project @relation(fields: [projectId], references: [id])
+  projectId String
+
+  narrative   Narrative? @relation(fields: [narrativeId], references: [id])
+  narrativeId String?
+
+  @@index([projectId])
+  @@index([createdAt])
 }
 
 model Kol {
@@ -155,52 +252,6 @@ model Kol {
   @@index([tweetsCountNumeric])
   @@index([username])
   @@index([createdAt])
-}
-
-model Project {
-  id                 String               @id @default(uuid())
-  name               String
-  symbol             String
-  slug               String?
-  avatarUrl          String?
-  bannerUrl          String?
-  description        String?
-  twitterUsername    String
-  twitterId          String?
-  isVerified         Boolean?
-  stage              String?
-  followersCount     Int?
-  followingCount     Int?
-  twitterCreatedAt   DateTime?
-  coingeckoImageUrl  String?
-  marketCap          Float?
-  price              Float?
-  contractAddress    String?
-  featured           Boolean              @default(false)
-  hidden             Boolean              @default(false)
-  totalViews         Int?
-  totalPosts         Int?
-  mindsharePercent   Float?
-  mindshareChange24h Float?
-  mindshareChange7d  Float?
-  mindshareChange30d Float?
-  mindshareChange90d Float?
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
-  narrativeLinks     NarrativeToProject[]
-  rewardPools        RewardPool[]
-  kols               KolToProject[]
-
-  @@unique([twitterId])
-  @@index([slug])
-  @@index([twitterUsername])
-  @@index([mindsharePercent])
-  @@index([marketCap])
-  @@index([createdAt])
-  @@index([followersCount])
-  @@index([totalViews])
-  @@index([price])
-  @@index([featured, mindsharePercent])
 }
 
 model RewardPool {

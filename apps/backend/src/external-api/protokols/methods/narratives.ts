@@ -1,17 +1,17 @@
 import { fetchFromProtokols, retry } from "../client";
 import { endpoints } from "../endpoints";
-import { Narrative, NarrativeDetails } from "../types/narrative";
+import { NarrativeDetailsResponse, NarrativeListResponse } from "../types";
 
-export const getNarrativeList = async (): Promise<Narrative[]> => {
+export const getNarrativeList = async (): Promise<NarrativeListResponse> => {
   const url = endpoints.narrativeList();
 
-  return retry(url, () => fetchFromProtokols<Narrative[]>(url));
+  return retry(url, () => fetchFromProtokols<NarrativeListResponse>(url));
 };
 
 export const getNarrativeDetails = async (
   slug_or_id
-): Promise<NarrativeDetails> => {
+): Promise<NarrativeDetailsResponse> => {
   const url = endpoints.narrativeDetails(slug_or_id);
 
-  return retry(url, () => fetchFromProtokols<NarrativeDetails>(url));
+  return retry(url, () => fetchFromProtokols<NarrativeDetailsResponse>(url));
 };

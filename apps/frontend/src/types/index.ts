@@ -1,34 +1,40 @@
 export interface Project {
-  id: string; // cuid (Prisma)
-  name: string;
-  slug: string; // уникальный идентификатор (равен id в Coingecko)
-  avatarUrl?: string | null;
-  category?: string | null;
-  categories?: string[] | null;
-  website?: string | null;
-  description?: string | null;
-  marketCap?: string | null;
-  launchDate?: string | null; // DateTime → string
-  twitter?: string | null;
-  telegram?: string | null;
-  discord?: string | null;
-  rawData?: any | null;
+  id: string;
+  stage?: string;
 
-  featured: boolean | string;
+  featured: boolean;
+  hidden: boolean;
 
-  // Поля анализа
-  mindshare?: string | null;
-  kolAttention?: string | null;
-  engagement?: string | null;
-  trustScore?: string | null;
-  rewardPoolUsd?: string | null;
-  rewardRank?: string | null;
+  mindshare: number;
 
-  createdAt?: string;
-  updatedAt?: string;
+  twitterId: string;
+  twitterUsername: string;
+  twitterDisplayName: string;
+  twitterAvatarUrl: string;
+  twitterDescription: string;
+  twitterDescriptionLink?: string;
+  twitterFollowersCount: number;
+  twitterFollowingCount: number;
+  twitterIsVerified: boolean;
+  twitterGoldBadge?: boolean;
+  twitterLang: string;
+  twitterCreatedAt: string;
+
+  coinSymbol: string;
+  coinMarketCap: number;
+  coinPrice: number;
+  coinContractAddress?: string;
+  coinName: string;
+  coinImageUrl?: string;
+
+  createdAt: string;
+  updatedAt: string;
+  fetchedAt: string;
+
+  narrativeLinks: Narrative[];
 }
 
-export interface Influencer {
+export interface Kol {
   id: string; // cuid (Prisma)
   rank?: string; // ранг в списке
   name: string;
@@ -121,40 +127,6 @@ export interface RewardPool {
 
   requirements: string[]; // ["Minimum 5 minutes video length", ...]
 
-  project: ProtokolsProject;
+  project: Project;
   projectId: string;
-}
-
-export interface ProtokolsProject {
-  id: string;
-  name: string;
-  symbol: string;
-  featured: boolean;
-  hidden: boolean;
-  slug?: string;
-  stage?: string;
-  website?: string;
-  avatarUrl?: string;
-  description?: string;
-  twitterUsername: string;
-  twitterId: string;
-  isVerified: boolean;
-  followersCount: number;
-  followingCount: number;
-  twitterCreatedAt: string;
-  coingeckoImageUrl?: string;
-  marketCap?: number;
-  price?: number;
-  contractAddress?: string;
-  totalViews: number;
-  totalPosts: number;
-  mindsharePercent: number;
-  mindshareChange24h: number;
-  mindshareChange7d: number;
-  mindshareChange30d: number;
-  mindshareChange90d: number;
-  createdAt: string;
-  updatedAt: string;
-  rewardPools: RewardPool[];
-  narrativeLinks?: Narrative[]; // Новое поле
 }

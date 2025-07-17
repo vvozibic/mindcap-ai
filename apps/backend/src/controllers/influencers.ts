@@ -5,7 +5,7 @@ import { enrichInfluencer } from "../components/kols/enrichInfluencer";
 const prisma = new PrismaClient();
 
 const recalculateMindshareForInfluencers = async () => {
-  const influencers = await prisma.influencer.findMany({
+  const kols = await prisma.kol.findMany({
     select: {
       id: true,
       kolScore: true,
@@ -14,13 +14,13 @@ const recalculateMindshareForInfluencers = async () => {
     },
   });
 
-  const totalScore = influencers.reduce((sum, i) => sum + (i.kolScore || 0), 0);
+  const totalScore = kols.reduce((sum, i) => sum + (i.kolScore || 0), 0);
 
   // Простой батч по 10 штук
   const batchSize = 10;
 
-  for (let i = 0; i < influencers.length; i += batchSize) {
-    const batch = influencers.slice(i, i + batchSize);
+  for (let i = 0; i < kols.length; i += batchSize) {
+    const batch = kols.slice(i, i + batchSize);
     await Promise.all(
       batch.map((i) => {
         const score = i.kolScore || 0;
@@ -32,7 +32,7 @@ const recalculateMindshareForInfluencers = async () => {
             ? +((i.smartFollowers / i.followersCountNumeric) * 100).toFixed(2)
             : 0;
 
-        return prisma.influencer.update({
+        return prisma.kol.update({
           where: { id: i.id },
           data: { mindsharePercent, smartFollowersPercent },
         });
@@ -42,7 +42,7 @@ const recalculateMindshareForInfluencers = async () => {
 };
 
 export const getInfluencers = async (_req: Request, res: Response) => {
-  const influencers = await prisma.influencer.findMany({
+  const kols = await prisma.kol.findMany({
     select: {
       id: true,
       name: true,
@@ -69,7 +69,7 @@ export const getInfluencers = async (_req: Request, res: Response) => {
       bio: true,
       profileUrl: true,
       mindsharePercent: true,
-      mindshareNum: true,
+      mindshare: true,
       smartFollowersPercent: true,
       pow: true,
       poi: true,
@@ -83,7 +83,7 @@ export const getInfluencers = async (_req: Request, res: Response) => {
       kolScore: "desc",
     },
   });
-  res.json(influencers);
+  res.json(kols);
 };
 
 export const getPaginatedInfluencers = async (req: Request, res: Response) => {
@@ -114,8 +114,8 @@ export const getPaginatedInfluencers = async (req: Request, res: Response) => {
     : "kolScore";
 
   const [total, data] = await Promise.all([
-    prisma.influencer.count(),
-    prisma.influencer.findMany({
+    prisma.kol.count(),
+    prisma.kol.findMany({
       skip,
       take: limit,
       orderBy: {
@@ -147,7 +147,7 @@ export const getPaginatedInfluencers = async (req: Request, res: Response) => {
         bio: true,
         profileUrl: true,
         mindsharePercent: true,
-        mindshareNum: true,
+        mindshare: true,
         smartFollowersPercent: true,
         pow: true,
         poi: true,
@@ -170,27 +170,27 @@ export const getPaginatedInfluencers = async (req: Request, res: Response) => {
 
 export const getInfluencerById = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const proj = await prisma.influencer.findUnique({ where: { id } });
+  const proj = await prisma.kol.findUnique({ where: { id } });
   if (!proj) return res.status(404).json({ error: "Not found" });
   res.json(proj);
 };
 
 export const getInfluencerByUsername = async (req: Request, res: Response) => {
   const { username } = req.params;
-  const proj = await prisma.influencer.findUnique({ where: { username } });
+  const proj = await prisma.kol.findUnique({ where: { username } });
   if (!proj) return res.status(404).json({ error: "Not found" });
   res.json(proj);
 };
 
 export const createInfluencer = async (req: Request, res: Response) => {
-  const influencer = await prisma.influencer.create({ data: req.body });
+  const kol = await prisma.kol.create({ data: req.body });
   await recalculateMindshareForInfluencers();
-  res.status(201).json(influencer);
+  res.status(201).json(kol);
 };
 
 export const updateInfluencer = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const updated = await prisma.influencer.update({
+  const updated = await prisma.kol.update({
     where: { id },
     data: req.body,
   });
@@ -201,11 +201,11 @@ export const updateInfluencer = async (req: Request, res: Response) => {
 export const deleteInfluencer = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  await prisma.mention.deleteMany({
-    where: { projectId: id },
-  });
+  // await prisma.mention.deleteMany({
+  //   where: { projectId: id },
+  // });
 
-  await prisma.influencer.delete({
+  await prisma.kol.delete({
     where: { id },
   });
 
@@ -223,6 +223,6 @@ export const adminEnrichInfluencer = async (req: Request, res: Response) => {
     res.json({ success: true });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to enrich influencer" });
+    res.status(500).json({ error: "Failed to enrich kol" });
   }
 };

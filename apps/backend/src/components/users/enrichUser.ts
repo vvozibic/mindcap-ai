@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import axios from "axios";
 import fs from "fs/promises";
-import { retryWithDelay } from "../retryWithDelay";
+import { retryWithDelay } from "../_retryWithDelay";
 
 const prisma = new PrismaClient();
 

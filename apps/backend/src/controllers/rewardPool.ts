@@ -8,7 +8,7 @@ export const getAllRewardPools = async (_: Request, res: Response) => {
   const pools = await prisma.rewardPool.findMany({
     include: {
       project: {
-        select: { id: true, name: true },
+        select: { id: true, twitterUsername: true },
       },
     },
     orderBy: { deadline: "asc" },
@@ -23,7 +23,7 @@ export const getRewardPoolById = async (req: Request, res: Response) => {
     where: { id },
     include: {
       project: {
-        select: { id: true, name: true },
+        select: { id: true, twitterUsername: true },
       },
     },
   });
@@ -73,7 +73,7 @@ export const createRewardPool = async (req: Request, res: Response) => {
     },
     include: {
       project: {
-        select: { id: true, name: true },
+        select: { id: true, twitterUsername: true },
       },
     },
   });
@@ -125,7 +125,7 @@ export const updateRewardPool = async (req: Request, res: Response) => {
     },
     include: {
       project: {
-        select: { id: true, name: true },
+        select: { id: true, twitterUsername: true },
       },
     },
   });

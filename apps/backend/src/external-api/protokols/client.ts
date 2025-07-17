@@ -36,7 +36,7 @@ export const fetchFromProtokols = async <T>(
 
   const json = await res.json();
   await logToDb("SUCCESS", "Request succeeded", url);
-  return json.data;
+  return json;
 };
 
 export async function retry<T>(

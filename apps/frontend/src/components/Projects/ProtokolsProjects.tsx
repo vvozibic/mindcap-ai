@@ -1,7 +1,7 @@
 import { ArrowDown, ArrowUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ProtokolsProject } from "../../types";
+import { Project } from "../../types";
 import { formatNumber } from "../../utils/formatNumber";
 import Pagination from "../Pagination";
 import { TableSkeleton } from "../TableSkeleton";
@@ -34,16 +34,13 @@ type SortField =
   | "marketCap"
   | "price";
 
-const ProtokolsProjectsTable: React.FC = () => {
+const ProjectsTable: React.FC = () => {
   const [activeOverlayTab, setActiveOverlayTab] = useState<
     "overview" | "pools"
   >("overview");
-  const [selectedProject, setSelectedProject] =
-    useState<ProtokolsProject | null>(null);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [featuredProjects, setFeaturedProjects] = useState<ProtokolsProject[]>(
-    []
-  );
+  const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
   const navigate = useNavigate();
 
   const {
@@ -57,7 +54,7 @@ const ProtokolsProjectsTable: React.FC = () => {
     setPage,
     setSortField,
     setSortDirection,
-  } = usePaginatedData<ProtokolsProject>(
+  } = usePaginatedData<Project>(
     fetchPaginatedProjects,
     1,
     20,
@@ -65,13 +62,10 @@ const ProtokolsProjectsTable: React.FC = () => {
     "desc"
   );
 
-  const handleProjectClick = (
-    project: ProtokolsProject,
-    tab?: "overview" | "pools"
-  ) => {
+  const handleProjectClick = (project: Project, tab?: "overview" | "pools") => {
     if (tab) setActiveOverlayTab(tab);
 
-    navigate(`/projects/${project.slug}`);
+    navigate(`/projects/${project.twitterUsername}`);
   };
 
   const handleSort = (field: SortField) => {
@@ -82,7 +76,7 @@ const ProtokolsProjectsTable: React.FC = () => {
       setSortDirection("asc");
     }
   };
-  // const handleSort = (field: keyof ProtokolsProject) => {
+  // const handleSort = (field: keyof Project) => {
   //   if (field === sortField) {
   //     setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
   //   } else {
@@ -201,13 +195,13 @@ const ProtokolsProjectsTable: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-start gap-3">
                         <img
-                          src={proj.avatarUrl || "/default-avatar.png"}
+                          src={proj.twitterAvatarUrl || "/default-avatar.png"}
                           className="h-10 w-10 rounded-full"
-                          alt={proj.name}
+                          alt={proj.twitterDisplayName}
                         />
                         <div>
                           <div className="text-sm font-medium text-gray-200 group-hover:text-accent-500 transition-colors duration-150">
-                            {proj.name}
+                            {proj.twitterDisplayName}
                           </div>
                           <div className="flex gap-2 flex-wrap align-center">
                             <div className="text-sm text-gray-400">
@@ -235,21 +229,21 @@ const ProtokolsProjectsTable: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-200">
-                      {proj.mindsharePercent?.toFixed(2)}%
+                      {proj.mindshare?.toFixed(2)}%
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-200">
-                      {proj.followersCount?.toLocaleString()}
+                      {proj.twitterFollowersCount?.toLocaleString()}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-200">
                       {proj.totalViews?.toLocaleString()}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-200">
-                      {proj.marketCap
-                        ? `$${formatNumber(proj.marketCap)}`
+                      {proj.coinMarketCap
+                        ? `$${formatNumber(proj.coinMarketCap)}`
                         : "-"}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-200">
-                      {proj.price ? `$${proj.price.toFixed(2)}` : "-"}
+                      {proj.coinPrice ? `$${proj.coinPrice.toFixed(2)}` : "-"}
                     </td>
                   </tr>
                 ))}
@@ -280,4 +274,4 @@ const ProtokolsProjectsTable: React.FC = () => {
   );
 };
 
-export default ProtokolsProjectsTable;
+export default ProjectsTable;

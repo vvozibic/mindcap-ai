@@ -7,20 +7,16 @@ import { logToDb } from "../../external-api/protokols/client";
 
 const prisma = new PrismaClient();
 
-async function enrichNarratives() {
+export async function enrichNarratives() {
   try {
-    const narratives = await getNarrativeList();
+    const { data: narratives } = await getNarrativeList();
 
-    for (const narrative of narratives) {
+    for (const n of narratives) {
       try {
-        const data = await getNarrativeDetails(narrative.slug);
+        const { data } = await getNarrativeDetails(n.slug);
 
         if (!data) {
-          await logToDb(
-            "SKIP",
-            `No data returned for ${narrative.slug}`,
-            narrative.slug
-          );
+          await logToDb("SKIP", `No data returned for ${n.slug}`, n.slug);
           continue;
         }
 
@@ -91,11 +87,11 @@ async function enrichNarratives() {
         console.log(`✅ Synced: ${data.slug}`);
         await logToDb("SUCCESS", `Narrative synced: ${data.slug}`, data.slug);
       } catch (err: any) {
-        console.error(`❌ Failed to process ${narrative.slug}:`, err);
+        console.error(`❌ Failed to process ${n.slug}:`, err);
         await logToDb(
           "ERROR",
-          `Failed to process narrative ${narrative.slug}: ${err.message}`,
-          narrative.slug
+          `Failed to process narrative ${n.slug}: ${err.message}`,
+          n.slug
         );
       }
     }
@@ -110,6 +106,12 @@ async function enrichNarratives() {
   }
 }
 
-if (require.main === module) {
-  enrichNarratives();
-}
+enrichNarratives()
+  .then(() => {
+    console.log("🎉 Sync narratives done");
+    return prisma.$disconnect();
+  })
+  .catch((err) => {
+    console.error(err);
+    prisma.$disconnect();
+  });

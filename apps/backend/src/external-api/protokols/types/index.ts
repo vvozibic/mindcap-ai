@@ -9,6 +9,10 @@ export interface Narrative {
   slug: string;
 }
 
+export interface NarrativeListResponse {
+  data: Narrative[];
+}
+
 /**
  * Narrative Details
  */
@@ -45,6 +49,10 @@ export interface NarrativeDetails {
   total_views: number;
 }
 
+export interface NarrativeDetailsResponse {
+  data: NarrativeDetails;
+}
+
 /**
  * Percentage change in total market cap over the last 24 hours.
  */
@@ -65,4 +73,64 @@ export interface Mindshare {
   change_7d: number;
   change_90d: number;
   mindshare_percent: number;
+}
+
+export interface ListProjectsInNarativeResponse {
+  data: ProjectsInNarative[];
+  pagination: PaginationMeta;
+}
+
+export interface ProjectsInNarative {
+  coin: Coin;
+  mindshare: Mindshare;
+  total_posts: number;
+  total_views: number;
+  twitter_profile: TwitterProfile;
+}
+
+/**
+ * Coin */
+export interface Coin {
+  contract_address?: null | string;
+  image_url: null | string;
+  market_cap: number;
+  name: string;
+  price: number;
+  symbol: string;
+}
+
+/**
+ * Twitter Profile
+ */
+export interface TwitterProfile {
+  avatar_url: string;
+  description: string;
+  description_link?: null | string;
+  display_name: string;
+  followers_count: number;
+  following_count: number;
+  gold_badge: boolean | null;
+  id: string;
+  is_verified: boolean;
+  lang: string;
+  profile_created_at: string;
+  username: string;
+}
+
+/**
+ * Pagination Meta
+ */
+export interface PaginationMeta {
+  /**
+   * Cursor for next page (null if no more pages)
+   */
+  cursor: null | string;
+  /**
+   * Number of items per page
+   */
+  limit: number;
+  /**
+   * Current page number
+   */
+  page: number;
 }
