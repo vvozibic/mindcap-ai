@@ -46,6 +46,8 @@ const ProtokolsProjectsTable: React.FC = () => {
   );
   const navigate = useNavigate();
 
+  console.log(activeOverlayTab);
+
   const {
     data: projects,
     total,
@@ -69,9 +71,13 @@ const ProtokolsProjectsTable: React.FC = () => {
     project: ProtokolsProject,
     tab?: "overview" | "pools"
   ) => {
-    if (tab) setActiveOverlayTab(tab);
+    console.log(tab);
 
-    navigate(`/projects/${project.slug}`);
+    if (tab === "pools") {
+      navigate(`/projects/${project.slug}?tab=pools`);
+    } else {
+      navigate(`/projects/${project.slug}`);
+    }
   };
 
   const handleSort = (field: SortField) => {
