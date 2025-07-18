@@ -7,8 +7,9 @@ import {
   TrendingUp,
   Users,
 } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { Kol, Project, RewardPool } from "../../types";
+import InfluencerDetailOverlay from "../Infuencer/InfluencerDetailOverlay";
 import { Skeleton } from "../Skeleton";
 import { TableSkeleton } from "../TableSkeleton";
 import XLogo from "../XLogo";
@@ -46,6 +47,19 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
   handlePoolSelect,
   selectedPool,
 }) => {
+  const [selectedInfluencer, setSelectedInfluencer] =
+    useState<Influencer | null>(null);
+  const [isDetailOverlayOpen, setIsDetailOverlayOpen] = useState(false);
+
+  const handleInfluencerClick = (kol: Kol) => {
+    setSelectedInfluencer(kol);
+    setIsDetailOverlayOpen(true);
+  };
+
+  const closeDetailOverlay = () => {
+    setIsDetailOverlayOpen(false);
+  };
+
   if (!project)
     return (
       <div>
@@ -103,78 +117,79 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
       {/* Project Information and Reward Pool - Now below the KOL leaderboard */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Left Column - Project Information */}
-        <div>
-          <h4 className="text-lg font-medium text-gray-200 mb-4">
-            Project Information
-          </h4>
+        {activeTab === "overview" && (
+          <div>
+            <h4 className="text-lg font-medium text-gray-200 mb-4">
+              Project Information
+            </h4>
 
-          <div className="bg-primary-700 rounded-lg p-4 mb-6">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="bg-primary-700 rounded-lg p-4 mb-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center">
+                  <TrendingUp className="h-5 w-5 text-accent-500" />
+                  <div className="ml-3">
+                    <h6 className="text-xs font-medium text-gray-400">
+                      Mindshare
+                    </h6>
+                    <p className="text-lg font-bold text-gray-200">
+                      {project?.mindsharePercent?.toFixed(2)}%
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center">
+                  <Users className="h-5 w-5 text-accent-500" />
+                  <div className="ml-3">
+                    <h6 className="text-xs font-medium text-gray-400">
+                      Followers
+                    </h6>
+                    <p className="text-lg font-bold text-gray-200">
+                      {project?.followersCount?.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center">
+                  <Eye className="h-5 w-5 text-accent-500" />
+                  <div className="ml-3">
+                    <h6 className="text-xs font-medium text-gray-400">Views</h6>
+                    <p className="text-lg font-bold text-gray-200">
+                      {project?.totalViews?.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center">
+                  <Newspaper className="h-5 w-5 text-accent-500" />
+                  <div className="ml-3">
+                    <h6 className="text-xs font-medium text-gray-400">Posts</h6>
+                    <p className="text-lg font-bold text-gray-200">
+                      {project?.totalPosts?.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <div className="flex items-center">
-                <TrendingUp className="h-5 w-5 text-accent-500" />
-                <div className="ml-3">
+                <div className="mt-3">
                   <h6 className="text-xs font-medium text-gray-400">
-                    Mindshare
+                    Narratives
                   </h6>
-                  <p className="text-lg font-bold text-gray-200">
-                    {project?.mindshare?.toFixed(2)}%
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <Users className="h-5 w-5 text-accent-500" />
-                <div className="ml-3">
-                  <h6 className="text-xs font-medium text-gray-400">
-                    Followers
-                  </h6>
-                  <p className="text-lg font-bold text-gray-200">
-                    {project?.twitterFollowersCount?.toLocaleString()}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <Eye className="h-5 w-5 text-accent-500" />
-                <div className="ml-3">
-                  <h6 className="text-xs font-medium text-gray-400">Views</h6>
-                  <p className="text-lg font-bold text-gray-200">
-                    {project?.totalViews?.toLocaleString()}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <Newspaper className="h-5 w-5 text-accent-500" />
-                <div className="ml-3">
-                  <h6 className="text-xs font-medium text-gray-400">Posts</h6>
-                  <p className="text-lg font-bold text-gray-200">
-                    {project?.totalPosts?.toLocaleString()}
-                  </p>
+                  <div className="flex gap-2 mt-2">
+                    {project?.narrativeLinks?.map((link, idx) => (
+                      <span
+                        key={idx}
+                        className="bg-primary-600 text-gray-100 text-xs px-2 py-0.5 rounded-full"
+                      >
+                        {link.narrative.name}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center">
-              <div className="mt-3">
-                <h6 className="text-xs font-medium text-gray-400">
-                  Narratives
-                </h6>
-                <div className="flex gap-2 mt-2">
-                  {project?.narrativeLinks?.map((link, idx) => (
-                    <span
-                      key={idx}
-                      className="bg-primary-600 text-gray-100 text-xs px-2 py-0.5 rounded-full"
-                    >
-                      {link.narrative.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* <h5 className="text-md font-medium text-gray-300 mb-3">
+            {/* <h5 className="text-md font-medium text-gray-300 mb-3">
                           About the Project
                         </h5>
                         <div className="bg-primary-700 rounded-lg p-4 mb-6">
@@ -191,20 +206,20 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                           </div>
                         </div> */}
 
-          <h5 className="text-md font-medium text-gray-300 mb-3">
-            Social Channels
-          </h5>
-          <div className="bg-primary-700 rounded-lg p-4">
-            <div className="grid grid-cols-2 gap-4">
-              <a
-                href={`https://x.com/${project?.twitterUsername}` || "/"}
-                target="_blank"
-                className="flex items-center text-gray-300 hover:text-accent-500"
-              >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Profile X
-              </a>
-              {/* <a
+            <h5 className="text-md font-medium text-gray-300 mb-3">
+              Social Channels
+            </h5>
+            <div className="bg-primary-700 rounded-lg p-4">
+              <div className="grid grid-cols-2 gap-4">
+                <a
+                  href={`https://x.com/${project.twitterUsername}` || "/"}
+                  target="_blank"
+                  className="flex items-center text-gray-300 hover:text-accent-500"
+                >
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  Website
+                </a>
+                {/* <a
                               href="#"
                               className="flex items-center text-gray-300 hover:text-accent-500"
                             >
@@ -225,101 +240,103 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                               <ExternalLink className="h-4 w-4 mr-2" />
                               Telegram
                             </a> */}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Right Column - Reward Pool */}
-        {(project.rewardPools.length > 0 || project.featured) && (
-          <div>
-            <h4 className="text-lg font-medium text-gray-200 mb-4">
-              Reward Pool
-            </h4>
+        {(project.rewardPools.length > 0 || project.featured) &&
+          activeTab === "overview" && (
+            <div>
+              <h4 className="text-lg font-medium text-gray-200 mb-4">
+                Reward Pool
+              </h4>
 
-            <div className="bg-primary-700 rounded-lg p-6 mb-6 border border-primary-700">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                  <DollarSign className="h-8 w-8 text-accent-500" />
-                  <div className="ml-3">
-                    <h5 className="text-sm font-medium text-gray-300">
-                      Total Reward Pool
-                    </h5>
-                    <p className="text-3xl font-bold text-white">
-                      {" "}
-                      {project.rewardPools?.reduce(
-                        (acc, pool) => acc + pool.totalAmountUsd,
-                        0
-                      )}
-                    </p>
+              <div className="bg-primary-700 rounded-lg p-6 mb-6 border border-primary-700">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center">
+                    <DollarSign className="h-8 w-8 text-accent-500" />
+                    <div className="ml-3">
+                      <h5 className="text-sm font-medium text-gray-300">
+                        Total Reward Pool
+                      </h5>
+                      <p className="text-3xl font-bold text-white">
+                        {" "}
+                        {project.rewardPools?.reduce(
+                          (acc, pool) => acc + pool.totalAmountUsd,
+                          0
+                        )}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                {/* <div className="bg-primary-800 rounded-lg p-3">
+                  {/* <div className="bg-primary-800 rounded-lg p-3">
                               <p className="text-xs text-gray-400">Rank</p>
                               <p className="text-xl font-bold text-white">
                                 #{project.rewardRank}
                               </p>
                             </div> */}
-              </div>
-
-              {!!projectPools?.length && (
-                <div className="mt-6">
-                  <h6 className="text-sm font-medium text-gray-300 mb-3">
-                    Active Campaigns
-                  </h6>
-                  <div className="space-y-3">
-                    {projectPools
-                      .filter((pool) => pool.status === "active")
-                      .map((pool) => (
-                        <div
-                          key={pool.id}
-                          className="bg-primary-600 rounded-lg p-3 flex justify-between items-center"
-                        >
-                          <div>
-                            <p className="text-sm font-medium text-white">
-                              {pool.title}
-                            </p>
-                            <p className="text-xs text-gray-400">
-                              {pool.reward}
-                            </p>
-                          </div>
-                          <button
-                            onClick={() => {
-                              setActiveTab("pools");
-                              setSelectedPool(pool);
-                            }}
-                            className="bg-accent-500 hover:bg-accent-600 text-primary-900 text-xs px-3 py-1 rounded"
-                          >
-                            View Details
-                          </button>
-                        </div>
-                      ))}
-                  </div>
                 </div>
-              )}
 
-              <div className="mt-6 pt-6 border-t border-primary-700">
-                <h6 className="text-sm font-medium text-gray-300 mb-2">
-                  How It Works
-                </h6>
-                <ol className="list-decimal list-inside text-gray-400 space-y-2">
-                  <li>Browse available project pools</li>
-                  <li>Select a campaign that matches your skills</li>
-                  <li>Create and submit your content</li>
-                  <li>Get rewarded based on performance</li>
-                </ol>
-
-                {!!projectPools.length && (
-                  <button
-                    onClick={() => setActiveTab("pools")}
-                    className="mt-4 w-full bg-accent-500 hover:bg-accent-600 text-primary-900 py-2 rounded-md text-sm font-medium"
-                  >
-                    View All Project Pools
-                  </button>
+                {!!projectPools?.length && (
+                  <div className="mt-6">
+                    <h6 className="text-sm font-medium text-gray-300 mb-3">
+                      Active Campaigns
+                    </h6>
+                    <div className="space-y-3">
+                      {projectPools
+                        .filter((pool) => pool.status === "active")
+                        .map((pool) => (
+                          <div
+                            key={pool.id}
+                            className="bg-primary-600 rounded-lg p-3 flex justify-between items-center"
+                          >
+                            <div>
+                              <p className="text-sm font-medium text-white">
+                                {pool.title}
+                              </p>
+                              <p className="text-xs text-gray-400">
+                                {pool.reward}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => {
+                                setActiveTab("pools");
+                                setSelectedPool(pool);
+                              }}
+                              className="bg-accent-500 hover:bg-accent-600 text-primary-900 text-xs px-3 py-1 rounded"
+                            >
+                              View Details
+                            </button>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
                 )}
+
+                <div className="mt-6 pt-6 border-t border-primary-700">
+                  <h6 className="text-sm font-medium text-gray-300 mb-2">
+                    How It Works
+                  </h6>
+                  <ol className="list-decimal list-inside text-gray-400 space-y-2">
+                    <li>Browse available project pools</li>
+                    <li>Select a campaign that matches your skills</li>
+                    <li>Create and submit your content</li>
+                    <li>Get rewarded based on performance</li>
+                  </ol>
+
+                  {!!projectPools.length && (
+                    <button
+                      onClick={() => setActiveTab("pools")}
+                      className="mt-4 w-full bg-accent-500 hover:bg-accent-600 text-primary-900 py-2 rounded-md text-sm font-medium"
+                    >
+                      View All Project Pools
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
 
       {activeTab === "overview" ? (
@@ -369,6 +386,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                       <tbody className="bg-primary-800 divide-y divide-primary-700">
                         {topKOLs.map((kol, index) => (
                           <tr
+                            onClick={() => handleInfluencerClick(kol)}
                             key={kol.id}
                             className={`hover:bg-primary-600 cursor-pointer transition-colors duration-150 ${
                               index % 2 === 0
@@ -871,6 +889,13 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
           )}
         </div>
       )}
+
+      <InfluencerDetailOverlay
+        isOpen={isDetailOverlayOpen}
+        onClose={closeDetailOverlay}
+        influencer={selectedInfluencer}
+        allInfluencers={topKOLs.filter((k) => k && k.id)}
+      />
     </>
   );
 };

@@ -43,6 +43,8 @@ const ProjectsTable: React.FC = () => {
   const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
   const navigate = useNavigate();
 
+  console.log(activeOverlayTab);
+
   const {
     data: projects,
     total,
@@ -63,9 +65,13 @@ const ProjectsTable: React.FC = () => {
   );
 
   const handleProjectClick = (project: Project, tab?: "overview" | "pools") => {
-    if (tab) setActiveOverlayTab(tab);
+    console.log(tab);
 
-    navigate(`/projects/${project.twitterUsername}`);
+    if (tab === "pools") {
+      navigate(`/projects/${project.twitterUsername}?tab=pools`);
+    } else {
+      navigate(`/projects/${project.twitterUsername}`);
+    }
   };
 
   const handleSort = (field: SortField) => {

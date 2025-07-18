@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import ProjectDetails from "../components/Projects/ProjectDetails";
 import { Skeleton } from "../components/Skeleton";
 import { TableSkeleton } from "../components/TableSkeleton";
@@ -38,12 +38,16 @@ export function useProjectInfluencers(projectId: string | null | undefined) {
 
 const ProjectPage = () => {
   const { slug } = useParams();
+  const [params] = useSearchParams();
+  const initialTab = (params.get("tab") || "overview") as "pools" | "overview";
+
   const [project, setProject] = useState<ProtokolsProject | null>(null);
   const [activeOverlayTab, setActiveOverlayTab] = useState<
     "overview" | "pools"
-  >("overview");
+  >(initialTab);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<null | string>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!slug) return;
@@ -148,27 +152,46 @@ const ProjectPage = () => {
     moneyScore: "Financial reputation score",
   };
 
-  console.log(project);
-
   return (
-    <div className="max-w-7xl py-6 px-4 sm:px-6 mx-auto mt-[50px] relative z-10 overflow-hidden rounded-xl border border-primary-700/40 bg-primary-800/40 backdrop-blur-sm shadow-[inset_0_0_0_1px_rgba(0,255,174,0.05),0_8px_20px_rgba(0,255,174,0.05)]">
-      <ProjectDetails
-        isOpen={true}
-        isModal={false}
-        onClose={() => {}}
-        onLogin={() => {}}
-        isAuthenticated={true}
-        activeTab={activeOverlayTab}
-        setActiveTab={setActiveOverlayTab}
-        projectPools={projectPools}
-        project={project}
-        topKOLs={topKOLs}
-        selectedPool={selectedPool}
-        handleBackToList={handleBackToList}
-        handlePoolSelect={handlePoolSelect}
-        setSelectedPool={setSelectedPool}
-      />
-    </div>
+    <>
+      <div className="max-w-7xl py-6 px-4 sm:px-6 mx-auto mt-[50px] relative z-10 overflow-hidden rounded-xl border border-primary-700/40 bg-primary-800/40 backdrop-blur-sm shadow-[inset_0_0_0_1px_rgba(0,255,174,0.05),0_8px_20px_rgba(0,255,174,0.05)]">
+        <button
+          onClick={() => navigate("/projects")}
+          className="flex items-center text-gray-400 hover:text-gray-300 mb-4"
+        >
+          <svg
+            className="h-5 w-5 mr-1"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+          Back to all projects
+        </button>
+        <ProjectDetails
+          isOpen={true}
+          isModal={false}
+          onClose={() => {}}
+          onLogin={() => {}}
+          isAuthenticated={true}
+          activeTab={activeOverlayTab}
+          setActiveTab={setActiveOverlayTab}
+          projectPools={projectPools}
+          project={project}
+          topKOLs={topKOLs}
+          selectedPool={selectedPool}
+          handleBackToList={handleBackToList}
+          handlePoolSelect={handlePoolSelect}
+          setSelectedPool={setSelectedPool}
+        />
+      </div>
+    </>
   );
 };
 

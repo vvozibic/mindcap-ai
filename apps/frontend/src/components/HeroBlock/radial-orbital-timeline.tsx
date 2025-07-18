@@ -1,7 +1,5 @@
 "use client";
-import { ArrowRight, Link, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Button } from "./button";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
 
 interface TimelineItem {
@@ -279,7 +277,7 @@ export default function RadialOrbitalTimeline({
                     <CardContent className="text-xs text-white/80">
                       <p>{item.content}</p>
 
-                      <div className="mt-3 pt-2 border-t border-white/10">
+                      {/* <div className="mt-3 pt-2 border-t border-white/10">
                         <div className="flex justify-between items-center text-xs mb-1">
                           <span className="flex items-center">
                             <Zap size={10} className="mr-1" />
@@ -293,9 +291,9 @@ export default function RadialOrbitalTimeline({
                             style={{ width: `${item.energy}%` }}
                           ></div>
                         </div>
-                      </div>
+                      </div> */}
 
-                      {item.relatedIds.length > 0 && (
+                      {/* {item.relatedIds.length > 0 && (
                         <div className="mt-3 pt-2 border-t border-white/10">
                           <div className="flex items-center mb-2">
                             <Link size={10} className="text-white/70 mr-1" />
@@ -329,7 +327,7 @@ export default function RadialOrbitalTimeline({
                             })}
                           </div>
                         </div>
-                      )}
+                      )} */}
                     </CardContent>
                   </Card>
                 )}
