@@ -2,7 +2,7 @@ import { Menu, User, X } from "lucide-react";
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { User as UserType } from "../types";
-import { Logo } from "./Logo";
+import Logo from "./Logo";
 import XLogo from "./XLogo";
 
 interface NavbarProps {
