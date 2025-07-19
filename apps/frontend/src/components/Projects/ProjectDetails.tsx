@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import React, { useState } from "react";
 import { Influencer, ProtokolsProject, RewardPool } from "../../types";
+import { formatMindsharePercent } from "../../utils/formatMindhsarePercent";
 import InfluencerDetailOverlay from "../Infuencer/InfluencerDetailOverlay";
 import { Skeleton } from "../Skeleton";
 import { TableSkeleton } from "../TableSkeleton";
@@ -395,7 +396,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                             <td className="pt-3 pr-0 pb-3 pl-6 whitespace-nowrap text-sm font-medium text-white">
                               #{index + 1}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="px-6 py-4 whitespace-nowrap overflow-hidden">
                               <div className="flex items-center">
                                 <img
                                   className="h-10 w-10 rounded-full"
@@ -423,7 +424,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white font-medium">
-                              {`${Number(kol.mindshareNum * 100).toFixed(2)}%`}
+                              {formatMindsharePercent(kol?.mindshareNum)}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                               {kol.smartFollowers}
