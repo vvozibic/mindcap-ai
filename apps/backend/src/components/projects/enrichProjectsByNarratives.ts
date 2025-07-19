@@ -1,4 +1,3 @@
-// scripts/enrich/enrichProjectsByNarratives.ts
 import { PrismaClient } from "@prisma/client";
 import pLimit from "p-limit";
 import { getProjectsInNarrative } from "../../external-api/protokols";
@@ -7,11 +6,7 @@ import { logToDb } from "../../external-api/protokols/client";
 const prisma = new PrismaClient();
 const limit = pLimit(5);
 
-const isSnapshotAllowed = () => {
-  const now = new Date();
-  const hour = now.getUTCHours();
-  return hour === 0; // Только в 00:00 UTC
-};
+const fetchedDate = new Date().toISOString().split("T")[0];
 
 export async function enrichProjectsByNarratives() {
   const narratives = await prisma.narrative.findMany();
@@ -72,35 +67,34 @@ export async function enrichProjectsByNarratives() {
               },
             });
 
-            const today = new Date().toISOString().split("T")[0]; // yyyy-mm-dd
-
-            const existingSnapshot = await prisma.projectSnapshot.findFirst({
+            await prisma.projectSnapshot.upsert({
               where: {
-                projectId: project.id,
-                narrativeId: narrative.id,
-              },
-            });
-
-            if (!existingSnapshot) {
-              await prisma.projectSnapshot.create({
-                data: {
+                projectId_narrativeId_fetchedDate: {
                   projectId: project.id,
                   narrativeId: narrative.id,
-
-                  totalViews: p.total_views,
-                  totalPosts: p.total_posts,
-
-                  mindsharePercent: p.mindshare.mindshare_percent,
-                  mindshareChange24h: p.mindshare.change_24h,
-                  mindshareChange7d: p.mindshare.change_7d,
-                  mindshareChange30d: p.mindshare.change_30d,
-                  mindshareChange90d: p.mindshare.change_90d,
-
-                  source: "Protokols",
-                  updatedBy: "cron",
+                  fetchedDate,
                 },
-              });
-            }
+              },
+              update: {},
+              create: {
+                projectId: project.id,
+                narrativeId: narrative.id,
+
+                totalViews: p.total_views,
+                totalPosts: p.total_posts,
+
+                mindsharePercent: p.mindshare.mindshare_percent,
+                mindshareChange24h: p.mindshare.change_24h,
+                mindshareChange7d: p.mindshare.change_7d,
+                mindshareChange30d: p.mindshare.change_30d,
+                mindshareChange90d: p.mindshare.change_90d,
+
+                source: "Protokols",
+                updatedBy: "cron",
+
+                fetchedDate,
+              },
+            });
 
             await prisma.projectToNarrative.upsert({
               where: {

@@ -3,7 +3,7 @@ import {
   fetchFromProtocols,
   fetchFromTweetScout,
   normalizeInfluencerData,
-} from "./utils";
+} from "./_utils";
 
 const prisma = new PrismaClient();
 

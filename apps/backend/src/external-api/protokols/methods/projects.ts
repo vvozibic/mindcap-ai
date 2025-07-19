@@ -2,6 +2,7 @@ import { fetchFromProtokols } from "../client";
 import { endpoints } from "../endpoints";
 import { ListProjectsInNarativeResponse } from "../types"; // твой тип
 
+// Get first 100 projects
 export const getProjectsInNarrative = async (
   slug: string,
   limit = 20

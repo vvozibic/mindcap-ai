@@ -7,8 +7,9 @@ export const endpoints = {
   projectsListInNarrative: (narrative_id_or_slug: string) =>
     `${BASE}/narratives/${narrative_id_or_slug}/projects`,
 
-  // projectStats: (slug: string, timeframe = "30d") =>
-  //   `${BASE}/project/${slug}/stats?timeframe=${timeframe}`,
-  // influencerStats: (handle: string, timeframe = "30d") =>
-  //   `${BASE}/profile/${handle}/stats?timeframe=${timeframe}`,
+  topKolsListInProject: (username_or_id: string) =>
+    `${BASE}/project/${username_or_id}/top-contributors`,
+
+  profileStats: (username_or_id: string) =>
+    `${BASE}/profile/${username_or_id}/stats`,
 };

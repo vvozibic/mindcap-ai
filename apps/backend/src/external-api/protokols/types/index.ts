@@ -117,6 +117,65 @@ export interface TwitterProfile {
   username: string;
 }
 
+export interface ListKOLsInProjectsResponse {
+  data: KOLInProject[];
+  pagination: PaginationMeta;
+}
+export interface KOLInProject {
+  avatar_url: string;
+  description: string;
+  description_link?: null | string;
+  display_name: string;
+  followers_count: number;
+  following_count: number;
+  gold_badge: boolean | null;
+  id: string;
+  is_verified: boolean;
+  lang: string;
+  profile_created_at: string;
+  total_comments: number;
+  total_interactions: number;
+  total_posts: number;
+  total_views: number;
+  username: string;
+}
+
+export interface ProfileStateResponse {
+  data: ProfileStats;
+}
+
+/**
+ * Profile Stats
+ */
+export interface ProfileStats {
+  avg_likes: number;
+  avg_views: number;
+  engagement_rate: number;
+  followers_change: number;
+  followers_count: number;
+  kol_score: number;
+  smart_engagement: number;
+  smart_engagement_change?: number;
+  smart_followers_count: number;
+  threads_count: number;
+  total_account_comments: number;
+  total_account_interactions: number;
+  total_account_likes: number;
+  total_account_posts: number;
+  total_account_replies: number;
+  total_account_retweets: number;
+  total_account_views: number;
+  total_interactions: number;
+  total_interactions_change: number;
+  total_organic_interactions: number;
+  total_organic_posts: number;
+  total_organic_views: number;
+  total_posts: number;
+  total_posts_change: number;
+  total_views: number;
+  total_views_change: number;
+}
+
 /**
  * Pagination Meta
  */

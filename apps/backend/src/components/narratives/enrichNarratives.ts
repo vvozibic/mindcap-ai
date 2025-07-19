@@ -7,6 +7,8 @@ import { logToDb } from "../../external-api/protokols/client";
 
 const prisma = new PrismaClient();
 
+const fetchedDate = new Date().toISOString().split("T")[0];
+
 export async function enrichNarratives() {
   try {
     const { data: narratives } = await getNarrativeList();
@@ -63,13 +65,21 @@ export async function enrichNarratives() {
           },
         });
 
-        await prisma.narrativeSnapshot.create({
-          data: {
+        await prisma.narrativeSnapshot.upsert({
+          where: {
+            narrativeId_fetchedDate: {
+              narrativeId: data.narrative_id,
+              fetchedDate,
+            },
+          },
+          update: {},
+          create: {
             narrativeId: data.narrative_id,
             projectCount: data.project_count,
             totalViews: data.total_views,
             totalPosts: data.total_posts,
             totalMarketCapUsd: data.market_cap.total_market_cap_usd,
+
             marketCapChange24h: data.market_cap.change_24h,
             marketCapChange7d: data.market_cap.change_7d,
             marketCapChange30d: data.market_cap.change_30d,
@@ -79,8 +89,11 @@ export async function enrichNarratives() {
             mindshareChange7d: data.mindshare.change_7d,
             mindshareChange30d: data.mindshare.change_30d,
             mindshareChange90d: data.mindshare.change_90d,
+
             source: "Protokols",
             updatedBy: "cron",
+
+            fetchedDate,
           },
         });
 

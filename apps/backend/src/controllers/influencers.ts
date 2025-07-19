@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
-import { enrichInfluencer } from "../components/kols/enrichInfluencer";
+import { enrichInfluencer } from "../components/kols/_enrichInfluencer";
 
 const prisma = new PrismaClient();
 

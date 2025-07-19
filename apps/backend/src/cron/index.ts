@@ -1,9 +1,14 @@
 import { enrichNarratives } from "../components/narratives/enrichNarratives";
+import { enrichProjectsByNarratives } from "../components/projects/enrichProjectsByNarratives";
 import { startTimer } from "./utils";
 
 async function main() {
-  const end = startTimer("enrichNarratives");
+  const end = startTimer("enrichAll");
+
   await enrichNarratives();
+
+  await enrichProjectsByNarratives();
+
   end();
 }
 

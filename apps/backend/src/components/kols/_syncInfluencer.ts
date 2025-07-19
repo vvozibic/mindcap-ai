@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
-import { users } from "./users";
+import { users } from "./_users";
 import {
   fetchFromProtocols,
   fetchFromTweetScout,
   normalizeInfluencerData,
-} from "./utils";
+} from "./_utils";
 
 const prisma = new PrismaClient();
 
