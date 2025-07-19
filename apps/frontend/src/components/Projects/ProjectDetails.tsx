@@ -363,7 +363,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                             Influencer
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
-                            AI score
+                            Mindo Share
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
                             Smart Followers

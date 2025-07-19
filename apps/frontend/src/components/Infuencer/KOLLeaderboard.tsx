@@ -157,7 +157,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                     onClick={() => handleSort("mindshare")}
                   >
                     <div className="flex items-center relative">
-                      AI score
+                      Mindo Share
                       {sortField === "mindshare" &&
                         (sortDirection === "asc" ? (
                           <ArrowUp className="h-4 w-4 ml-1" />
