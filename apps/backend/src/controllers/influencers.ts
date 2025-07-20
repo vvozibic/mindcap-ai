@@ -4,81 +4,81 @@ import { enrichInfluencer } from "../components/kols/_enrichInfluencer";
 
 const prisma = new PrismaClient();
 
-const recalculateMindshareForInfluencers = async () => {
-  const kols = await prisma.kol.findMany({
-    select: {
-      id: true,
-      kolScore: true,
-      smartFollowers: true,
-      followersCountNumeric: true,
-    },
-  });
+// const recalculateMindshareForInfluencers = async () => {
+//   const kols = await prisma.kOL.findMany({
+//     select: {
+//       id: true,
+//       kolScore: true,
+//       smartFollowers: true,
+//       followersCountNumeric: true,
+//     },
+//   });
 
-  const totalScore = kols.reduce((sum, i) => sum + (i.kolScore || 0), 0);
+//   const totalScore = kols.reduce((sum, i) => sum + (i.kolScore || 0), 0);
 
-  // Простой батч по 10 штук
-  const batchSize = 10;
+//   // Простой батч по 10 штук
+//   const batchSize = 10;
 
-  for (let i = 0; i < kols.length; i += batchSize) {
-    const batch = kols.slice(i, i + batchSize);
-    await Promise.all(
-      batch.map((i) => {
-        const score = i.kolScore || 0;
-        const mindsharePercent =
-          totalScore > 0 ? +((score / totalScore) * 100).toFixed(2) : 0;
+//   for (let i = 0; i < kols.length; i += batchSize) {
+//     const batch = kols.slice(i, i + batchSize);
+//     await Promise.all(
+//       batch.map((i) => {
+//         const score = i.kolScore || 0;
+//         const mindshare =
+//           totalScore > 0 ? +((score / totalScore) * 100).toFixed(2) : 0;
 
-        const smartFollowersPercent =
-          i.followersCountNumeric && i.followersCountNumeric > 0
-            ? +((i.smartFollowers / i.followersCountNumeric) * 100).toFixed(2)
-            : 0;
+//         const smartFollowersPercent =
+//           i.followersCountNumeric && i.followersCountNumeric > 0
+//             ? +((i.smartFollowers / i.followersCountNumeric) * 100).toFixed(2)
+//             : 0;
 
-        return prisma.kol.update({
-          where: { id: i.id },
-          data: { mindsharePercent, smartFollowersPercent },
-        });
-      })
-    );
-  }
-};
+//         return prisma.kOL.update({
+//           where: { id: i.id },
+//           data: { mindshare, smartFollowersPercent },
+//         });
+//       })
+//     );
+//   }
+// };
 
 export const getInfluencers = async (_req: Request, res: Response) => {
-  const kols = await prisma.kol.findMany({
-    select: {
-      id: true,
-      name: true,
-      badges: true,
-      username: true,
-      avatarUrl: true,
-      platform: true,
-      followingsNumeric: true,
-      followersCountNumeric: true,
-      smartFollowers: true,
-      tweetsCountNumeric: true,
-      avgLikes: true,
-      avgViews: true,
-      engagementRate: true,
-      kolScore: true,
-      totalPosts: true,
-      totalLikes: true,
-      totalReplies: true,
-      totalRetweets: true,
-      totalViews: true,
-      totalComments: true,
-      twitterRegisterDate: true,
-      expertise: true,
-      bio: true,
-      profileUrl: true,
-      mindsharePercent: true,
-      mindshare: true,
-      smartFollowersPercent: true,
-      pow: true,
-      poi: true,
-      poe: true,
-      moneyScore: true,
-      verified: true,
-      createdAt: true,
-      updatedAt: true,
-    },
+  const kols = await prisma.kOL.findMany({
+    // select: {
+    //   id: true,
+    //   name: true,
+    //   badges: true,
+    //   username: true,
+    //   avatarUrl: true,
+    //   platform: true,
+    //   followingsNumeric: true,
+    //   followersCountNumeric: true,
+    //   smartFollowers: true,
+    //   tweetsCountNumeric: true,
+    //   avgLikes: true,
+    //   avgViews: true,
+    //   engagementRate: true,
+    //   kolScore: true,
+    //   totalPosts: true,
+    //   totalLikes: true,
+    //   totalReplies: true,
+    //   totalRetweets: true,
+    //   totalViews: true,
+    //   totalComments: true,
+    //   twitterRegisterDate: true,
+    //   expertise: true,
+    //   bio: true,
+    //   profileUrl: true,
+    //   mindsharePercent: true,
+    //   mindshare: true,
+    //   smartFollowersPercent: true,
+    //   pow: true,
+    //   poi: true,
+    //   poe: true,
+    //   moneyScore: true,
+    //   verified: true,
+    //   createdAt: true,
+    //   updatedAt: true,
+    // },
     orderBy: {
       kolScore: "desc",
     },
@@ -114,49 +114,49 @@ export const getPaginatedInfluencers = async (req: Request, res: Response) => {
     : "kolScore";
 
   const [total, data] = await Promise.all([
-    prisma.kol.count(),
-    prisma.kol.findMany({
+    prisma.kOL.count(),
+    prisma.kOL.findMany({
       skip,
       take: limit,
       orderBy: {
         [safeSortField]: sortDirection,
       },
-      select: {
-        id: true,
-        name: true,
-        badges: true,
-        username: true,
-        avatarUrl: true,
-        platform: true,
-        followingsNumeric: true,
-        followersCountNumeric: true,
-        smartFollowers: true,
-        tweetsCountNumeric: true,
-        avgLikes: true,
-        avgViews: true,
-        engagementRate: true,
-        kolScore: true,
-        totalPosts: true,
-        totalLikes: true,
-        totalReplies: true,
-        totalRetweets: true,
-        totalViews: true,
-        totalComments: true,
-        twitterRegisterDate: true,
-        expertise: true,
-        bio: true,
-        profileUrl: true,
-        mindsharePercent: true,
-        mindshare: true,
-        smartFollowersPercent: true,
-        pow: true,
-        poi: true,
-        poe: true,
-        moneyScore: true,
-        verified: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      // select: {
+      //   id: true,
+      //   name: true,
+      //   badges: true,
+      //   username: true,
+      //   avatarUrl: true,
+      //   platform: true,
+      //   followingsNumeric: true,
+      //   followersCountNumeric: true,
+      //   smartFollowers: true,
+      //   tweetsCountNumeric: true,
+      //   avgLikes: true,
+      //   avgViews: true,
+      //   engagementRate: true,
+      //   kolScore: true,
+      //   totalPosts: true,
+      //   totalLikes: true,
+      //   totalReplies: true,
+      //   totalRetweets: true,
+      //   totalViews: true,
+      //   totalComments: true,
+      //   twitterRegisterDate: true,
+      //   expertise: true,
+      //   bio: true,
+      //   profileUrl: true,
+      //   mindsharePercent: true,
+      //   mindshare: true,
+      //   smartFollowersPercent: true,
+      //   pow: true,
+      //   poi: true,
+      //   poe: true,
+      //   moneyScore: true,
+      //   verified: true,
+      //   createdAt: true,
+      //   updatedAt: true,
+      // },
     }),
   ]);
 
@@ -170,31 +170,33 @@ export const getPaginatedInfluencers = async (req: Request, res: Response) => {
 
 export const getInfluencerById = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const proj = await prisma.kol.findUnique({ where: { id } });
+  const proj = await prisma.kOL.findUnique({ where: { id } });
   if (!proj) return res.status(404).json({ error: "Not found" });
   res.json(proj);
 };
 
 export const getInfluencerByUsername = async (req: Request, res: Response) => {
   const { username } = req.params;
-  const proj = await prisma.kol.findUnique({ where: { username } });
+  const proj = await prisma.kOL.findUnique({
+    where: { twitterUsername: username },
+  });
   if (!proj) return res.status(404).json({ error: "Not found" });
   res.json(proj);
 };
 
 export const createInfluencer = async (req: Request, res: Response) => {
-  const kol = await prisma.kol.create({ data: req.body });
-  await recalculateMindshareForInfluencers();
+  const kol = await prisma.kOL.create({ data: req.body });
+  // await recalculateMindshareForInfluencers();
   res.status(201).json(kol);
 };
 
 export const updateInfluencer = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const updated = await prisma.kol.update({
+  const updated = await prisma.kOL.update({
     where: { id },
     data: req.body,
   });
-  await recalculateMindshareForInfluencers();
+  // await recalculateMindshareForInfluencers();
   res.json(updated);
 };
 
@@ -205,11 +207,11 @@ export const deleteInfluencer = async (req: Request, res: Response) => {
   //   where: { projectId: id },
   // });
 
-  await prisma.kol.delete({
+  await prisma.kOL.delete({
     where: { id },
   });
 
-  await recalculateMindshareForInfluencers();
+  // await recalculateMindshareForInfluencers();
 
   res.status(200).json({ message: "Project and related mentions deleted" });
 };
@@ -219,7 +221,7 @@ export const adminEnrichInfluencer = async (req: Request, res: Response) => {
 
   try {
     await enrichInfluencer(username);
-    await recalculateMindshareForInfluencers();
+    // await recalculateMindshareForInfluencers();
     res.json({ success: true });
   } catch (err) {
     console.error(err);

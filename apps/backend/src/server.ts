@@ -86,6 +86,9 @@ app.use((req, res, next) => {
   next();
 });
 
+console.log("process.env.PORT =", process.env.PORT);
+console.log("Resolved PORT =", PORT);
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Listening on ${PORT}`);
 });

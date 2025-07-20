@@ -307,7 +307,7 @@ export const getInfluencersByProject = async (req: Request, res: Response) => {
   }
 
   try {
-    const influencers = await prisma.kol.findMany({
+    const influencers = await prisma.kOL.findMany({
       where: {
         projects: {
           some: {

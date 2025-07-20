@@ -267,6 +267,7 @@ model KOL {
   fetchedAt DateTime @default(now())
 
   @@unique([twitterId])
+  @@unique([twitterUsername])
   @@index([twitterUsername])
   @@index([twitterId])
 }
