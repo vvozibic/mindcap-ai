@@ -8,7 +8,7 @@ import {
 const prisma = new PrismaClient();
 
 // Укажи сюда ID проекта, к которому нужно привязать всех инфлюенсеров
-const PROJECT_ID = "e977203f-9f79-48ad-bfd2-118159b25ef8"; // заменишь на нужный
+const PROJECT_ID = "bac45b9f-a371-415f-b10e-115ef61edea2"; // заменишь на нужный
 
 export async function fetchTopKOLs(username: string): Promise<any[]> {
   const result: any[] = [];
@@ -53,7 +53,7 @@ export async function fetchTopKOLs(username: string): Promise<any[]> {
 // }
 
 export async function syncInfluencersFromList() {
-  const users = await fetchTopKOLs("XEN_Crypto");
+  const users = await fetchTopKOLs("OrderlyNetwork");
 
   console.log(`🔍 Found ${users.length} influencers to sync`);
   console.log(users.map((u) => u.username).join(", "));

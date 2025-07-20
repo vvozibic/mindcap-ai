@@ -36,6 +36,26 @@ export async function fetchFromProtocols(username: string) {
   }
 }
 
+export async function fetchTopKOLs(username: string) {
+  try {
+    const res = await fetch(
+      `https://public-api.protokols.io/api/v1/project/${username}/top-contributors`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.PROTOKOLS_API_KEY}`,
+        },
+      }
+    );
+
+    if (!res.ok) throw new Error(`Failed: ${res.status} ${res.statusText}`);
+    const json = await res.json();
+    return json.data;
+  } catch (err) {
+    console.warn(`Protokols fetch failed for ${username}:`, err);
+    return null;
+  }
+}
+
 export function normalizeInfluencerData({
   username,
   scoutData,
