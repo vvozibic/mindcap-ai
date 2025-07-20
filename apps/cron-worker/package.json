@@ -1,0 +1,11 @@
+{
+  "name": "mindcap-cron-worker",
+  "scripts": {
+    "start": "yarn tsx src/run.ts"
+  },
+  "dependencies": {
+    "prisma": "^6.10.1",
+    "@prisma/client": "^6.10.1",
+    "tsx": "^4.7.0"
+  }
+}

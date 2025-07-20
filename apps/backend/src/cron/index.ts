@@ -1,18 +1,16 @@
-import { enrichNarratives } from "../components/narratives/enrichNarratives";
-import { enrichProjectsByNarratives } from "../components/projects/enrichProjectsByNarratives";
 import { startTimer } from "./utils";
 
-async function main() {
+export async function mainCron() {
   const end = startTimer("enrichAll");
 
-  await enrichNarratives();
+  // await enrichNarratives();
 
-  await enrichProjectsByNarratives();
+  // await enrichProjectsByNarratives();
 
   end();
 }
 
-main().catch((err) => {
-  console.error("❌ Cron job failed:", err);
-  process.exit(1);
-});
+// main().catch((err) => {
+//   console.error("❌ Cron job failed:", err);
+//   process.exit(1);
+// });
