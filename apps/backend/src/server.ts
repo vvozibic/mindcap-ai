@@ -14,6 +14,8 @@ import rewardPoolRoutes from "./routes/rewardPool";
 import { usersRoutes } from "./routes/users";
 import { queuePageVisit } from "./utils/visits";
 
+import "./cron/index"; // Import cron jobs to ensure they run
+
 dotenv.config();
 
 const app = express();
