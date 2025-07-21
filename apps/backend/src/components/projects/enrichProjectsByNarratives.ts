@@ -182,12 +182,14 @@ export async function enrichProjectsByNarratives() {
   console.log("🎯 Завершено enrichProjectsByNarratives");
 }
 
-enrichProjectsByNarratives()
-  .then(() => {
-    console.log("🎉 Sync projects done");
-    return prisma.$disconnect();
-  })
-  .catch((err) => {
-    console.error(err);
-    prisma.$disconnect();
-  });
+if (require.main === module) {
+  enrichProjectsByNarratives()
+    .then(() => {
+      console.log("🎉 Sync projects done");
+      return prisma.$disconnect();
+    })
+    .catch((err) => {
+      console.error(err);
+      prisma.$disconnect();
+    });
+}

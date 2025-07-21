@@ -38,7 +38,7 @@ export const getKOLsInProjects = async (
 export const getProfileStats = async (
   slug_or_id
 ): Promise<ProfileStateResponse> => {
-  const url = endpoints.narrativeDetails(slug_or_id);
+  const url = endpoints.profileStats(slug_or_id);
 
   return retry(url, () => fetchFromProtokols<ProfileStateResponse>(url));
 };

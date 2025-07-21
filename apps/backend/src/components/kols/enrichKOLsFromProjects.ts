@@ -7,7 +7,13 @@ const prisma = new PrismaClient();
 const limit = pLimit(5);
 
 export async function enrichKOLsFromProjects() {
-  const projects = await prisma.project.findMany();
+  const projects = await prisma.project.findMany({
+    where: {
+      kols: {
+        none: {}, // полностью пустые
+      },
+    },
+  });
   console.log(`🔍 Найдено проектов: ${projects.length}`);
 
   await Promise.all(
@@ -101,12 +107,14 @@ export async function enrichKOLsFromProjects() {
   console.log("🎯 Завершено enrichKOLsFromProjects");
 }
 
-enrichKOLsFromProjects()
-  .then(() => {
-    console.log("🎉 Sync KOLs done");
-    return prisma.$disconnect();
-  })
-  .catch((err) => {
-    console.error(err);
-    prisma.$disconnect();
-  });
+if (require.main === module) {
+  enrichKOLsFromProjects()
+    .then(() => {
+      console.log("🎉 Sync KOLs done");
+      return prisma.$disconnect();
+    })
+    .catch((err) => {
+      console.error(err);
+      prisma.$disconnect();
+    });
+}
