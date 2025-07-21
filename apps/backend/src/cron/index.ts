@@ -5,7 +5,7 @@ import cron from "node-cron";
 
 // 9:50 AM MSK every day "50 6 * * *"
 // 15:00 PM MSK every day "0 12 * * *"
-cron.schedule("0 12 * * *", async () => {
+cron.schedule("50 12 * * *", async () => {
   const end = startTimer("enrichAll");
   console.log("🔁 [CRON] Запуск обогащения...");
   try {
