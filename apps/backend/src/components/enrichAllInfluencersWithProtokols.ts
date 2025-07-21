@@ -40,6 +40,8 @@ export async function enrichAllInfluencersWithProtokols() {
   await prisma.$disconnect();
 }
 
-enrichAllInfluencersWithProtokols()
-  .then(() => console.log("🎉 Done"))
-  .catch(console.error);
+if (require.main === module) {
+  enrichAllInfluencersWithProtokols()
+    .then(() => console.log("🎉 Done"))
+    .catch(console.error);
+}

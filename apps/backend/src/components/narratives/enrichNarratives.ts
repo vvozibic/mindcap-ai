@@ -119,12 +119,14 @@ export async function enrichNarratives() {
   }
 }
 
-enrichNarratives()
-  .then(() => {
-    console.log("🎉 Sync narratives done");
-    return prisma.$disconnect();
-  })
-  .catch((err) => {
-    console.error(err);
-    prisma.$disconnect();
-  });
+if (require.main === module) {
+  enrichNarratives()
+    .then(() => {
+      console.log("🎉 Sync narratives done");
+      return prisma.$disconnect();
+    })
+    .catch((err) => {
+      console.error(err);
+      prisma.$disconnect();
+    });
+}
