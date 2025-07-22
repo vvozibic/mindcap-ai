@@ -275,7 +275,7 @@ export const getProtokolsProjectBySlug = async (
   res: Response
 ) => {
   const { twitterUsername } = req.params;
-  const project = await prisma.project.findFirst({
+  const project = await prisma.project.findUnique({
     where: { twitterUsername },
     include: {
       narrativeLinks: {
