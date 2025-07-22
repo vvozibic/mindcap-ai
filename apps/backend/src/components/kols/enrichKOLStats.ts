@@ -10,11 +10,7 @@ const fetchedDate = new Date().toISOString().split("T")[0];
 export async function enrichKOLStats() {
   const kols = await prisma.kOL.findMany({
     where: {
-      kolSnapshot: {
-        none: {
-          fetchedDate,
-        },
-      },
+      kolScore: null,
     },
     select: {
       id: true,
