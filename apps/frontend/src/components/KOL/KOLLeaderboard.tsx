@@ -79,7 +79,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
 
     return {
       ...i,
-      mindshare: (+(i?.mindshare || 0) * 100).toFixed(2),
+      mindshare: (+(i?.kolScorePercentFromTotal || 0) * 100).toFixed(2),
       postingFrequency: postingFrequency,
     };
   });
@@ -159,7 +159,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                     onClick={() => handleSort("mindshare")}
                   >
                     <div className="flex items-center relative">
-                      AI score
+                      Mindo share
                       {sortField === "mindshare" &&
                         (sortDirection === "asc" ? (
                           <ArrowUp className="h-4 w-4 ml-1" />

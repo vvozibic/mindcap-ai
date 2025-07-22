@@ -224,11 +224,12 @@ model KOL {
   twitterCreatedAt       DateTime
 
   // Main metrics
-  kolScore            Float?
-  smartFollowersCount Int?
-  threadsCount        Int?
-  engagementRate      Float?
-  smartEngagement     Float?
+  kolScore                 Float?
+  kolScorePercentFromTotal Float?
+  smartFollowersCount      Int?
+  threadsCount             Int?
+  engagementRate           Float?
+  smartEngagement          Float?
 
   // Average metrics
   avgViews Int?

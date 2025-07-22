@@ -88,7 +88,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
 
     return {
       ...i,
-      mindshare: (+(i?.mindshare || 0) * 100).toFixed(2),
+      mindshare: (+(i?.kolScorePercentFromTotal || 0) * 100).toFixed(2),
       postingFrequency: postingFrequency,
     };
   });

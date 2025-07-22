@@ -49,7 +49,7 @@ export interface KOL {
   twitterCreatedAt: string; // ISO string
 
   // Frontend specific
-  mindshare?: string;
+  kolScorePercentFromTotal?: number;
   postingFrequency?: string;
 
   kolScore: number | null;

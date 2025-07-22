@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Считаем сумму всех kolScore
-  const { totalScore } = await prisma.influencer
+  const { totalScore } = await prisma.kOL
     .aggregate({
       _sum: {
         kolScore: true,
@@ -23,8 +23,8 @@ async function main() {
 
   // Обновляем через raw SQL — точнее и быстрее
   const updated = await prisma.$executeRawUnsafe(`
-    UPDATE "Influencer"
-    SET "mindshareNum" = "kolScore"::double precision / ${totalScore}
+    UPDATE "KOL"
+    SET "kolScorePercentFromTotal" = "kolScore"::double precision / ${totalScore}
   `);
 
   console.log(`✅ Updated ${updated} influencers`);

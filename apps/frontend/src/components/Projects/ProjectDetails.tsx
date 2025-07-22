@@ -360,10 +360,10 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                             Rank
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
-                            Influencer
+                            KOL
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
-                            AI score
+                            Mindo share
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
                             Smart Followers
@@ -427,7 +427,9 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white font-medium">
-                              {`${Number(kol.mindshare * 100).toFixed(2)}%`}
+                              {`${Number(
+                                (kol?.kolScorePercentFromTotal || 0) * 100
+                              ).toFixed(2)}%`}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                               {kol.smartFollowersCount?.toLocaleString() || "0"}
