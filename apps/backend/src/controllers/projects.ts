@@ -319,6 +319,7 @@ export const getInfluencersByProject = async (req: Request, res: Response) => {
         kolScore: {
           gt: 0, // фильтруем KOL с нулевым весом
         },
+        hidden: false,
       },
       orderBy: {
         kolScore: "desc", // сортировка по весу, если нужно

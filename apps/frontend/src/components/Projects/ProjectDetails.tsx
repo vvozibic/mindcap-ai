@@ -427,9 +427,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white font-medium">
-                              {`${Number(
-                                (kol?.kolScorePercentFromTotal || 0) * 100
-                              ).toFixed(2)}%`}
+                              {`${kol?.kolScorePercentFromTotal?.toFixed(2)}%`}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                               {kol.smartFollowersCount?.toLocaleString() || "0"}

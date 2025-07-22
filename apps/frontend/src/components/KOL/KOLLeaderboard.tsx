@@ -79,7 +79,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
 
     return {
       ...i,
-      mindshare: (+(i?.kolScorePercentFromTotal || 0) * 100).toFixed(2),
+      mindshare: i?.kolScorePercentFromTotal?.toFixed(2),
       postingFrequency: postingFrequency,
     };
   });

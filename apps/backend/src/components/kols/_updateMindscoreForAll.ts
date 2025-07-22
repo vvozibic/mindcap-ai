@@ -3,11 +3,13 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  // Считаем сумму всех kolScore
   const { totalScore } = await prisma.kOL
     .aggregate({
       _sum: {
         kolScore: true,
+      },
+      where: {
+        hidden: false,
       },
     })
     .then((res) => ({
@@ -19,20 +21,20 @@ async function main() {
     return;
   }
 
-  console.log(`✅ Total kolScore: ${totalScore}`);
+  console.log(`✅ Total kolScore (visible only): ${totalScore}`);
 
-  // Обновляем через raw SQL — точнее и быстрее
   const updated = await prisma.$executeRawUnsafe(`
     UPDATE "KOL"
-    SET "kolScorePercentFromTotal" = "kolScore"::double precision / ${totalScore}
+    SET "kolScorePercentFromTotal" = ("kolScore"::double precision / ${totalScore}) * 100
+    WHERE "hidden" = false
   `);
 
-  console.log(`✅ Updated ${updated} influencers`);
+  console.log(`✅ Updated ${updated} visible influencers`);
 }
 
 main()
   .catch((e) => {
-    console.error("❌ Error updating mindshareNum:", e);
+    console.error("❌ Error updating kolScorePercentFromTotal:", e);
   })
   .finally(async () => {
     await prisma.$disconnect();

@@ -207,7 +207,8 @@ model ProjectToNarrative {
 }
 
 model KOL {
-  id String @id @default(uuid())
+  id     String  @id @default(uuid())
+  hidden Boolean @default(false)
 
   // Twitter profile
   twitterId              String

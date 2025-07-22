@@ -224,7 +224,7 @@ const KOLDetails: React.FC<KOLDetailOverlayProps> = ({ kol }) => {
               <h5 className="text-sm font-medium text-gray-300">Mindo share</h5>
               <div className="flex items-baseline">
                 <p className="text-xl font-bold text-gray-200">
-                  {Number(+(detailData?.mindshare || 0) * 100).toFixed(2)}%
+                  {detailData?.mindshare?.toFixed(2)}%
                 </p>
               </div>
             </div>

@@ -44,42 +44,12 @@ const prisma = new PrismaClient();
 
 export const getInfluencers = async (_req: Request, res: Response) => {
   const kols = await prisma.kOL.findMany({
-    // select: {
-    //   id: true,
-    //   name: true,
-    //   badges: true,
-    //   username: true,
-    //   avatarUrl: true,
-    //   platform: true,
-    //   followingsNumeric: true,
-    //   followersCountNumeric: true,
-    //   smartFollowers: true,
-    //   tweetsCountNumeric: true,
-    //   avgLikes: true,
-    //   avgViews: true,
-    //   engagementRate: true,
-    //   kolScore: true,
-    //   totalPosts: true,
-    //   totalLikes: true,
-    //   totalReplies: true,
-    //   totalRetweets: true,
-    //   totalViews: true,
-    //   totalComments: true,
-    //   twitterRegisterDate: true,
-    //   expertise: true,
-    //   bio: true,
-    //   profileUrl: true,
-    //   mindsharePercent: true,
-    //   mindshare: true,
-    //   smartFollowersPercent: true,
-    //   pow: true,
-    //   poi: true,
-    //   poe: true,
-    //   moneyScore: true,
-    //   verified: true,
-    //   createdAt: true,
-    //   updatedAt: true,
-    // },
+    where: {
+      kolScore: {
+        gte: 0,
+      },
+      hidden: false,
+    },
     orderBy: {
       kolScore: "desc",
     },
@@ -100,7 +70,7 @@ export const getPaginatedInfluencers = async (req: Request, res: Response) => {
   // Поддерживаем только допустимые поля сортировки
   const allowedSortFields = [
     "followersCountNumeric",
-    "mindsharePercent",
+    "kolScorePercent",
     "pow",
     "poi",
     "poe",
@@ -116,54 +86,26 @@ export const getPaginatedInfluencers = async (req: Request, res: Response) => {
     : "kolScore";
 
   const [total, data] = await Promise.all([
-    prisma.kOL.count(),
+    prisma.kOL.count({
+      where: {
+        kolScore: {
+          gte: 0,
+        },
+        hidden: false,
+      },
+    }),
     prisma.kOL.findMany({
       where: {
         kolScore: {
           gte: 0,
         },
+        hidden: false,
       },
       skip,
       take: limit,
       orderBy: {
         [safeSortField]: sortDirection,
       },
-      // select: {
-      //   id: true,
-      //   name: true,
-      //   badges: true,
-      //   username: true,
-      //   avatarUrl: true,
-      //   platform: true,
-      //   followingsNumeric: true,
-      //   followersCountNumeric: true,
-      //   smartFollowers: true,
-      //   tweetsCountNumeric: true,
-      //   avgLikes: true,
-      //   avgViews: true,
-      //   engagementRate: true,
-      //   kolScore: true,
-      //   totalPosts: true,
-      //   totalLikes: true,
-      //   totalReplies: true,
-      //   totalRetweets: true,
-      //   totalViews: true,
-      //   totalComments: true,
-      //   twitterRegisterDate: true,
-      //   expertise: true,
-      //   bio: true,
-      //   profileUrl: true,
-      //   mindsharePercent: true,
-      //   mindshare: true,
-      //   smartFollowersPercent: true,
-      //   pow: true,
-      //   poi: true,
-      //   poe: true,
-      //   moneyScore: true,
-      //   verified: true,
-      //   createdAt: true,
-      //   updatedAt: true,
-      // },
     }),
   ]);
 
