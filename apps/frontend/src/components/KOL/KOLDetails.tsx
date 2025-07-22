@@ -81,7 +81,7 @@ const KOLDetails: React.FC<KOLDetailOverlayProps> = ({ kol }) => {
                     Followers
                   </h6>
                   <p className="text-lg font-bold text-gray-200">
-                    {detailData?.followers}
+                    {detailData?.followers?.toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -93,7 +93,7 @@ const KOLDetails: React.FC<KOLDetailOverlayProps> = ({ kol }) => {
                     Following
                   </h6>
                   <p className="text-lg font-bold text-gray-200">
-                    {detailData?.following || "0"}
+                    {detailData?.following?.toLocaleString() || "0"}
                   </p>
                 </div>
               </div>
@@ -105,7 +105,7 @@ const KOLDetails: React.FC<KOLDetailOverlayProps> = ({ kol }) => {
                     Smart Followers
                   </h6>
                   <p className="text-lg font-bold text-gray-200">
-                    {detailData?.smartFollowers || "0"}
+                    {detailData?.smartFollowers?.toLocaleString() || "0"}
                   </p>
                 </div>
               </div>
@@ -190,7 +190,7 @@ const KOLDetails: React.FC<KOLDetailOverlayProps> = ({ kol }) => {
             </div>
           </div>
 
-          <h5 className="text-md font-medium text-gray-300 mb-3">
+          <h5 className="text-md font-medium text-gray-300 mb-3 mt-6">
             Social Channels
           </h5>
           <div className="bg-primary-700 rounded-lg p-4">
@@ -215,7 +215,7 @@ const KOLDetails: React.FC<KOLDetailOverlayProps> = ({ kol }) => {
               <h5 className="text-sm font-medium text-gray-300">Total Posts</h5>
               <div className="flex items-baseline">
                 <p className="text-xl font-bold text-gray-200">
-                  {detailData?.totalPosts}
+                  {detailData?.totalPosts?.toLocaleString()}
                 </p>
                 <span className="ml-2 text-xs text-gray-400">Lifetime</span>
               </div>
@@ -232,7 +232,7 @@ const KOLDetails: React.FC<KOLDetailOverlayProps> = ({ kol }) => {
               <h5 className="text-sm font-medium text-gray-300">KOL score</h5>
               <div className="flex items-baseline">
                 <p className="text-xl font-bold text-gray-200">
-                  {detailData?.kolScore}
+                  {detailData?.kolScore?.toLocaleString()}
                 </p>
               </div>
             </div>
@@ -291,14 +291,14 @@ const KOLDetails: React.FC<KOLDetailOverlayProps> = ({ kol }) => {
                 <Eye className="h-5 w-5 text-white-500 mb-1" />
                 <p className="text-xs font-medium text-gray-400">Views</p>
                 <p className="text-lg font-bold text-gray-200">
-                  {detailData?.views}
+                  {detailData?.views?.toLocaleString()}
                 </p>
               </div>
               <div className="flex flex-col items-center">
                 <Heart className="h-5 w-5 text-red-500 mb-1" />
                 <p className="text-xs font-medium text-gray-400">Likes</p>
                 <p className="text-lg font-bold text-gray-200">
-                  {detailData?.likes}
+                  {detailData?.likes?.toLocaleString()}
                 </p>
               </div>
 
@@ -306,7 +306,7 @@ const KOLDetails: React.FC<KOLDetailOverlayProps> = ({ kol }) => {
                 <MessageCircle className="h-5 w-5 text-blue-500 mb-1" />
                 <p className="text-xs font-medium text-gray-400">Comments</p>
                 <p className="text-lg font-bold text-gray-200">
-                  {detailData?.comments}
+                  {detailData?.comments?.toLocaleString()}
                 </p>
               </div>
 
@@ -314,7 +314,7 @@ const KOLDetails: React.FC<KOLDetailOverlayProps> = ({ kol }) => {
                 <Share2 className="h-5 w-5 text-green-500 mb-1" />
                 <p className="text-xs font-medium text-gray-400">Retweets</p>
                 <p className="text-lg font-bold text-gray-200">
-                  {detailData?.retwets}
+                  {detailData?.retwets?.toLocaleString()}
                 </p>
               </div>
             </div>
@@ -345,21 +345,21 @@ const KOLDetails: React.FC<KOLDetailOverlayProps> = ({ kol }) => {
               <div>
                 <p className="text-xs text-gray-400">Avg. Comments/Post</p>
                 <p className="text-gray-200 font-medium">
-                  {detailData?.avgCommentsPerPost}
+                  {detailData?.avgCommentsPerPost?.toLocaleString()}
                 </p>
               </div>
 
               <div>
                 <p className="text-xs text-gray-400">Avg. Retweets/Post</p>
                 <p className="text-gray-200 font-medium">
-                  {detailData?.avgRetweetsPerPost}
+                  {detailData?.avgRetweetsPerPost?.toLocaleString()}
                 </p>
               </div>
 
               <div>
                 <p className="text-xs text-gray-400">Avg. Engagement/Post</p>
                 <p className="text-gray-200 font-medium">
-                  {detailData?.avgEngagementPerPost}
+                  {detailData?.avgEngagementPerPost?.toLocaleString()}
                 </p>
               </div>
 

@@ -82,12 +82,23 @@ const ProjectPage = () => {
     );
 
   const projectPools = project.rewardPools || [];
-  const topKOLs = influencers.map((i) => ({
-    ...i,
-    postingFrequency: Number(
+
+  const topKOLs = influencers.map((i) => {
+    const realPostingFrequency = Number(
       (i?.totalPosts || 0) / daysBetween(i.twitterCreatedAt, new Date())
-    )?.toFixed(0),
-  }));
+    );
+
+    const postingFrequency =
+      realPostingFrequency > 0 && realPostingFrequency < 1
+        ? 1
+        : Math.round(realPostingFrequency)?.toFixed(0);
+
+    return {
+      ...i,
+      mindshare: (+(i?.mindshare || 0) * 100).toFixed(2),
+      postingFrequency: postingFrequency,
+    };
+  });
 
   const handlePoolSelect = (pool: RewardPool) => {
     setSelectedPool(pool);

@@ -8,7 +8,7 @@ import {
   Users,
 } from "lucide-react";
 import React, { useState } from "react";
-import { KOL, Kol, Project, RewardPool } from "../../types";
+import { KOL, Project, RewardPool } from "../../types";
 import InfluencerDetailOverlay from "../KOL/KOLDetailOverlay";
 import { Skeleton } from "../Skeleton";
 import { TableSkeleton } from "../TableSkeleton";
@@ -24,7 +24,7 @@ interface ProjectDetailOverlayProps {
   isAuthenticated: boolean;
   onLogin: () => void;
   projectPools: RewardPool[];
-  topKOLs: Kol[];
+  topKOLs: KOL[];
   handleBackToList: () => void;
   selectedPool: RewardPool | null;
   handlePoolSelect: (p: RewardPool) => void;
@@ -47,13 +47,11 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
   handlePoolSelect,
   selectedPool,
 }) => {
-  const [selectedInfluencer, setSelectedInfluencer] = useState<KOL | null>(
-    null
-  );
+  const [selectedKOL, setSelectedKOL] = useState<KOL | null>(null);
   const [isDetailOverlayOpen, setIsDetailOverlayOpen] = useState(false);
 
-  const handleInfluencerClick = (kol: Kol) => {
-    setSelectedInfluencer(kol);
+  const handleInfluencerClick = (kol: KOL) => {
+    setSelectedKOL(kol);
     setIsDetailOverlayOpen(true);
   };
 
@@ -345,7 +343,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
           {/* Top KOLs for this project - Now at the top and spanning full width */}
           {Boolean(topKOLs?.length) && (
             <div className="col-span-2">
-              <h5 className="text-lg font-medium text-gray-300 mb-3">
+              <h5 className="text-lg font-medium text-gray-300 mb-3 mt-6">
                 Top KOLs Engaging with {project.twitterUsername}
               </h5>
               <div className="bg-primary-700 rounded-lg overflow-hidden">
@@ -402,17 +400,20 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                               <div className="flex items-center">
                                 <img
                                   className="h-10 w-10 rounded-full"
-                                  src={kol.avatarUrl || "/default-avatar.png"}
-                                  alt={kol.name}
+                                  src={
+                                    kol.twitterAvatarUrl ||
+                                    "/default-avatar.png"
+                                  }
+                                  alt={kol.twitterDisplayName}
                                 />
                                 <div className="ml-4 max-w-[300px]">
                                   <div className="text-sm font-medium text-white">
-                                    {kol.username}
+                                    {kol.twitterUsername}
                                   </div>
                                   <div className="text-sm text-text-muted">
-                                    {kol.name}
+                                    {kol.twitterDisplayName}
                                   </div>
-                                  <div className="flex mt-1 space-x-1">
+                                  {/* <div className="flex mt-1 space-x-1">
                                     {kol.badges?.split(",").map((badge, i) => (
                                       <span
                                         key={i}
@@ -421,21 +422,22 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                                         {badge}
                                       </span>
                                     ))}
-                                  </div>
+                                  </div> */}
                                 </div>
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white font-medium">
-                              {`${Number(kol.mindshareNum * 100).toFixed(2)}%`}
+                              {`${Number(kol.mindshare * 100).toFixed(2)}%`}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                              {kol.smartFollowers}
+                              {kol.smartFollowersCount?.toLocaleString() || "0"}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                              {kol.followersCountNumeric}
+                              {kol.twitterFollowersCount?.toLocaleString() ||
+                                "0"}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                              {kol.kolScore}
+                              {kol.kolScore?.toLocaleString() || "0"}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                               {kol?.engagementRate
@@ -444,7 +446,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                               {kol?.postingFrequency
-                                ? `${kol.postingFrequency}/day`
+                                ? `~${kol.postingFrequency}/day`
                                 : "-"}
                             </td>
                           </tr>
@@ -894,8 +896,8 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
       <InfluencerDetailOverlay
         isOpen={isDetailOverlayOpen}
         onClose={closeDetailOverlay}
-        influencer={selectedInfluencer}
-        allInfluencers={topKOLs.filter((k) => k && k.id)}
+        kol={selectedKOL}
+        allKOLs={topKOLs.filter((k) => k && k.id)}
       />
     </>
   );

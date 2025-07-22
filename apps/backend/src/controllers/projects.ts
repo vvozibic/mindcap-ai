@@ -256,7 +256,6 @@ export const getProtokolsProjectById = async (req: Request, res: Response) => {
               name: true,
               slug: true,
               mindsharePercent: true,
-              // marketCapUsd: true,
               totalViews: true,
             },
           },
@@ -288,7 +287,6 @@ export const getProtokolsProjectBySlug = async (
               name: true,
               slug: true,
               mindsharePercent: true,
-              // marketCapUsd: true,
               totalViews: true,
             },
           },
@@ -299,6 +297,7 @@ export const getProtokolsProjectBySlug = async (
   });
 
   if (!project) return res.status(404).json({ error: "Not found" });
+
   sendJson(res, project);
 };
 
@@ -317,43 +316,10 @@ export const getInfluencersByProject = async (req: Request, res: Response) => {
             projectId,
           },
         },
+        kolScore: {
+          gt: 0, // фильтруем KOL с нулевым весом
+        },
       },
-      // select: {
-      //   id: true,
-      //   name: true,
-      //   badges: true,
-      //   username: true,
-      //   avatarUrl: true,
-      //   platform: true,
-      //   followingsNumeric: true,
-      //   followersCountNumeric: true,
-      //   smartFollowers: true,
-      //   tweetsCountNumeric: true,
-      //   avgLikes: true,
-      //   avgViews: true,
-      //   engagementRate: true,
-      //   kolScore: true,
-      //   totalPosts: true,
-      //   totalLikes: true,
-      //   totalReplies: true,
-      //   totalRetweets: true,
-      //   totalViews: true,
-      //   totalComments: true,
-      //   twitterRegisterDate: true,
-      //   expertise: true,
-      //   bio: true,
-      //   profileUrl: true,
-      //   mindsharePercent: true,
-      //   mindshareNum: true,
-      //   smartFollowersPercent: true,
-      //   pow: true,
-      //   poi: true,
-      //   poe: true,
-      //   moneyScore: true,
-      //   verified: true,
-      //   createdAt: true,
-      //   updatedAt: true,
-      // },
       orderBy: {
         kolScore: "desc", // сортировка по весу, если нужно
       },

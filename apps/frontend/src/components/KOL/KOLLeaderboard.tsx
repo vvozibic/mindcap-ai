@@ -67,15 +67,22 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
     }
   };
 
-  const kolsWithAdditionalFields = kols.map((i) => ({
-    ...i,
-    mindshare: (+(i?.mindshare || 0) * 100).toFixed(2),
-    postingFrequency: !!i.totalPosts
-      ? Number(
-          i?.totalPosts / daysBetween(i.twitterCreatedAt, new Date())
-        )?.toFixed(0)
-      : "0",
-  }));
+  const kolsWithAdditionalFields = kols.map((i) => {
+    const realPostingFrequency = Number(
+      (i?.totalPosts || 0) / daysBetween(i.twitterCreatedAt, new Date())
+    );
+
+    const postingFrequency =
+      realPostingFrequency > 0 && realPostingFrequency < 1
+        ? 1
+        : Math.round(realPostingFrequency)?.toFixed(0);
+
+    return {
+      ...i,
+      mindshare: (+(i?.mindshare || 0) * 100).toFixed(2),
+      postingFrequency: postingFrequency,
+    };
+  });
 
   const showTooltip = (id: string) => setTooltipVisible(id);
   const hideTooltip = () => setTooltipVisible(null);
@@ -351,17 +358,17 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
 
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-200">
-                        {kol.smartFollowersCount}
+                        {kol.smartFollowersCount?.toLocaleString()}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-200">
-                        {kol.twitterFollowersCount}
+                        {kol.twitterFollowersCount?.toLocaleString()}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-200">
-                        {kol.kolScore}
+                        {kol.kolScore?.toLocaleString()}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -374,7 +381,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-200">
                         {kol?.postingFrequency
-                          ? `${kol?.postingFrequency}/day`
+                          ? `~${kol?.postingFrequency}/day`
                           : "-"}
                       </div>
                     </td>

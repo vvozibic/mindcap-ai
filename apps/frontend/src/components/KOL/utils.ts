@@ -38,6 +38,14 @@ export const getKOLDetailData = (kol: KOL | null): KOLDetailData | null => {
   if (!kol) return null;
 
   const totalPosts = kol.totalPosts || 0;
+  const realPostingFrequency = Number(
+    (kol?.totalPosts || 0) / daysBetween(kol.twitterCreatedAt, new Date())
+  );
+
+  const postingFrequency =
+    realPostingFrequency > 0 && realPostingFrequency < 1
+      ? "~1/day"
+      : `~${Math.round(realPostingFrequency)?.toFixed(0)}/day`;
 
   return {
     biography: kol?.twitterDescription || "No biography available",
@@ -58,11 +66,7 @@ export const getKOLDetailData = (kol: KOL | null): KOLDetailData | null => {
     averageLikesTrend: "up",
     kolScore: kol?.kolScore || 0,
     mindshare: kol?.mindshare,
-    postingFrequency: totalPosts
-      ? `~${Number(
-          totalPosts / daysBetween(kol.twitterCreatedAt, new Date())
-        )?.toFixed(0)}/day`
-      : "0",
+    postingFrequency: postingFrequency || "0",
     likes: kol?.totalAccountLikes || 0,
     views: kol?.totalAccountViews || 0,
     comments: kol?.totalAccountComments || 0,
