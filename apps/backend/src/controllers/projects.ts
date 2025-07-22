@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
+import { sendJson } from "../utils/sendJson";
 // import { parseLinks, serializeLinks } from "../utils/links";
 
 const prisma = new PrismaClient();
@@ -30,7 +31,7 @@ export const getAllProjects = async (_: Request, res: Response) => {
     orderBy: [{ coinMarketCap: "desc" }],
   });
 
-  res.json(projects);
+  sendJson(res, projects);
 };
 
 export const getFeaturedProjects = async (_: Request, res: Response) => {
@@ -58,7 +59,7 @@ export const getFeaturedProjects = async (_: Request, res: Response) => {
     orderBy: [{ coinMarketCap: "desc" }],
   });
 
-  res.json(projects);
+  sendJson(res, projects);
 };
 
 // export const getAllProjects = async (req: Request, res: Response) => {
@@ -83,7 +84,8 @@ export const getProject = async (req: Request, res: Response) => {
   const { id } = req.params;
   const proj = await prisma.project.findUnique({ where: { id } });
   if (!proj) return res.status(404).json({ error: "Not found" });
-  res.json(proj);
+
+  sendJson(res, proj);
 };
 
 export const createProject = async (req: Request, res: Response) => {
@@ -145,7 +147,7 @@ export const getAllProtokolsProjects = async (_: Request, res: Response) => {
     },
   });
 
-  res.json(projects);
+  sendJson(res, projects);
 };
 
 export const getFeaturedProtokolsProjects = async (
@@ -177,7 +179,7 @@ export const getFeaturedProtokolsProjects = async (
     orderBy: [{ coinMarketCap: "desc" }],
   });
 
-  res.json(projects);
+  sendJson(res, projects);
 };
 export const getPaginatedProtokolsProjects = async (
   req: Request,
@@ -232,7 +234,7 @@ export const getPaginatedProtokolsProjects = async (
     }),
   ]);
 
-  res.json({
+  sendJson(res, {
     data: projects,
     total,
     page,
@@ -265,7 +267,8 @@ export const getProtokolsProjectById = async (req: Request, res: Response) => {
   });
 
   if (!project) return res.status(404).json({ error: "Not found" });
-  res.json(project);
+
+  sendJson(res, project);
 };
 
 export const getProtokolsProjectBySlug = async (
@@ -296,7 +299,7 @@ export const getProtokolsProjectBySlug = async (
   });
 
   if (!project) return res.status(404).json({ error: "Not found" });
-  res.json(project);
+  sendJson(res, project);
 };
 
 export const getInfluencersByProject = async (req: Request, res: Response) => {
@@ -315,48 +318,48 @@ export const getInfluencersByProject = async (req: Request, res: Response) => {
           },
         },
       },
-      select: {
-        id: true,
-        name: true,
-        badges: true,
-        username: true,
-        avatarUrl: true,
-        platform: true,
-        followingsNumeric: true,
-        followersCountNumeric: true,
-        smartFollowers: true,
-        tweetsCountNumeric: true,
-        avgLikes: true,
-        avgViews: true,
-        engagementRate: true,
-        kolScore: true,
-        totalPosts: true,
-        totalLikes: true,
-        totalReplies: true,
-        totalRetweets: true,
-        totalViews: true,
-        totalComments: true,
-        twitterRegisterDate: true,
-        expertise: true,
-        bio: true,
-        profileUrl: true,
-        mindsharePercent: true,
-        mindshareNum: true,
-        smartFollowersPercent: true,
-        pow: true,
-        poi: true,
-        poe: true,
-        moneyScore: true,
-        verified: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      // select: {
+      //   id: true,
+      //   name: true,
+      //   badges: true,
+      //   username: true,
+      //   avatarUrl: true,
+      //   platform: true,
+      //   followingsNumeric: true,
+      //   followersCountNumeric: true,
+      //   smartFollowers: true,
+      //   tweetsCountNumeric: true,
+      //   avgLikes: true,
+      //   avgViews: true,
+      //   engagementRate: true,
+      //   kolScore: true,
+      //   totalPosts: true,
+      //   totalLikes: true,
+      //   totalReplies: true,
+      //   totalRetweets: true,
+      //   totalViews: true,
+      //   totalComments: true,
+      //   twitterRegisterDate: true,
+      //   expertise: true,
+      //   bio: true,
+      //   profileUrl: true,
+      //   mindsharePercent: true,
+      //   mindshareNum: true,
+      //   smartFollowersPercent: true,
+      //   pow: true,
+      //   poi: true,
+      //   poe: true,
+      //   moneyScore: true,
+      //   verified: true,
+      //   createdAt: true,
+      //   updatedAt: true,
+      // },
       orderBy: {
         kolScore: "desc", // сортировка по весу, если нужно
       },
     });
 
-    res.json(influencers);
+    sendJson(res, influencers);
   } catch (err) {
     console.error("Failed to fetch influencers for project:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -382,7 +385,7 @@ export const updateProtokolsProject = async (req: Request, res: Response) => {
         rewardPools: true,
       },
     });
-    res.json(project);
+    sendJson(res, project);
   } catch (e: any) {
     res.status(400).json({ error: e.message });
   }

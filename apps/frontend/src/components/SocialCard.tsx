@@ -1,8 +1,8 @@
 import { Award, Gift, Share2, TrendingUp, Users } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { Influencer, User } from "../types";
-import InfluencerDetails from "./Infuencer/InfluencerDetails";
-import { getInfluencerDetailData } from "./Infuencer/utils";
+import { KOL, User } from "../types";
+import InfluencerDetails from "./KOL/KOLDetails";
+import { getKOLDetailData } from "./KOL/utils";
 import { Skeleton } from "./Skeleton";
 import XLogo from "./XLogo";
 
@@ -13,11 +13,11 @@ interface SocialCardProps {
 
 async function fetchInfluencerByUsername(
   username: string
-): Promise<Influencer | null> {
+): Promise<KOL | null> {
   try {
     const response = await fetch(`/api/influencers/user/${username}`);
     if (!response.ok) throw new Error("Failed to fetch influencer");
-    const data: Influencer = await response.json();
+    const data: KOL = await response.json();
     return data;
   } catch (error) {
     console.error("Error fetching influencer:", error);
@@ -26,18 +26,18 @@ async function fetchInfluencerByUsername(
 }
 
 const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
-  const [influencer, setInfuencer] = useState<Influencer | null>(null);
+  const [kol, setKol] = useState<KOL | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       if (user?.username) {
-        const influencer = await fetchInfluencerByUsername(user?.username);
-        if (influencer) setInfuencer(influencer);
+        const kol = await fetchInfluencerByUsername(user?.username);
+        if (kol) setKol(kol);
       }
     };
     fetchData();
   }, [user]);
-  const detailData = getInfluencerDetailData(influencer);
+  const detailData = getKOLDetailData(kol);
 
   if (!user.isAuthenticated) {
     return (
@@ -61,11 +61,11 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
     );
   }
 
-  if (!influencer || !detailData || !user) return <Skeleton />;
+  if (!kol || !detailData || !user) return <Skeleton />;
 
-  return influencer && detailData ? (
+  return kol && detailData ? (
     <>
-      <InfluencerDetails influencer={influencer} />
+      <InfluencerDetails kol={kol} />
       <div className="mt-8  pt-6">
         <h3 className="text-lg font-medium text-gray-200">
           Improve Your Score

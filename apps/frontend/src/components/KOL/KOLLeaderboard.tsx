@@ -1,11 +1,11 @@
 import { ArrowDown, ArrowUp, Info } from "lucide-react";
 import React, { useState } from "react";
-import { Influencer } from "../../types";
+import { KOL } from "../../types";
 import { daysBetween } from "../../utils/daysBetween";
 import Pagination from "../Pagination";
 import { TableSkeleton } from "../TableSkeleton";
 import { usePaginatedData } from "../usePaginatedData";
-import InfluencerDetailOverlay from "./InfluencerDetailOverlay";
+import KOLDetailOverlay from "./KOLDetailOverlay";
 
 interface KOLLeaderboardProps {}
 
@@ -22,7 +22,7 @@ type SortField =
   | "postingFrequency"
   | "kolScore";
 
-const fetchInfluencers = async ({
+const fetchKOLs = async ({
   page,
   limit,
   sortField,
@@ -42,8 +42,7 @@ const fetchInfluencers = async ({
 
 const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
   const [tooltipVisible, setTooltipVisible] = useState<string | null>(null);
-  const [selectedInfluencer, setSelectedInfluencer] =
-    useState<Influencer | null>(null);
+  const [selectedKOL, setSelectedKOL] = useState<KOL | null>(null);
   const [isDetailOverlayOpen, setIsDetailOverlayOpen] = useState(false);
 
   const {
@@ -57,13 +56,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
     loading,
     setSortField,
     setSortDirection,
-  } = usePaginatedData<Influencer>(
-    fetchInfluencers,
-    1,
-    20,
-    "mindshare",
-    "desc"
-  );
+  } = usePaginatedData<KOL>(fetchKOLs, 1, 20, "mindshare", "desc");
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
@@ -74,19 +67,21 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
     }
   };
 
-  const influencers = kols.map((i) => ({
+  const kolsWithAdditionalFields = kols.map((i) => ({
     ...i,
-    mindshare: (i?.mindshareNum * 100).toFixed(2),
-    postingFrequency: Number(
-      i?.tweetsCountNumeric / daysBetween(i.twitterRegisterDate, new Date())
-    )?.toFixed(0),
+    mindshare: (+(i?.mindshare || 0) * 100).toFixed(2),
+    postingFrequency: !!i.totalPosts
+      ? Number(
+          i?.totalPosts / daysBetween(i.twitterCreatedAt, new Date())
+        )?.toFixed(0)
+      : "0",
   }));
 
   const showTooltip = (id: string) => setTooltipVisible(id);
   const hideTooltip = () => setTooltipVisible(null);
 
-  const handleInfluencerClick = (kol: Influencer) => {
-    setSelectedInfluencer(kol);
+  const handleKOLClick = (kol: KOL) => {
+    setSelectedKOL(kol);
     setIsDetailOverlayOpen(true);
   };
 
@@ -122,7 +117,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
           </p>
         </div>
 
-        {Boolean(!influencers.length) ? (
+        {Boolean(!kolsWithAdditionalFields.length) ? (
           <TableSkeleton />
         ) : (
           <div className="overflow-x-auto">
@@ -148,7 +143,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
                   >
-                    Influencer
+                    KOL
                   </th>
 
                   <th
@@ -304,7 +299,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                 </tr>
               </thead>
               <tbody className="bg-primary-800/50 backdrop-blur-sm divide-y divide-primary-700/30">
-                {influencers.map((kol, index) => (
+                {kolsWithAdditionalFields.map((kol, index) => (
                   <tr
                     key={kol.id}
                     className={`group cursor-pointer transition-colors duration-200 hover:bg-primary-900/35 hover:ring-1 hover:ring-accent-500/20 ${
@@ -312,7 +307,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                         ? "bg-primary-800/40"
                         : "bg-primary-700/60"
                     }`}
-                    onClick={() => handleInfluencerClick(kol)}
+                    onClick={() => handleKOLClick(kol)}
                   >
                     <td className="pt-3 pr-0 pb-3 pl-6 whitespace-nowrap">
                       <div className="text-sm text-accent-500">
@@ -324,19 +319,19 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                         <div className="flex-shrink-0 h-10 w-10">
                           <img
                             className="h-10 w-10 rounded-full"
-                            src={kol.avatarUrl || "/default-avatar.png"}
-                            alt={kol.name}
+                            src={kol.twitterAvatarUrl || "/default-avatar.png"}
+                            alt={kol.twitterDisplayName || kol.twitterUsername}
                           />
                         </div>
                         <div className="ml-4 max-w-[300px] text-wrap">
                           <div className="text-sm font-medium text-gray-200 group-hover:text-accent-500 transition-colors duration-300">
-                            {kol.name}
+                            {kol.twitterDisplayName}
                           </div>
                           <div className="text-sm text-gray-400">
-                            {kol.username}
+                            {kol.twitterUsername}
                           </div>
-                          <div className="flex mt-1 space-x-1">
-                            {kol.badges?.split(",")?.map((badge, index) => (
+                          {/* <div className="flex mt-1 space-x-1">
+                            {kol?.badges?.split(",")?.map((badge, index) => (
                               <span
                                 key={index}
                                 className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-600 text-accent-500"
@@ -344,7 +339,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                                 {badge}
                               </span>
                             ))}
-                          </div>
+                          </div> */}
                         </div>
                       </div>
                     </td>
@@ -356,12 +351,12 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
 
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-200">
-                        {kol.smartFollowers}
+                        {kol.smartFollowersCount}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-200">
-                        {kol.followersCountNumeric}
+                        {kol.twitterFollowersCount}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -391,7 +386,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
         )}
       </div>
 
-      {Boolean(influencers.length) && (
+      {Boolean(kolsWithAdditionalFields.length) && (
         <Pagination
           page={page}
           limit={limit}
@@ -399,12 +394,13 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
           onPageChange={setPage}
         />
       )}
-      {selectedInfluencer && (
-        <InfluencerDetailOverlay
+
+      {selectedKOL && (
+        <KOLDetailOverlay
           isOpen={isDetailOverlayOpen}
           onClose={closeDetailOverlay}
-          influencer={selectedInfluencer}
-          allInfluencers={kols.filter((k) => k && k.id)}
+          kol={selectedKOL}
+          allKOLs={kols.filter((k) => k && k.id)}
         />
       )}
     </>

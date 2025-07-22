@@ -16,33 +16,33 @@ import {
   Users,
 } from "lucide-react";
 import React from "react";
-import { Influencer } from "../../types";
-import { getInfluencerDetailData } from "./utils";
+import { KOL } from "../../types";
+import { getKOLDetailData } from "./utils";
 
-interface InfluencerDetailOverlayProps {
-  influencer: Influencer | null;
+interface KOLDetailOverlayProps {
+  kol: KOL | null;
 }
 
-const InfluencerDetails: React.FC<InfluencerDetailOverlayProps> = ({
-  influencer,
-}) => {
-  const detailData = getInfluencerDetailData(influencer);
+const KOLDetails: React.FC<KOLDetailOverlayProps> = ({ kol }) => {
+  const detailData = getKOLDetailData(kol);
 
-  if (!influencer || !detailData) return null;
+  if (!kol) return null;
 
   return (
     <div className="w-full transform overflow-hidden rounded-2xl bg-primary-800 p-6 text-left align-middle shadow-xl transition-all border border-primary-700">
       <div className="flex items-center mb-6 pb-4 border-b border-primary-700">
         <img
-          src={influencer?.avatarUrl || "/default-avatar.png"}
-          alt={influencer.name}
+          src={kol?.twitterAvatarUrl || "/default-avatar.png"}
+          alt={kol.twitterDisplayName}
           className="h-16 w-16 rounded-full border-2 border-accent-500"
         />
         <div className="ml-4">
-          <div className="text-xl font-bold text-white">{influencer.name}</div>
-          <p className="text-gray-300">{influencer.username}</p>
-          <div className="flex mt-1 space-x-1">
-            {influencer.badges?.split(",").map((badge, index) => (
+          <div className="text-xl font-bold text-white">
+            {kol.twitterDisplayName}
+          </div>
+          <p className="text-gray-300">{kol.twitterDisplayName}</p>
+          {/* <div className="flex mt-1 space-x-1">
+            {kol.badges?.split(",").map((badge, index) => (
               <span
                 key={index}
                 className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-600 text-accent-500"
@@ -50,7 +50,7 @@ const InfluencerDetails: React.FC<InfluencerDetailOverlayProps> = ({
                 {badge}
               </span>
             ))}
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -224,7 +224,7 @@ const InfluencerDetails: React.FC<InfluencerDetailOverlayProps> = ({
               <h5 className="text-sm font-medium text-gray-300">AI score</h5>
               <div className="flex items-baseline">
                 <p className="text-xl font-bold text-gray-200">
-                  {Number((detailData?.mindshare || 0) * 100).toFixed(2)}%
+                  {Number(+(detailData?.mindshare || 0) * 100).toFixed(2)}%
                 </p>
               </div>
             </div>
@@ -377,4 +377,4 @@ const InfluencerDetails: React.FC<InfluencerDetailOverlayProps> = ({
   );
 };
 
-export default InfluencerDetails;
+export default KOLDetails;

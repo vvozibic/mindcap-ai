@@ -8,8 +8,8 @@ import {
   Users,
 } from "lucide-react";
 import React, { useState } from "react";
-import { Kol, Project, RewardPool } from "../../types";
-import InfluencerDetailOverlay from "../Infuencer/InfluencerDetailOverlay";
+import { KOL, Kol, Project, RewardPool } from "../../types";
+import InfluencerDetailOverlay from "../KOL/KOLDetailOverlay";
 import { Skeleton } from "../Skeleton";
 import { TableSkeleton } from "../TableSkeleton";
 import XLogo from "../XLogo";
@@ -47,8 +47,9 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
   handlePoolSelect,
   selectedPool,
 }) => {
-  const [selectedInfluencer, setSelectedInfluencer] =
-    useState<Influencer | null>(null);
+  const [selectedInfluencer, setSelectedInfluencer] = useState<KOL | null>(
+    null
+  );
   const [isDetailOverlayOpen, setIsDetailOverlayOpen] = useState(false);
 
   const handleInfluencerClick = (kol: Kol) => {
@@ -132,7 +133,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                       Mindshare
                     </h6>
                     <p className="text-lg font-bold text-gray-200">
-                      {project?.mindsharePercent?.toFixed(2)}%
+                      {project?.mindshare?.toFixed(2)}%
                     </p>
                   </div>
                 </div>
@@ -144,7 +145,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                       Followers
                     </h6>
                     <p className="text-lg font-bold text-gray-200">
-                      {project?.followersCount?.toLocaleString()}
+                      {project?.twitterFollowersCount?.toLocaleString()}
                     </p>
                   </div>
                 </div>

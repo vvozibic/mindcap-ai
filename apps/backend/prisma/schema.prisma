@@ -143,6 +143,7 @@ model Project {
   kols            KOLToProject[]
 
   @@unique([twitterId])
+  @@unique([twitterUsername])
   @@index([twitterUsername])
   @@index([coinMarketCap])
   @@index([createdAt])
@@ -284,8 +285,8 @@ model KOLSnapshot {
   smartEngagement     Float
 
   // Average metrics
-  avgViews Int
-  avgLikes Int
+  avgViews Int?
+  avgLikes Int?
 
   // Total metrics
   totalPosts        Int

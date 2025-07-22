@@ -3,7 +3,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import ProjectDetails from "../components/Projects/ProjectDetails";
 import { Skeleton } from "../components/Skeleton";
 import { TableSkeleton } from "../components/TableSkeleton";
-import { Influencer, ProtokolsProject, RewardPool } from "../types";
+import { KOL, Project, RewardPool } from "../types";
 import { daysBetween } from "../utils/daysBetween";
 
 const fetchProject = async ({ slug }: { slug: string }) => {
@@ -13,7 +13,7 @@ const fetchProject = async ({ slug }: { slug: string }) => {
 };
 
 export function useProjectInfluencers(projectId: string | null | undefined) {
-  const [influencers, setInfluencers] = useState<Influencer[]>([]);
+  const [influencers, setInfluencers] = useState<KOL[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<null | string>(null);
 
@@ -41,7 +41,7 @@ const ProjectPage = () => {
   const [params] = useSearchParams();
   const initialTab = (params.get("tab") || "overview") as "pools" | "overview";
 
-  const [project, setProject] = useState<ProtokolsProject | null>(null);
+  const [project, setProject] = useState<Project | null>(null);
   const [activeOverlayTab, setActiveOverlayTab] = useState<
     "overview" | "pools"
   >(initialTab);
@@ -85,7 +85,7 @@ const ProjectPage = () => {
   const topKOLs = influencers.map((i) => ({
     ...i,
     postingFrequency: Number(
-      i?.tweetsCountNumeric / daysBetween(i.twitterRegisterDate, new Date())
+      (i?.totalPosts || 0) / daysBetween(i.twitterCreatedAt, new Date())
     )?.toFixed(0),
   }));
 

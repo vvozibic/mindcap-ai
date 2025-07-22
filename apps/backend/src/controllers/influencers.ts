@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { enrichInfluencer } from "../components/kols/_enrichInfluencer";
+import { sendJson } from "../utils/sendJson";
 
 const prisma = new PrismaClient();
 
@@ -83,7 +84,8 @@ export const getInfluencers = async (_req: Request, res: Response) => {
       kolScore: "desc",
     },
   });
-  res.json(kols);
+
+  sendJson(res, kols);
 };
 
 export const getPaginatedInfluencers = async (req: Request, res: Response) => {
@@ -116,6 +118,11 @@ export const getPaginatedInfluencers = async (req: Request, res: Response) => {
   const [total, data] = await Promise.all([
     prisma.kOL.count(),
     prisma.kOL.findMany({
+      where: {
+        kolScore: {
+          gte: 0,
+        },
+      },
       skip,
       take: limit,
       orderBy: {
@@ -160,7 +167,7 @@ export const getPaginatedInfluencers = async (req: Request, res: Response) => {
     }),
   ]);
 
-  res.json({
+  sendJson(res, {
     data,
     total,
     page,
@@ -172,7 +179,8 @@ export const getInfluencerById = async (req: Request, res: Response) => {
   const { id } = req.params;
   const proj = await prisma.kOL.findUnique({ where: { id } });
   if (!proj) return res.status(404).json({ error: "Not found" });
-  res.json(proj);
+
+  sendJson(res, proj);
 };
 
 export const getInfluencerByUsername = async (req: Request, res: Response) => {
@@ -197,7 +205,8 @@ export const updateInfluencer = async (req: Request, res: Response) => {
     data: req.body,
   });
   // await recalculateMindshareForInfluencers();
-  res.json(updated);
+
+  sendJson(res, updated);
 };
 
 export const deleteInfluencer = async (req: Request, res: Response) => {

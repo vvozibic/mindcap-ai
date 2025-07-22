@@ -33,51 +33,54 @@ export interface Project {
 
   narrativeLinks: Narrative[];
 }
+export interface KOL {
+  id: string;
 
-export interface Kol {
-  id: string; // cuid (Prisma)
-  rank?: string; // ранг в списке
-  name: string;
-  username: string; // уникальный
-  avatarUrl?: string | null;
-  badges?: string | null;
-  bio?: string | null;
-  platform?: string | null; // "twitter" и т.п.
-  businessAccount?: boolean;
-  followers?: string | null;
-  followings?: string | null;
-  expertise?: string | null;
-  profileUrl?: string | null;
-  twitterScoutJsonRaw?: any | null;
+  twitterId: string;
+  twitterUsername: string;
+  twitterDisplayName: string;
+  twitterAvatarUrl: string | null;
+  twitterDescription: string | null;
+  twitterFollowersCount: number;
+  twitterFollowingCount: number;
+  twitterIsVerified: boolean;
+  twitterLang: string;
+  twitterGoldBadge: boolean | null;
+  twitterCreatedAt: string; // ISO string
 
-  followingsNumeric: number;
-  followersCountNumeric: number;
-  tweetsCountNumeric: number;
-  avgLikes: number;
-  avgViews: number;
-  engagementRate: number;
-  kolScore: number;
-  totalPosts: number;
-  totalLikes: number;
-  totalViews: number;
-  totalReplies: number;
-  totalComments: number;
-  totalRetweets: number;
-  twitterRegisterDate: string;
-
+  // Frontend specific
+  mindshare?: string;
   postingFrequency?: string;
 
-  mindshareNum: number;
-  pow?: string | null;
-  poi?: string | null;
-  poe?: string | null;
-  smartFollowers?: string | null;
-  followersCount?: string | null;
+  kolScore: number | null;
+  smartFollowersCount: number | null;
+  followersChange: number | null;
+  smartEngagement: number | null;
+  smartEngagementChange: number | null;
+  engagementRate: number | null;
+  avgViews: number | null;
+  avgLikes: number | null;
+  threadsCount: number | null;
+  totalPosts: number | null;
+  totalViews: number | null;
+  totalInteractions: number | null;
+  totalOrganicPosts: number | null;
+  totalOrganicViews: number | null;
+  totalOrganicInteractions: number | null;
+  totalAccountPosts: number | null;
+  totalAccountViews: number | null;
+  totalAccountInteractions: number | null;
+  totalAccountComments: number | null;
+  totalAccountLikes: number | null;
+  totalAccountRetweets: number | null;
+  totalAccountReplies: number | null;
+  totalPostsChange: number | null;
+  totalViewsChange: number | null;
+  totalInteractionsChange: number | null;
 
-  moneyScore?: string | null;
-
-  createdAt?: string;
-  updatedAt?: string;
+  fetchedAt: string; // ISO string
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface User {

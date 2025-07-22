@@ -1,6 +1,6 @@
 import React from "react";
 import HeroBlock from "../components/HeroBlock";
-import KOLLeaderboard from "../components/Infuencer/KOLLeaderboard";
+import KOLLeaderboard from "../components/KOL/KOLLeaderboard";
 import NarrativesTreemap from "../components/Narratives";
 
 interface HomePageProps {}
