@@ -75,7 +75,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
         />
         <div className="ml-4">
           <h3 className="text-xl font-bold text-white">
-            {project.twitterUsername}
+            {project.twitterDisplayName}
           </h3>
           <p className="text-gray-300">{project.twitterDescription}</p>
         </div>

@@ -230,36 +230,28 @@ const KOLDetails: React.FC<KOLDetailOverlayProps> = ({ kol }) => {
                 </p>
               </div>
             </div>
-            <div className="ml-8">
-              <h5 className="text-sm font-medium text-gray-300">POW</h5>
-              <div className="flex items-baseline">
-                <p className="text-xl font-bold text-gray-200">
-                  {formatNumber(
-                    Number(detailData?.proofOfWork?.toFixed(2)) || 0
-                  )}
-                </p>
+            {Boolean(detailData?.proofOfWork) && (
+              <div className="ml-8">
+                <h5 className="text-sm font-medium text-gray-300">POW</h5>
+                <div className="flex items-baseline">
+                  <p className="text-xl font-bold text-gray-200">
+                    {formatNumber(
+                      Number(detailData?.proofOfWork?.toFixed(2)) || 0
+                    )}
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="ml-8">
-              <h5 className="text-sm font-medium text-gray-300">
-                Quality Score
-              </h5>
-              <div className="flex items-baseline">
-                <p className="text-xl font-bold text-gray-200">
-                  {formatNumber(
-                    Number(detailData?.qualityScore?.toFixed(2)) || 0
-                  )}
-                </p>
+            )}
+            {Boolean(detailData?.qualityScore) && (
+              <div className="ml-8">
+                <h5 className="text-sm font-medium text-gray-300">KOL score</h5>
+                <div className="flex items-baseline">
+                  <p className="text-xl font-bold text-gray-200">
+                    {detailData?.kolScore?.toLocaleString()}
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="ml-8">
-              <h5 className="text-sm font-medium text-gray-300">KOL score</h5>
-              <div className="flex items-baseline">
-                <p className="text-xl font-bold text-gray-200">
-                  {detailData?.kolScore?.toLocaleString()}
-                </p>
-              </div>
-            </div>
+            )}
           </div>
 
           <h5 className="text-md font-medium text-gray-300 mb-3">
