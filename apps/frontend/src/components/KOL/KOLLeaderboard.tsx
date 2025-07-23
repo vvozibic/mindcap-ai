@@ -2,6 +2,7 @@ import { ArrowDown, ArrowUp, Info } from "lucide-react";
 import React, { useState } from "react";
 import { KOL } from "../../types";
 import { daysBetween } from "../../utils/daysBetween";
+import { formatNumber } from "../../utils/formatNumber";
 import Pagination from "../Pagination";
 import { TableSkeleton } from "../TableSkeleton";
 import { usePaginatedData } from "../usePaginatedData";
@@ -81,6 +82,10 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
       ...i,
       mindshare: i?.kolScorePercentFromTotal?.toFixed(2),
       postingFrequency: postingFrequency,
+      mindoMetric: i.projects.reduce(
+        (acc: number, p: any) => acc + (p.mindoMetric || 0),
+        0
+      ),
     };
   });
 
@@ -159,7 +164,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                     onClick={() => handleSort("mindshare")}
                   >
                     <div className="flex items-center relative">
-                      Mindo share
+                      Mindo metric
                       {sortField === "mindshare" &&
                         (sortDirection === "asc" ? (
                           <ArrowUp className="h-4 w-4 ml-1" />
@@ -352,7 +357,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-200 font-medium">
-                        {`${kol.mindshare}%`}
+                        {`${formatNumber(kol.mindoMetric || 0)}`}
                       </div>
                     </td>
 

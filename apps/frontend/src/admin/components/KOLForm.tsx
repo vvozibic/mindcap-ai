@@ -1,18 +1,28 @@
 import { X } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { Influencer } from "../../types";
+import z from "zod";
+import { KOL } from "../../types";
+import { KOLSchema } from "../../zod";
 
-interface InfluencerFormProps {
+const partialKOLSchema = KOLSchema.omit({
+  createdAt: true,
+  updatedAt: true,
+  fetchedAt: true,
+});
+
+type KOLFormData = z.infer<typeof partialKOLSchema>;
+
+interface KOLFormProps {
   influencerId: string | null;
   onSuccess: () => void;
   onCancel: () => void;
 }
 
-async function fetchInfluencerById(id: string): Promise<Influencer | null> {
+async function fetchKOLById(id: string): Promise<KOL | null> {
   try {
     const response = await fetch(`/api/influencers/${id}`);
     if (!response.ok) throw new Error("Failed to fetch influencer");
-    const data: Influencer = await response.json();
+    const data: KOL = await response.json();
     return data;
   } catch (error) {
     console.error("Error fetching influencer:", error);
@@ -20,55 +30,41 @@ async function fetchInfluencerById(id: string): Promise<Influencer | null> {
   }
 }
 
-const InfluencerForm: React.FC<InfluencerFormProps> = ({
+const KOLForm: React.FC<KOLFormProps> = ({
   influencerId,
   onSuccess,
   onCancel,
 }) => {
-  const [formData, setFormData] = useState<Influencer>({
-    id: "",
-    name: "",
-    username: "",
-    avatarUrl: "",
-    badges: "",
-    platform: "",
-    followers: "",
-    expertise: "",
-    bio: "",
-    profileUrl: "",
-    mindshare: "",
-    pow: "",
-    poi: "",
-    poe: "",
-    smartFollowers: "",
-    followersCount: "",
-    moneyScore: "",
+  const [formData, setFormData] = useState<KOL>({
+    id: crypto.randomUUID(),
+    twitterUsername: "",
+    twitterDisplayName: "",
+    twitterAvatarUrl: "",
+    twitterFollowersCount: 0,
+    twitterDescription: "",
+    kolScorePercentFromTotal: 0,
+    smartFollowersCount: 0,
   });
+
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof KOLFormData, string>>
+  >({});
 
   useEffect(() => {
     const fetchData = async () => {
       if (influencerId) {
-        const influencer = await fetchInfluencerById(influencerId);
-        if (influencer) setFormData(influencer);
+        const kol = await fetchKOLById(influencerId);
+        if (kol) setFormData(kol);
       } else {
         setFormData({
           id: crypto.randomUUID(),
-          name: "",
-          username: "",
-          avatarUrl: "",
-          platform: "",
-          followers: "",
-          badges: "",
-          expertise: "",
-          bio: "",
-          profileUrl: "",
-          mindshare: "",
-          pow: "",
-          poi: "",
-          poe: "",
-          smartFollowers: "",
-          followersCount: "",
-          moneyScore: "",
+          twitterUsername: "",
+          twitterDisplayName: "",
+          twitterAvatarUrl: "",
+          twitterFollowersCount: 0,
+          twitterDescription: "",
+          kolScorePercentFromTotal: 0,
+          smartFollowersCount: 0,
         });
       }
     };
@@ -86,6 +82,21 @@ const InfluencerForm: React.FC<InfluencerFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const result = kolSchema.safeParse(formData);
+
+    if (!result.success) {
+      const fieldErrors: Partial<Record<keyof KOLFormData, string>> = {};
+      result.error.errors.forEach((err) => {
+        const field = err.path[0] as keyof KOLFormData;
+        fieldErrors[field] = err.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setErrors({}); // очистить ошибки
+
     const method = influencerId ? "PUT" : "POST";
     const url = influencerId
       ? `/api/influencers/${influencerId}`
@@ -114,7 +125,7 @@ const InfluencerForm: React.FC<InfluencerFormProps> = ({
     <div>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-gray-800">
-          {influencerId ? "Edit Influencer" : "Add New Influencer"}
+          {influencerId ? "Edit KOL" : "Add New KOL"}
         </h2>
         <button
           onClick={onCancel}
@@ -131,23 +142,30 @@ const InfluencerForm: React.FC<InfluencerFormProps> = ({
             .map(
               ([key, value = ""]) =>
                 key !== "id" && (
-                  <div key={key}>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {key.charAt(0).toUpperCase() + key.slice(1)}
-                    </label>
-                    <input
-                      type="text"
-                      name={key}
-                      disabled={typeof value === "object" && value !== null}
-                      value={
-                        typeof value === "object" && value !== null
-                          ? JSON.stringify(value)
-                          : value || ""
-                      }
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
-                    />
-                  </div>
+                  <>
+                    <div key={key}>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {key.charAt(0).toUpperCase() + key.slice(1)}
+                      </label>
+                      <input
+                        type="text"
+                        name={key}
+                        disabled={typeof value === "object" && value !== null}
+                        value={
+                          typeof value === "object" && value !== null
+                            ? JSON.stringify(value)
+                            : value || ""
+                        }
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
+                      />
+                    </div>
+                    {errors[key as keyof KOLFormData] && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors[key as keyof KOLFormData]}
+                      </p>
+                    )}
+                  </>
                 )
             )}
         </div>
@@ -164,7 +182,7 @@ const InfluencerForm: React.FC<InfluencerFormProps> = ({
             type="submit"
             className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
           >
-            {influencerId ? "Update Influencer" : "Add Influencer"}
+            {influencerId ? "Update KOL" : "Add KOL"}
           </button>
         </div>
       </form>
@@ -172,4 +190,4 @@ const InfluencerForm: React.FC<InfluencerFormProps> = ({
   );
 };
 
-export default InfluencerForm;
+export default KOLForm;

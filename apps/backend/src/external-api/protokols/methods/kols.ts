@@ -42,3 +42,9 @@ export const getProfileStats = async (
 
   return retry(url, () => fetchFromProtokols<ProfileStateResponse>(url));
 };
+
+export const getProfile = async (slug_or_id): Promise<ProfileStateResponse> => {
+  const url = endpoints.profile(slug_or_id);
+
+  return retry(url, () => fetchFromProtokols<ProfileStateResponse>(url));
+};

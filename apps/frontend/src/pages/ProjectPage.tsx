@@ -83,22 +83,28 @@ const ProjectPage = () => {
 
   const projectPools = project.rewardPools || [];
 
-  const topKOLs = influencers.map((i) => {
-    const realPostingFrequency = Number(
-      (i?.totalPosts || 0) / daysBetween(i.twitterCreatedAt, new Date())
-    );
+  const topKOLs = influencers
+    .map((i) => {
+      const realPostingFrequency = Number(
+        (i?.totalPosts || 0) / daysBetween(i.twitterCreatedAt, new Date())
+      );
 
-    const postingFrequency =
-      realPostingFrequency > 0 && realPostingFrequency < 1
-        ? 1
-        : Math.round(realPostingFrequency)?.toFixed(0);
+      const postingFrequency =
+        realPostingFrequency > 0 && realPostingFrequency < 1
+          ? 1
+          : Math.round(realPostingFrequency)?.toFixed(0);
 
-    return {
-      ...i,
-      mindshare: i?.kolScorePercentFromTotal?.toFixed(2),
-      postingFrequency: postingFrequency,
-    };
-  });
+      return {
+        ...i,
+        mindshare: i?.kolScorePercentFromTotal?.toFixed(2),
+        postingFrequency: postingFrequency,
+        mindoMetric:
+          i.projects.find((p) => p.project.id === project.id)?.mindoMetric || 0,
+      };
+    })
+    .sort((a, b) => {
+      return b.mindoMetric - a.mindoMetric;
+    });
 
   const handlePoolSelect = (pool: RewardPool) => {
     setSelectedPool(pool);

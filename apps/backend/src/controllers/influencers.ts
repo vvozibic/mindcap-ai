@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { enrichInfluencer } from "../components/kols/_enrichInfluencer";
+import { getProfile } from "../external-api/protokols/methods/kols";
 import { sendJson } from "../utils/sendJson";
 
 const prisma = new PrismaClient();
@@ -58,6 +59,19 @@ export const getInfluencers = async (_req: Request, res: Response) => {
   sendJson(res, kols);
 };
 
+export const searchProtokolsByUsername = async (
+  req: Request,
+  res: Response
+) => {
+  const { twitterUsername } = req.params;
+
+  console.log(twitterUsername);
+
+  const data = await getProfile(twitterUsername);
+
+  res.status(200).json(data);
+};
+
 export const getPaginatedInfluencers = async (req: Request, res: Response) => {
   const limit = parseInt(req.query.limit as string) || 20;
   const page = parseInt(req.query.page as string) || 1;
@@ -100,6 +114,13 @@ export const getPaginatedInfluencers = async (req: Request, res: Response) => {
           gte: 0,
         },
         hidden: false,
+      },
+      include: {
+        projects: {
+          include: {
+            project: true,
+          },
+        },
       },
       skip,
       take: limit,

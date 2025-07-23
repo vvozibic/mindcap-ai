@@ -335,6 +335,11 @@ model KOLToProject {
   totalInteractions BigInt @db.BigInt
   totalComments     BigInt @db.BigInt
 
+  // Syntetic metrics
+  qualityScore Float? // 1 * log1p(avgLikes) + 1.5 * log1p(totalComments) + 0.1 * log1p(avgViews)
+  proofOfWork  Float? // totalPosts + qualityScore
+  mindoMetric  Float? // proofOfWork * kolScore
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   fetchedAt DateTime @default(now())
@@ -379,4 +384,9 @@ model Log {
   message   String
   url       String?
   timestamp DateTime @default(now())
+}
+
+generator zod {
+  provider = "npx zod-prisma-types"
+  output   = "../../frontend/src/zod"
 }

@@ -12,4 +12,6 @@ export const endpoints = {
 
   profileStats: (username_or_id: string) =>
     `${BASE}/profile/${username_or_id}/stats`,
+
+  profile: (username_or_id: string) => `${BASE}/profile/${username_or_id}`,
 };

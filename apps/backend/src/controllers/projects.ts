@@ -321,6 +321,13 @@ export const getInfluencersByProject = async (req: Request, res: Response) => {
         },
         hidden: false,
       },
+      include: {
+        projects: {
+          include: {
+            project: true,
+          },
+        },
+      },
       orderBy: {
         kolScore: "desc", // сортировка по весу, если нужно
       },

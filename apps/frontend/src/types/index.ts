@@ -27,6 +27,10 @@ export interface Project {
   coinName: string;
   coinImageUrl?: string;
 
+  mindoMetric: number;
+  proofOfWork: number;
+  qualityScore: number;
+
   createdAt: string;
   updatedAt: string;
   fetchedAt: string;
@@ -77,6 +81,10 @@ export interface KOL {
   totalPostsChange: number | null;
   totalViewsChange: number | null;
   totalInteractionsChange: number | null;
+
+  mindoMetric?: number | null;
+
+  projects: any;
 
   fetchedAt: string; // ISO string
   createdAt: string;

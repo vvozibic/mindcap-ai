@@ -7,6 +7,7 @@ import {
   getInfluencerByUsername,
   getInfluencers,
   getPaginatedInfluencers,
+  searchProtokolsByUsername,
   updateInfluencer,
 } from "../controllers/influencers";
 import { authenticateToken } from "../middleware/auth";
@@ -14,6 +15,7 @@ import { authenticateToken } from "../middleware/auth";
 const router = express.Router();
 
 router.get("/", getInfluencers);
+router.get("/search-protokols/:twitterUsername", searchProtokolsByUsername);
 router.get("/paginate", getPaginatedInfluencers);
 router.get("/:id", getInfluencerById);
 router.get("/user/:username", getInfluencerByUsername);

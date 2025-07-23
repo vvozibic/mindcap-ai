@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import React, { useState } from "react";
 import { KOL, Project, RewardPool } from "../../types";
+import { formatNumber } from "../../utils/formatNumber";
 import InfluencerDetailOverlay from "../KOL/KOLDetailOverlay";
 import { Skeleton } from "../Skeleton";
 import { TableSkeleton } from "../TableSkeleton";
@@ -363,7 +364,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                             KOL
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
-                            Mindo share
+                            Mindo metric
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
                             Smart Followers
@@ -427,7 +428,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white font-medium">
-                              {`${kol?.kolScorePercentFromTotal?.toFixed(2)}%`}
+                              {formatNumber(kol?.mindoMetric || 0)}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                               {kol.smartFollowersCount?.toLocaleString() || "0"}
@@ -495,15 +496,15 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                           selectedPool.status === "active"
                             ? "bg-green-900 text-green-200"
                             : selectedPool.status === "upcoming"
-                            ? "bg-blue-900 text-blue-200"
-                            : "bg-gray-700 text-gray-200"
+                              ? "bg-blue-900 text-blue-200"
+                              : "bg-gray-700 text-gray-200"
                         }`}
                       >
                         {selectedPool.status === "active"
                           ? "Active"
                           : selectedPool.status === "upcoming"
-                          ? "Upcoming"
-                          : "Completed"}
+                            ? "Upcoming"
+                            : "Completed"}
                       </span>
                       <span className="ml-2 text-gray-400 text-sm">
                         <Clock className="inline-block h-4 w-4 mr-1" />
@@ -800,15 +801,15 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                           pool.status === "active"
                             ? "bg-green-900 text-green-200"
                             : pool.status === "upcoming"
-                            ? "bg-blue-900 text-blue-200"
-                            : "bg-gray-700 text-gray-200"
+                              ? "bg-blue-900 text-blue-200"
+                              : "bg-gray-700 text-gray-200"
                         }`}
                       >
                         {pool.status === "active"
                           ? "Active"
                           : pool.status === "upcoming"
-                          ? "Upcoming"
-                          : "Completed"}
+                            ? "Upcoming"
+                            : "Completed"}
                       </span>
                     </div>
 
