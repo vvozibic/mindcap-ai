@@ -21,6 +21,9 @@ export interface KOLDetailData {
   views: number;
   kolScore?: number;
   mindshare?: number;
+  mindoMetric?: number | null;
+  proofOfWork: number | null;
+  qualityScore: number | null;
   comments: number;
   retwets: number;
   smartFollowersPercent: number;
@@ -66,6 +69,9 @@ export const getKOLDetailData = (kol: KOL | null): KOLDetailData | null => {
     averageLikesTrend: "up",
     kolScore: kol?.kolScore || 0,
     mindshare: kol?.kolScorePercentFromTotal,
+    mindoMetric: kol?.mindoMetric,
+    proofOfWork: kol?.proofOfWork,
+    qualityScore: kol?.qualityScore,
     postingFrequency: postingFrequency || "0",
     likes: kol?.totalAccountLikes || 0,
     views: kol?.totalAccountViews || 0,

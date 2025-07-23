@@ -72,63 +72,118 @@ export const searchProtokolsByUsername = async (
   res.status(200).json(data);
 };
 
+const allowedSortFields = {
+  mindoMetric: `SUM(kp."mindoMetric")`,
+  proofOfWork: `SUM(kp."proofOfWork")`,
+  qualityScore: `SUM(kp."qualityScore")`,
+  totalPosts: `SUM(kp."totalPosts")`,
+  totalComments: `SUM(kp."totalComments")`,
+  kolScore: `k."kolScore"`,
+  engagementRate: `k."engagementRate"`,
+  smartFollowersCount: `k."smartFollowersCount"`,
+  twitterFollowersCount: `k."twitterFollowersCount"`,
+  totalAccountPosts: `k."totalAccountPosts"`,
+} as const;
+
+type SortField = keyof typeof allowedSortFields;
+
 export const getPaginatedInfluencers = async (req: Request, res: Response) => {
   const limit = parseInt(req.query.limit as string) || 20;
   const page = parseInt(req.query.page as string) || 1;
   const skip = (page - 1) * limit;
 
-  const sortField = (req.query.sortField as string) || "kolScore";
-  const sortDirection =
-    (req.query.sortDirection as string) === "asc" ? "asc" : "desc";
+  const sortField = (req.query.sortField as string) || "mindoMetric";
+  const sortDirection = req.query.sortDirection === "asc" ? "ASC" : "DESC";
 
-  // Поддерживаем только допустимые поля сортировки
-  const allowedSortFields = [
-    "followersCountNumeric",
-    "kolScorePercent",
-    "pow",
-    "poi",
-    "poe",
-    "smartFollowers",
-    "engagementRate",
-    "avgLikes",
-    "tweetsCountNumeric",
-    "kolScore",
-  ] as const;
+  const sortExpr = allowedSortFields[sortField as SortField];
+  if (!sortExpr) {
+    return res.status(400).json({ error: `Invalid sortField: ${sortField}` });
+  }
 
-  const safeSortField = allowedSortFields.includes(sortField as any)
-    ? (sortField as (typeof allowedSortFields)[number])
-    : "kolScore";
+  const data = await prisma.$queryRawUnsafe<any[]>(
+    `
+    SELECT
+    k.id,
+    k."hidden",
+    k."twitterId",
+    k."twitterUsername",
+    k."twitterDisplayName",
+    k."twitterAvatarUrl",
+    k."twitterDescription",
+    k."twitterDescriptionLink",
+    k."twitterFollowersCount",
+    k."twitterFollowingCount",
+    k."twitterIsVerified",
+    k."twitterGoldBadge",
+    k."twitterLang",
+    k."twitterCreatedAt",
 
-  const [total, data] = await Promise.all([
-    prisma.kOL.count({
-      where: {
-        kolScore: {
-          gte: 0,
-        },
-        hidden: false,
-      },
-    }),
-    prisma.kOL.findMany({
-      where: {
-        kolScore: {
-          gte: 0,
-        },
-        hidden: false,
-      },
-      include: {
-        projects: {
-          include: {
-            project: true,
-          },
-        },
-      },
-      skip,
-      take: limit,
-      orderBy: {
-        [safeSortField]: sortDirection,
-      },
-    }),
-  ]);
+    -- main metrics
+    k."kolScore",
+    k."kolScorePercentFromTotal",
+    k."smartFollowersCount",
+    k."threadsCount",
+    k."engagementRate",
+    k."smartEngagement",
+
+    -- average
+    k."avgViews",
+    k."avgLikes",
+
+    -- total
+    k."totalPosts",
+    k."totalViews",
+    k."totalInteractions",
+
+    -- total organic
+    k."totalOrganicPosts",
+    k."totalOrganicViews",
+    k."totalOrganicInteractions",
+
+    -- total account
+    k."totalAccountPosts",
+    k."totalAccountViews",
+    k."totalAccountInteractions",
+    k."totalAccountComments",
+    k."totalAccountLikes",
+    k."totalAccountRetweets",
+    k."totalAccountReplies",
+
+    -- change metrics
+    k."totalPostsChange",
+    k."totalInteractionsChange",
+    k."totalViewsChange",
+    k."followersChange",
+    k."smartEngagementChange",
+    
+    SUM(kp."mindoMetric") AS "mindoMetric",
+    SUM(kp."proofOfWork") AS "proofOfWork",
+    SUM(kp."qualityScore") AS "qualityScore",
+    SUM(kp."totalPosts") AS "totalPosts",
+    SUM(kp."totalComments") AS "totalComments"
+    FROM "KOL" k
+    JOIN "KOLToProject" kp ON kp."kolId" = k.id
+    WHERE k."kolScore" > 0 AND k."hidden" = false
+    GROUP BY k.id
+    ORDER BY ${sortExpr} ${sortDirection}
+    LIMIT $1 OFFSET $2
+  `,
+    limit,
+    skip
+  );
+
+  const totalResult = await prisma.$queryRawUnsafe<{ count: number }[]>(`
+    SELECT COUNT(*)::int AS count
+    FROM (
+      SELECT k.id
+      FROM "KOL" k
+      JOIN "KOLToProject" kp ON kp."kolId" = k.id
+      WHERE k."kolScore" > 0 AND k."hidden" = false
+      GROUP BY k.id
+    ) sub;
+  `);
+
+  const total = totalResult[0]?.count ?? 0;
 
   sendJson(res, {
     data,

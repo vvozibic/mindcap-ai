@@ -2,8 +2,6 @@ import {
   Clock,
   DollarSign,
   ExternalLink,
-  Eye,
-  Newspaper,
   TrendingUp,
   Users,
 } from "lucide-react";
@@ -149,7 +147,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                   </div>
                 </div>
 
-                <div className="flex items-center">
+                {/* <div className="flex items-center">
                   <Eye className="h-5 w-5 text-accent-500" />
                   <div className="ml-3">
                     <h6 className="text-xs font-medium text-gray-400">Views</h6>
@@ -167,7 +165,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                       {project?.totalPosts?.toLocaleString()}
                     </p>
                   </div>
-                </div>
+                </div> */}
               </div>
 
               <div className="flex items-center">
@@ -364,7 +362,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                             KOL
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
-                            Mindo metric
+                            Mindo score
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
                             Smart Followers
@@ -428,7 +426,9 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white font-medium">
-                              {formatNumber(kol?.mindoMetric || 0)}
+                              {formatNumber(
+                                Number(kol?.mindoMetric?.toFixed(2)) || 0
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                               {kol.smartFollowersCount?.toLocaleString() || "0"}

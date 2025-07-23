@@ -271,6 +271,9 @@ model KOL {
 
   @@unique([twitterId])
   @@unique([twitterUsername])
+  @@index([kolScore])
+  @@index([hidden])
+  @@index([kolScore, hidden])
   @@index([twitterUsername])
   @@index([twitterId])
 }
@@ -348,6 +351,7 @@ model KOLToProject {
   project Project @relation(fields: [projectId], references: [id])
 
   @@unique([kolId, projectId])
+  @@index([mindoMetric])
   @@index([kolId])
   @@index([projectId])
 }

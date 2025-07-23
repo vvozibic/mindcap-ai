@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import React from "react";
 import { KOL } from "../../types";
+import { formatNumber } from "../../utils/formatNumber";
 import { getKOLDetailData } from "./utils";
 
 interface KOLDetailOverlayProps {
@@ -221,10 +222,34 @@ const KOLDetails: React.FC<KOLDetailOverlayProps> = ({ kol }) => {
               </div>
             </div>
             <div className="ml-8">
-              <h5 className="text-sm font-medium text-gray-300">Mindo share</h5>
+              <h5 className="text-sm font-medium text-gray-300">Mindo score</h5>
               <div className="flex items-baseline">
                 <p className="text-xl font-bold text-gray-200">
-                  {detailData?.mindshare?.toFixed(2)}%
+                  {formatNumber(
+                    Number(detailData?.mindoMetric?.toFixed(2)) || 0
+                  )}
+                </p>
+              </div>
+            </div>
+            <div className="ml-8">
+              <h5 className="text-sm font-medium text-gray-300">POW</h5>
+              <div className="flex items-baseline">
+                <p className="text-xl font-bold text-gray-200">
+                  {formatNumber(
+                    Number(detailData?.proofOfWork?.toFixed(2)) || 0
+                  )}
+                </p>
+              </div>
+            </div>
+            <div className="ml-8">
+              <h5 className="text-sm font-medium text-gray-300">
+                Quality Score
+              </h5>
+              <div className="flex items-baseline">
+                <p className="text-xl font-bold text-gray-200">
+                  {formatNumber(
+                    Number(detailData?.qualityScore?.toFixed(2)) || 0
+                  )}
                 </p>
               </div>
             </div>
