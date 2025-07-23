@@ -4,7 +4,6 @@ import {
   CheckCircle,
   ExternalLink,
   Eye,
-  FileText,
   Heart,
   MessageCircle,
   Share2,
@@ -41,7 +40,7 @@ const KOLDetails: React.FC<KOLDetailOverlayProps> = ({ kol }) => {
           <div className="text-xl font-bold text-white">
             {kol.twitterDisplayName}
           </div>
-          <p className="text-gray-300">{kol.twitterDisplayName}</p>
+          <p className="text-gray-300">@{kol.twitterUsername}</p>
           {/* <div className="flex mt-1 space-x-1">
             {kol.badges?.split(",").map((badge, index) => (
               <span
@@ -211,8 +210,8 @@ const KOLDetails: React.FC<KOLDetailOverlayProps> = ({ kol }) => {
           <h4 className="text-lg font-medium text-gray-200 mb-4">Analytics</h4>
 
           <div className="flex items-center mb-4">
-            <FileText className="h-5 w-5 text-accent-500" />
-            <div className="ml-3">
+            {/* <FileText className="h-5 w-5 text-accent-500" /> */}
+            <div className="">
               <h5 className="text-sm font-medium text-gray-300">Total Posts</h5>
               <div className="flex items-baseline">
                 <p className="text-xl font-bold text-gray-200">
