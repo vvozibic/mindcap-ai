@@ -26,7 +26,7 @@ export const ProjectSnapshotScalarFieldEnumSchema = z.enum(['id','totalViews','t
 
 export const ProjectToNarrativeScalarFieldEnumSchema = z.enum(['id','narrativeId','projectId','totalViews','totalPosts','mindsharePercent','mindshareChange24h','mindshareChange7d','mindshareChange30d','mindshareChange90d','createdAt']);
 
-export const KOLScalarFieldEnumSchema = z.enum(['id','hidden','twitterId','twitterUsername','twitterDisplayName','twitterAvatarUrl','twitterDescription','twitterDescriptionLink','twitterFollowersCount','twitterFollowingCount','twitterIsVerified','twitterGoldBadge','twitterLang','twitterCreatedAt','kolScore','kolScorePercentFromTotal','smartFollowersCount','threadsCount','engagementRate','smartEngagement','avgViews','avgLikes','totalPosts','totalViews','totalInteractions','totalOrganicPosts','totalOrganicViews','totalOrganicInteractions','totalAccountPosts','totalAccountViews','totalAccountInteractions','totalAccountComments','totalAccountLikes','totalAccountRetweets','totalAccountReplies','totalPostsChange','totalInteractionsChange','totalViewsChange','followersChange','smartEngagementChange','createdAt','updatedAt','fetchedAt']);
+export const KOLScalarFieldEnumSchema = z.enum(['id','hidden','isAlsoProject','twitterId','twitterUsername','twitterDisplayName','twitterAvatarUrl','twitterDescription','twitterDescriptionLink','twitterFollowersCount','twitterFollowingCount','twitterIsVerified','twitterGoldBadge','twitterLang','twitterCreatedAt','kolScore','kolScorePercentFromTotal','smartFollowersCount','threadsCount','engagementRate','smartEngagement','avgViews','avgLikes','totalPosts','totalViews','totalInteractions','totalOrganicPosts','totalOrganicViews','totalOrganicInteractions','totalAccountPosts','totalAccountViews','totalAccountInteractions','totalAccountComments','totalAccountLikes','totalAccountRetweets','totalAccountReplies','totalPostsChange','totalInteractionsChange','totalViewsChange','followersChange','smartEngagementChange','createdAt','updatedAt','fetchedAt']);
 
 export const KOLSnapshotScalarFieldEnumSchema = z.enum(['id','kolId','kolScore','smartFollowersCount','threadsCount','engagementRate','smartEngagement','avgViews','avgLikes','totalPosts','totalViews','totalInteractions','totalOrganicPosts','totalOrganicViews','totalOrganicInteractions','totalAccountPosts','totalAccountViews','totalAccountInteractions','totalAccountComments','totalAccountLikes','totalAccountRetweets','totalAccountReplies','totalPostsChange','totalInteractionsChange','totalViewsChange','followersChange','smartEngagementChange','fetchedDate']);
 
@@ -223,6 +223,7 @@ export type ProjectToNarrative = z.infer<typeof ProjectToNarrativeSchema>
 export const KOLSchema = z.object({
   id: z.string(),
   hidden: z.boolean(),
+  isAlsoProject: z.boolean(),
   twitterId: z.string(),
   twitterUsername: z.string(),
   twitterDisplayName: z.string(),
@@ -630,6 +631,7 @@ export const KOLCountOutputTypeSelectSchema: z.ZodType<Prisma.KOLCountOutputType
 export const KOLSelectSchema: z.ZodType<Prisma.KOLSelect> = z.object({
   id: z.boolean().optional(),
   hidden: z.boolean().optional(),
+  isAlsoProject: z.boolean().optional(),
   twitterId: z.boolean().optional(),
   twitterUsername: z.boolean().optional(),
   twitterDisplayName: z.boolean().optional(),
@@ -1714,6 +1716,7 @@ export const KOLWhereInputSchema: z.ZodType<Prisma.KOLWhereInput> = z.object({
   NOT: z.union([ z.lazy(() => KOLWhereInputSchema),z.lazy(() => KOLWhereInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   hidden: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
+  isAlsoProject: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   twitterId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   twitterUsername: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   twitterDisplayName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
@@ -1762,6 +1765,7 @@ export const KOLWhereInputSchema: z.ZodType<Prisma.KOLWhereInput> = z.object({
 export const KOLOrderByWithRelationInputSchema: z.ZodType<Prisma.KOLOrderByWithRelationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   hidden: z.lazy(() => SortOrderSchema).optional(),
+  isAlsoProject: z.lazy(() => SortOrderSchema).optional(),
   twitterId: z.lazy(() => SortOrderSchema).optional(),
   twitterUsername: z.lazy(() => SortOrderSchema).optional(),
   twitterDisplayName: z.lazy(() => SortOrderSchema).optional(),
@@ -1843,6 +1847,7 @@ export const KOLWhereUniqueInputSchema: z.ZodType<Prisma.KOLWhereUniqueInput> = 
   OR: z.lazy(() => KOLWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => KOLWhereInputSchema),z.lazy(() => KOLWhereInputSchema).array() ]).optional(),
   hidden: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
+  isAlsoProject: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   twitterDisplayName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   twitterAvatarUrl: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   twitterDescription: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
@@ -1889,6 +1894,7 @@ export const KOLWhereUniqueInputSchema: z.ZodType<Prisma.KOLWhereUniqueInput> = 
 export const KOLOrderByWithAggregationInputSchema: z.ZodType<Prisma.KOLOrderByWithAggregationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   hidden: z.lazy(() => SortOrderSchema).optional(),
+  isAlsoProject: z.lazy(() => SortOrderSchema).optional(),
   twitterId: z.lazy(() => SortOrderSchema).optional(),
   twitterUsername: z.lazy(() => SortOrderSchema).optional(),
   twitterDisplayName: z.lazy(() => SortOrderSchema).optional(),
@@ -1943,6 +1949,7 @@ export const KOLScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.KOLScalar
   NOT: z.union([ z.lazy(() => KOLScalarWhereWithAggregatesInputSchema),z.lazy(() => KOLScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   hidden: z.union([ z.lazy(() => BoolWithAggregatesFilterSchema),z.boolean() ]).optional(),
+  isAlsoProject: z.union([ z.lazy(() => BoolWithAggregatesFilterSchema),z.boolean() ]).optional(),
   twitterId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   twitterUsername: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   twitterDisplayName: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
@@ -3342,6 +3349,7 @@ export const ProjectToNarrativeUncheckedUpdateManyInputSchema: z.ZodType<Prisma.
 export const KOLCreateInputSchema: z.ZodType<Prisma.KOLCreateInput> = z.object({
   id: z.string().optional(),
   hidden: z.boolean().optional(),
+  isAlsoProject: z.boolean().optional(),
   twitterId: z.string(),
   twitterUsername: z.string(),
   twitterDisplayName: z.string(),
@@ -3390,6 +3398,7 @@ export const KOLCreateInputSchema: z.ZodType<Prisma.KOLCreateInput> = z.object({
 export const KOLUncheckedCreateInputSchema: z.ZodType<Prisma.KOLUncheckedCreateInput> = z.object({
   id: z.string().optional(),
   hidden: z.boolean().optional(),
+  isAlsoProject: z.boolean().optional(),
   twitterId: z.string(),
   twitterUsername: z.string(),
   twitterDisplayName: z.string(),
@@ -3438,6 +3447,7 @@ export const KOLUncheckedCreateInputSchema: z.ZodType<Prisma.KOLUncheckedCreateI
 export const KOLUpdateInputSchema: z.ZodType<Prisma.KOLUpdateInput> = z.object({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hidden: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  isAlsoProject: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   twitterId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   twitterUsername: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   twitterDisplayName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3486,6 +3496,7 @@ export const KOLUpdateInputSchema: z.ZodType<Prisma.KOLUpdateInput> = z.object({
 export const KOLUncheckedUpdateInputSchema: z.ZodType<Prisma.KOLUncheckedUpdateInput> = z.object({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hidden: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  isAlsoProject: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   twitterId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   twitterUsername: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   twitterDisplayName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3534,6 +3545,7 @@ export const KOLUncheckedUpdateInputSchema: z.ZodType<Prisma.KOLUncheckedUpdateI
 export const KOLCreateManyInputSchema: z.ZodType<Prisma.KOLCreateManyInput> = z.object({
   id: z.string().optional(),
   hidden: z.boolean().optional(),
+  isAlsoProject: z.boolean().optional(),
   twitterId: z.string(),
   twitterUsername: z.string(),
   twitterDisplayName: z.string(),
@@ -3580,6 +3592,7 @@ export const KOLCreateManyInputSchema: z.ZodType<Prisma.KOLCreateManyInput> = z.
 export const KOLUpdateManyMutationInputSchema: z.ZodType<Prisma.KOLUpdateManyMutationInput> = z.object({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hidden: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  isAlsoProject: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   twitterId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   twitterUsername: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   twitterDisplayName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3626,6 +3639,7 @@ export const KOLUpdateManyMutationInputSchema: z.ZodType<Prisma.KOLUpdateManyMut
 export const KOLUncheckedUpdateManyInputSchema: z.ZodType<Prisma.KOLUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hidden: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  isAlsoProject: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   twitterId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   twitterUsername: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   twitterDisplayName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4994,6 +5008,7 @@ export const KOLSnapshotOrderByRelationAggregateInputSchema: z.ZodType<Prisma.KO
 export const KOLCountOrderByAggregateInputSchema: z.ZodType<Prisma.KOLCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   hidden: z.lazy(() => SortOrderSchema).optional(),
+  isAlsoProject: z.lazy(() => SortOrderSchema).optional(),
   twitterId: z.lazy(() => SortOrderSchema).optional(),
   twitterUsername: z.lazy(() => SortOrderSchema).optional(),
   twitterDisplayName: z.lazy(() => SortOrderSchema).optional(),
@@ -5071,6 +5086,7 @@ export const KOLAvgOrderByAggregateInputSchema: z.ZodType<Prisma.KOLAvgOrderByAg
 export const KOLMaxOrderByAggregateInputSchema: z.ZodType<Prisma.KOLMaxOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   hidden: z.lazy(() => SortOrderSchema).optional(),
+  isAlsoProject: z.lazy(() => SortOrderSchema).optional(),
   twitterId: z.lazy(() => SortOrderSchema).optional(),
   twitterUsername: z.lazy(() => SortOrderSchema).optional(),
   twitterDisplayName: z.lazy(() => SortOrderSchema).optional(),
@@ -5117,6 +5133,7 @@ export const KOLMaxOrderByAggregateInputSchema: z.ZodType<Prisma.KOLMaxOrderByAg
 export const KOLMinOrderByAggregateInputSchema: z.ZodType<Prisma.KOLMinOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   hidden: z.lazy(() => SortOrderSchema).optional(),
+  isAlsoProject: z.lazy(() => SortOrderSchema).optional(),
   twitterId: z.lazy(() => SortOrderSchema).optional(),
   twitterUsername: z.lazy(() => SortOrderSchema).optional(),
   twitterDisplayName: z.lazy(() => SortOrderSchema).optional(),
@@ -7834,6 +7851,7 @@ export const KOLSnapshotScalarWhereInputSchema: z.ZodType<Prisma.KOLSnapshotScal
 export const KOLCreateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.KOLCreateWithoutKolSnapshotInput> = z.object({
   id: z.string().optional(),
   hidden: z.boolean().optional(),
+  isAlsoProject: z.boolean().optional(),
   twitterId: z.string(),
   twitterUsername: z.string(),
   twitterDisplayName: z.string(),
@@ -7881,6 +7899,7 @@ export const KOLCreateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.KOLCreateW
 export const KOLUncheckedCreateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.KOLUncheckedCreateWithoutKolSnapshotInput> = z.object({
   id: z.string().optional(),
   hidden: z.boolean().optional(),
+  isAlsoProject: z.boolean().optional(),
   twitterId: z.string(),
   twitterUsername: z.string(),
   twitterDisplayName: z.string(),
@@ -7944,6 +7963,7 @@ export const KOLUpdateToOneWithWhereWithoutKolSnapshotInputSchema: z.ZodType<Pri
 export const KOLUpdateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.KOLUpdateWithoutKolSnapshotInput> = z.object({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hidden: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  isAlsoProject: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   twitterId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   twitterUsername: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   twitterDisplayName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
@@ -7991,6 +8011,7 @@ export const KOLUpdateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.KOLUpdateW
 export const KOLUncheckedUpdateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.KOLUncheckedUpdateWithoutKolSnapshotInput> = z.object({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hidden: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  isAlsoProject: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   twitterId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   twitterUsername: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   twitterDisplayName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
@@ -8038,6 +8059,7 @@ export const KOLUncheckedUpdateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.K
 export const KOLCreateWithoutProjectsInputSchema: z.ZodType<Prisma.KOLCreateWithoutProjectsInput> = z.object({
   id: z.string().optional(),
   hidden: z.boolean().optional(),
+  isAlsoProject: z.boolean().optional(),
   twitterId: z.string(),
   twitterUsername: z.string(),
   twitterDisplayName: z.string(),
@@ -8085,6 +8107,7 @@ export const KOLCreateWithoutProjectsInputSchema: z.ZodType<Prisma.KOLCreateWith
 export const KOLUncheckedCreateWithoutProjectsInputSchema: z.ZodType<Prisma.KOLUncheckedCreateWithoutProjectsInput> = z.object({
   id: z.string().optional(),
   hidden: z.boolean().optional(),
+  isAlsoProject: z.boolean().optional(),
   twitterId: z.string(),
   twitterUsername: z.string(),
   twitterDisplayName: z.string(),
@@ -8217,6 +8240,7 @@ export const KOLUpdateToOneWithWhereWithoutProjectsInputSchema: z.ZodType<Prisma
 export const KOLUpdateWithoutProjectsInputSchema: z.ZodType<Prisma.KOLUpdateWithoutProjectsInput> = z.object({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hidden: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  isAlsoProject: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   twitterId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   twitterUsername: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   twitterDisplayName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
@@ -8264,6 +8288,7 @@ export const KOLUpdateWithoutProjectsInputSchema: z.ZodType<Prisma.KOLUpdateWith
 export const KOLUncheckedUpdateWithoutProjectsInputSchema: z.ZodType<Prisma.KOLUncheckedUpdateWithoutProjectsInput> = z.object({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hidden: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  isAlsoProject: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   twitterId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   twitterUsername: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   twitterDisplayName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),

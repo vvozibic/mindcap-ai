@@ -402,8 +402,7 @@ export const getInfluencersByProject = async (req: Request, res: Response) => {
     SUM(kp."totalComments") AS "totalComments"
     FROM "KOL" k
     JOIN "KOLToProject" kp ON kp."kolId" = k.id
-    WHERE k."kolScore" > 0
-      AND k."hidden" = false
+    WHERE k."hidden" = false
       AND kp."projectId" = $1
     GROUP BY k.id
     ORDER BY ${orderByClause}

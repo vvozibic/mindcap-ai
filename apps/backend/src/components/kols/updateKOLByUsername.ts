@@ -15,6 +15,7 @@ export async function updateKOLByUsername(username: string) {
       prisma.kOL.update({
         where: { twitterUsername: username },
         data: {
+          hidden: false,
           kolScore: data.kol_score,
           smartFollowersCount: data.smart_followers_count,
           followersChange: data.followers_change,

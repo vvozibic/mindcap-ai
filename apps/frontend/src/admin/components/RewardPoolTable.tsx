@@ -1,11 +1,11 @@
 import { Edit, Plus, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { ProtokolsProject, RewardPool } from "../../types";
+import { Project, RewardPool } from "../../types";
 import RewardPoolForm from "./RewardPoolForm";
 
 const RewardPoolAdmin: React.FC = () => {
   const [pools, setPools] = useState<RewardPool[]>([]);
-  const [allProjects, setAllProjects] = useState<ProtokolsProject[]>([]);
+  const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [currentId, setCurrentId] = useState<string | null>(null);
 
@@ -102,7 +102,7 @@ const RewardPoolAdmin: React.FC = () => {
                   {pool.status}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-500">
-                  {pool.project?.name || "-"}
+                  {pool.project?.twitterDisplayName || "-"}
                 </td>
                 <td className="px-6 py-4 text-sm font-medium">
                   <button

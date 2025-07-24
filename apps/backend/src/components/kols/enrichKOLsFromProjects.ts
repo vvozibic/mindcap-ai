@@ -9,9 +9,7 @@ const limit = pLimit(5);
 export async function enrichKOLsFromProjects() {
   const projects = await prisma.project.findMany({
     where: {
-      kols: {
-        none: {}, // полностью пустые
-      },
+      twitterUsername: "0G_labs",
     },
   });
   console.log(`🔍 Найдено проектов: ${projects.length}`);
@@ -31,6 +29,7 @@ export async function enrichKOLsFromProjects() {
             const kol = await prisma.kOL.upsert({
               where: { twitterId: k.id },
               update: {
+                hidden: false,
                 twitterUsername: k.username,
                 twitterDisplayName: k.display_name,
                 twitterAvatarUrl: k.avatar_url,

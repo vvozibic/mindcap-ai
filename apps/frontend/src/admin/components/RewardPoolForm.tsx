@@ -1,12 +1,12 @@
 import { X } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { ProtokolsProject, RewardPool } from "../../types";
+import { Project, RewardPool } from "../../types";
 
 interface RewardPoolFormProps {
   rewardPoolId: string | null;
   onSuccess: () => void;
   onCancel: () => void;
-  allProjects: ProtokolsProject[];
+  allProjects: Project[];
 }
 
 const defaultPool: Partial<RewardPool> = {
@@ -347,7 +347,7 @@ const RewardPoolForm: React.FC<RewardPoolFormProps> = ({
             </option>
             {allProjects.map((project) => (
               <option key={project.id} value={project.id}>
-                {project.name}
+                {project.twitterDisplayName || project.twitterUsername}
               </option>
             ))}
           </select>

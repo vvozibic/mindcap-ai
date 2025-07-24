@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
-import { enrichInfluencer } from "../components/kols/updateKOLByUsername";
+import { updateKOLByUsername } from "../components/kols/updateKOLByUsername";
 import { getProfile } from "../external-api/protokols/methods/kols";
 import { sendJson } from "../utils/sendJson";
 
@@ -163,7 +163,7 @@ export const getPaginatedInfluencers = async (req: Request, res: Response) => {
     SUM(kp."totalComments") AS "totalComments"
     FROM "KOL" k
     JOIN "KOLToProject" kp ON kp."kolId" = k.id
-    WHERE k."kolScore" > 0 AND k."hidden" = false
+    WHERE k."kolScore" > 0 AND k."hidden" = false AND k."isAlsoProject" = false
     GROUP BY k.id
     ORDER BY ${sortExpr} ${sortDirection}
     LIMIT $1 OFFSET $2
@@ -247,7 +247,7 @@ export const adminEnrichInfluencer = async (req: Request, res: Response) => {
   const { username } = req.body;
 
   try {
-    await enrichInfluencer(username);
+    await updateKOLByUsername(username);
     // await recalculateMindshareForInfluencers();
     res.json({ success: true });
   } catch (err) {

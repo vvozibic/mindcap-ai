@@ -26,6 +26,7 @@ const MAP_SNAKE_TO_CAMEL = {
 
 const defaultProject: Partial<Project> = {
   id: "",
+  stage: "",
   featured: false,
   hidden: false,
   mindshare: 0,
@@ -73,8 +74,6 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
             acc[key] = data[key];
             return acc;
           }, {});
-
-          console.log(filtered);
 
           setFormData(filtered);
         })

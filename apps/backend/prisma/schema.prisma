@@ -108,6 +108,8 @@ model Project {
   featured Boolean @default(false)
   hidden   Boolean @default(false)
 
+  // Admin created
+
   // Mindshare (global mindshare calculate from narrative mindshare)
   mindshare Float
 
@@ -207,8 +209,9 @@ model ProjectToNarrative {
 }
 
 model KOL {
-  id     String  @id @default(uuid())
-  hidden Boolean @default(false)
+  id            String  @id @default(uuid())
+  hidden        Boolean @default(false)
+  isAlsoProject Boolean @default(false)
 
   // Twitter profile
   twitterId              String
