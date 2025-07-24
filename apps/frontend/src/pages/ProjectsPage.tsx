@@ -1,5 +1,5 @@
 import React from "react";
-import ProtokolsProjectsTable from "../components/Projects/ProtokolsProjects";
+import ProtokolsProjectsTable from "../components/Projects/ProjectsLeaderboard";
 
 interface ProjectsPageProps {}
 

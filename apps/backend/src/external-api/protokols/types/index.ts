@@ -140,7 +140,7 @@ export interface KOLInProject {
   username: string;
 }
 
-export interface ProfileStateResponse {
+export interface ProfileStatsResponse {
   data: ProfileStats;
 }
 
@@ -174,6 +174,30 @@ export interface ProfileStats {
   total_posts_change: number;
   total_views: number;
   total_views_change: number;
+}
+
+export interface TwitterFullProfileResponse {
+  data: TwitterFullProfile;
+}
+
+/**
+ * Twitter Full Profile
+ */
+export interface TwitterFullProfile {
+  avatar_url: string;
+  description: string;
+  description_link?: null | string;
+  display_name: string;
+  followers_count: number;
+  following_count: number;
+  gold_badge: boolean | null;
+  id: string;
+  is_verified: boolean;
+  kol_score: number;
+  lang: string;
+  profile_created_at: string;
+  smart_followers_count: number;
+  username: string;
 }
 
 /**

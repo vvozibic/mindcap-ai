@@ -3,7 +3,7 @@ import express from "express";
 import crypto from "crypto";
 import fetch from "node-fetch";
 import querystring from "querystring";
-import { enrichInfluencer } from "../components/kols/_enrichInfluencer";
+import { updateKOLByUsername } from "../components/kols/updateKOLByUsername";
 import { enrichUser } from "../components/users/enrichUser";
 import {
   adminLogin,
@@ -108,7 +108,7 @@ authRoutes.get("/callback/twitter", async (req, res) => {
   console.log("Twitter auth callback userData", userData);
 
   enrichUser(userData?.data?.username).catch(console.error);
-  enrichInfluencer(userData?.data?.username).catch(console.error);
+  updateKOLByUsername(userData?.data?.username).catch(console.error);
 
   res.cookie("twitter_token", data?.access_token, {
     httpOnly: true,

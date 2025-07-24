@@ -340,7 +340,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
       {activeTab === "overview" ? (
         <div className="space-y-8">
           {/* Top KOLs for this project - Now at the top and spanning full width */}
-          {Boolean(topKOLs?.length) && (
+          {Boolean(topKOLs?.length) ? (
             <div className="col-span-2">
               <h5 className="text-lg font-medium text-gray-300 mb-3 mt-6">
                 Top KOLs Engaging with {project.twitterUsername}
@@ -458,6 +458,8 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                 </div>
               </div>
             </div>
+          ) : (
+            <TableSkeleton />
           )}
         </div>
       ) : (

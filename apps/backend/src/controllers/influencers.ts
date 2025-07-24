@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
-import { enrichInfluencer } from "../components/kols/_enrichInfluencer";
+import { enrichInfluencer } from "../components/kols/updateKOLByUsername";
 import { getProfile } from "../external-api/protokols/methods/kols";
 import { sendJson } from "../utils/sendJson";
 

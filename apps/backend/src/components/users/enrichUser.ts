@@ -1,24 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import axios from "axios";
 import fs from "fs/promises";
-import { retryWithDelay } from "../_retryWithDelay";
+import { getProfile } from "../../external-api/protokols/methods/kols";
 
 const prisma = new PrismaClient();
-
-export type TweetScoutResponse = {
-  avatar: string;
-  banner: string;
-  can_dm: boolean;
-  description: string;
-  followers_count: number;
-  friends_count: number;
-  id: string;
-  name: string;
-  register_date: string;
-  screen_name: string;
-  tweets_count: number;
-  verified: boolean;
-};
 
 export async function enrichUser(screenName: string, skipIfExists = true) {
   const username = screenName.toLowerCase();
@@ -35,30 +19,20 @@ export async function enrichUser(screenName: string, skipIfExists = true) {
       }
     }
 
-    const data = await retryWithDelay(() =>
-      axios
-        .get<TweetScoutResponse>(
-          `https://api.tweetscout.io/v2/info/${username}`,
-          {
-            headers: {
-              Accept: "application/json",
-              ApiKey: process.env.TWEETSCOUT_API_KEY || "",
-            },
-          }
-        )
-        .then((res) => res.data)
-    );
+    const stats = await getProfile(username);
+    const data = stats?.data;
+    if (!data) return;
 
     await prisma.user.upsert({
       where: { username },
       update: {
-        username: data.screen_name,
-        avatarUrl: data.avatar,
+        username: data.display_name,
+        avatarUrl: data.avatar_url,
         platform: "twitter",
       },
       create: {
-        username: data.screen_name,
-        avatarUrl: data.avatar,
+        username: data.display_name,
+        avatarUrl: data.avatar_url,
         platform: "twitter",
       },
     });

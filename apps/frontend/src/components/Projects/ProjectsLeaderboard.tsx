@@ -29,12 +29,12 @@ const fetchPaginatedProjects = async ({
 
 type SortField =
   | "mindsharePercent"
-  | "followersCount"
+  | "twitterFollowersCount"
   | "totalViews"
-  | "marketCap"
-  | "price";
+  | "coinMarketCap"
+  | "coinPrice";
 
-const ProjectsTable: React.FC = () => {
+const ProjectsLeaderboard: React.FC = () => {
   const [activeOverlayTab, setActiveOverlayTab] = useState<
     "overview" | "pools"
   >("overview");
@@ -142,11 +142,11 @@ const ProjectsTable: React.FC = () => {
                       ))}
                   </th>
                   <th
-                    onClick={() => handleSort("followersCount")}
+                    onClick={() => handleSort("twitterFollowersCount")}
                     className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase cursor-pointer"
                   >
                     Followers{" "}
-                    {sortField === "followersCount" &&
+                    {sortField === "twitterFollowersCount" &&
                       (sortDirection === "asc" ? (
                         <ArrowUp className="inline h-4 w-4" />
                       ) : (
@@ -154,23 +154,23 @@ const ProjectsTable: React.FC = () => {
                       ))}
                   </th>
                   <th
-                    onClick={() => handleSort("totalViews")}
+                    // onClick={() => handleSort("totalViews")}
                     className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase cursor-pointer"
                   >
                     Views{" "}
-                    {sortField === "totalViews" &&
+                    {/* {sortField === "totalViews" &&
                       (sortDirection === "asc" ? (
                         <ArrowUp className="inline h-4 w-4" />
                       ) : (
                         <ArrowDown className="inline h-4 w-4" />
-                      ))}
+                      ))} */}
                   </th>
                   <th
-                    onClick={() => handleSort("marketCap")}
+                    onClick={() => handleSort("coinMarketCap")}
                     className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase cursor-pointer"
                   >
                     Market Cap{" "}
-                    {sortField === "marketCap" &&
+                    {sortField === "coinMarketCap" &&
                       (sortDirection === "asc" ? (
                         <ArrowUp className="inline h-4 w-4" />
                       ) : (
@@ -178,11 +178,11 @@ const ProjectsTable: React.FC = () => {
                       ))}
                   </th>
                   <th
-                    onClick={() => handleSort("price")}
+                    onClick={() => handleSort("coinPrice")}
                     className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase cursor-pointer"
                   >
                     Price{" "}
-                    {sortField === "price" &&
+                    {sortField === "coinPrice" &&
                       (sortDirection === "asc" ? (
                         <ArrowUp className="inline h-4 w-4" />
                       ) : (
@@ -241,7 +241,12 @@ const ProjectsTable: React.FC = () => {
                       {proj.twitterFollowersCount?.toLocaleString()}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-200">
-                      {proj.totalViews?.toLocaleString()}
+                      {formatNumber(
+                        proj.narrativeLinks.reduce(
+                          (acc, n) => acc + (n?.narrative?.totalViews || 0),
+                          0
+                        )
+                      )}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-200">
                       {proj.coinMarketCap
@@ -280,4 +285,4 @@ const ProjectsTable: React.FC = () => {
   );
 };
 
-export default ProjectsTable;
+export default ProjectsLeaderboard;

@@ -187,18 +187,18 @@ export const getPaginatedProtokolsProjects = async (
 ) => {
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 20;
-  const sortField = (req.query.sortField as string) || "marketCap";
+  const sortField = (req.query.sortField as string) || "coinMarketCap";
   const sortDirection =
     (req.query.sortDirection as string) === "asc" ? "asc" : "desc";
   const skip = (page - 1) * limit;
 
   // Валидация допустимых полей сортировки
   const allowedSortFields = [
-    "marketCap",
-    "price",
+    "coinMarketCap",
+    "coinPrice",
     "mindshare",
-    "followersCount",
-    "totalViews",
+    "twitterFollowersCount",
+    // "totalViews",
   ];
 
   const safeSortField = allowedSortFields.includes(sortField as any)
@@ -223,7 +223,6 @@ export const getPaginatedProtokolsProjects = async (
                 name: true,
                 slug: true,
                 mindsharePercent: true,
-                // marketCapUsd: true,
                 totalViews: true,
               },
             },
@@ -301,43 +300,142 @@ export const getProtokolsProjectBySlug = async (
   sendJson(res, project);
 };
 
+export const allowedSortFields = {
+  mindoMetric: `SUM(kp."mindoMetric")`,
+  proofOfWork: `SUM(kp."proofOfWork")`,
+  qualityScore: `SUM(kp."qualityScore")`,
+  totalPosts: `SUM(kp."totalPosts")`,
+  totalComments: `SUM(kp."totalComments")`,
+  kolScore: `k."kolScore"`,
+  engagementRate: `k."engagementRate"`,
+  smartFollowersCount: `k."smartFollowersCount"`,
+  twitterFollowersCount: `k."twitterFollowersCount"`,
+  tweetsCountNumeric: `k."tweetsCountNumeric"`,
+} as const;
+
+export type SortField = keyof typeof allowedSortFields;
+
+export function getSortSql(sortField: string, sortDirection: string): string {
+  const direction = sortDirection === "asc" ? "ASC" : "DESC";
+  const expr = allowedSortFields[sortField as SortField];
+  if (!expr) throw new Error(`Invalid sortField: ${sortField}`);
+  return `${expr} ${direction}`;
+}
+
 export const getInfluencersByProject = async (req: Request, res: Response) => {
   const { projectId } = req.params;
+  const limit = parseInt(req.query.limit as string) || 100;
+  const page = parseInt(req.query.page as string) || 1;
+  const skip = (page - 1) * limit;
+  const sortField = (req.query.sortField as string) || "mindoMetric";
+  const sortDirection = req.query.sortDirection === "asc" ? "asc" : "desc";
 
   if (!projectId) {
     return res.status(400).json({ error: "Missing projectId in params" });
   }
 
-  try {
-    const influencers = await prisma.kOL.findMany({
-      where: {
-        projects: {
-          some: {
-            projectId,
-          },
-        },
-        kolScore: {
-          gt: 0, // фильтруем KOL с нулевым весом
-        },
-        hidden: false,
-      },
-      include: {
-        projects: {
-          include: {
-            project: true,
-          },
-        },
-      },
-      orderBy: {
-        kolScore: "desc", // сортировка по весу, если нужно
-      },
-    });
-
-    sendJson(res, influencers);
-  } catch (err) {
-    console.error("Failed to fetch influencers for project:", err);
-    res.status(500).json({ error: "Internal server error" });
+  if (!allowedSortFields[sortField as keyof typeof allowedSortFields]) {
+    return res.status(400).json({ error: `Invalid sortField: ${sortField}` });
   }
+
+  const orderByClause = getSortSql(sortField, sortDirection);
+
+  const data = await prisma.$queryRawUnsafe<any[]>(
+    `
+    SELECT
+    k.id,
+    k."hidden",
+    k."twitterId",
+    k."twitterUsername",
+    k."twitterDisplayName",
+    k."twitterAvatarUrl",
+    k."twitterDescription",
+    k."twitterDescriptionLink",
+    k."twitterFollowersCount",
+    k."twitterFollowingCount",
+    k."twitterIsVerified",
+    k."twitterGoldBadge",
+    k."twitterLang",
+    k."twitterCreatedAt",
+
+    -- main metrics
+    k."kolScore",
+    k."kolScorePercentFromTotal",
+    k."smartFollowersCount",
+    k."threadsCount",
+    k."engagementRate",
+    k."smartEngagement",
+
+    -- average
+    k."avgViews",
+    k."avgLikes",
+
+    -- total
+    k."totalPosts",
+    k."totalViews",
+    k."totalInteractions",
+
+    -- total organic
+    k."totalOrganicPosts",
+    k."totalOrganicViews",
+    k."totalOrganicInteractions",
+
+    -- total account
+    k."totalAccountPosts",
+    k."totalAccountViews",
+    k."totalAccountInteractions",
+    k."totalAccountComments",
+    k."totalAccountLikes",
+    k."totalAccountRetweets",
+    k."totalAccountReplies",
+
+    -- change metrics
+    k."totalPostsChange",
+    k."totalInteractionsChange",
+    k."totalViewsChange",
+    k."followersChange",
+    k."smartEngagementChange",
+    SUM(kp."mindoMetric")   AS "mindoMetric",
+    SUM(kp."proofOfWork")   AS "proofOfWork",
+    SUM(kp."qualityScore")  AS "qualityScore",
+    SUM(kp."totalPosts")    AS "totalPosts",
+    SUM(kp."totalComments") AS "totalComments"
+    FROM "KOL" k
+    JOIN "KOLToProject" kp ON kp."kolId" = k.id
+    WHERE k."kolScore" > 0
+      AND k."hidden" = false
+      AND kp."projectId" = $1
+    GROUP BY k.id
+    ORDER BY ${orderByClause}
+    LIMIT $2 OFFSET $3
+  `,
+    projectId,
+    limit,
+    skip
+  );
+
+  const totalResult = await prisma.$queryRawUnsafe<{ count: number }[]>(
+    `
+    SELECT COUNT(*)::int AS count
+    FROM (
+      SELECT k.id
+      FROM "KOL" k
+      JOIN "KOLToProject" kp ON kp."kolId" = k.id
+      WHERE k."kolScore" > 0 AND k."hidden" = false AND kp."projectId" = $1
+      GROUP BY k.id
+    ) sub
+  `,
+    projectId
+  );
+
+  const total = totalResult[0]?.count || 0;
+
+  sendJson(res, {
+    data,
+    total,
+    page,
+    limit,
+  });
 };
 
 export const createProtokolsProject = async (req: Request, res: Response) => {

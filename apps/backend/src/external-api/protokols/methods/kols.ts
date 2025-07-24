@@ -1,6 +1,10 @@
 import { fetchFromProtokols, retry } from "../client";
 import { endpoints } from "../endpoints";
-import { ListKOLsInProjectsResponse, ProfileStateResponse } from "../types"; // твой тип
+import {
+  ListKOLsInProjectsResponse,
+  ProfileStatsResponse,
+  TwitterFullProfileResponse,
+} from "../types"; // твой тип
 
 // Get first 100 KOLs
 export const getKOLsInProjects = async (
@@ -37,14 +41,16 @@ export const getKOLsInProjects = async (
 
 export const getProfileStats = async (
   slug_or_id
-): Promise<ProfileStateResponse> => {
+): Promise<ProfileStatsResponse> => {
   const url = endpoints.profileStats(slug_or_id);
 
-  return retry(url, () => fetchFromProtokols<ProfileStateResponse>(url));
+  return retry(url, () => fetchFromProtokols<ProfileStatsResponse>(url));
 };
 
-export const getProfile = async (slug_or_id): Promise<ProfileStateResponse> => {
+export const getProfile = async (
+  slug_or_id
+): Promise<TwitterFullProfileResponse> => {
   const url = endpoints.profile(slug_or_id);
 
-  return retry(url, () => fetchFromProtokols<ProfileStateResponse>(url));
+  return retry(url, () => fetchFromProtokols<TwitterFullProfileResponse>(url));
 };

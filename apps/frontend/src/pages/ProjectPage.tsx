@@ -28,7 +28,7 @@ export function useProjectInfluencers(projectId: string | null | undefined) {
         if (!res.ok) throw new Error("Failed to load influencers");
         return res.json();
       })
-      .then(setInfluencers)
+      .then(({ data }) => setInfluencers(data))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [projectId]);
@@ -74,6 +74,8 @@ const ProjectPage = () => {
 
   const { influencers } = useProjectInfluencers(project?.id);
 
+  console.log(influencers);
+
   if (!project)
     return (
       <div className="max-w-7xl py-6 px-4 sm:px-6 mx-auto mt-[50px] relative z-10 overflow-hidden rounded-xl border border-primary-700/40 bg-primary-800/30 backdrop-blur-sm shadow-[inset_0_0_0_1px_rgba(0,255,174,0.05),0_8px_20px_rgba(0,255,174,0.05)]">
@@ -91,15 +93,13 @@ const ProjectPage = () => {
 
       const postingFrequency =
         realPostingFrequency > 0 && realPostingFrequency < 1
-          ? 1
+          ? "1"
           : Math.round(realPostingFrequency)?.toFixed(0);
 
       return {
         ...i,
-        mindshare: i?.kolScorePercentFromTotal?.toFixed(2),
+        // mindshare: i?.kolScorePercentFromTotal?.toFixed(2),
         postingFrequency: postingFrequency,
-        mindoMetric:
-          i.projects.find((p) => p.project.id === project.id)?.mindoMetric || 0,
       };
     })
     .sort((a, b) => {
