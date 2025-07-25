@@ -39,10 +39,9 @@ const LoginModal: React.FC<LoginModalProps> = ({
     setLoading(true);
     const res = await fetch("/api/auth/login/twitter", {
       method: "POST",
-      body: JSON.stringify({ twitterHandle }),
+      body: JSON.stringify({}),
       headers: { "Content-Type": "application/json" },
     });
-    localStorage.setItem("user", twitterHandle);
     const data = await res.json();
     setLoading(false);
     onLogin(data.user);
@@ -172,8 +171,8 @@ const LoginModal: React.FC<LoginModalProps> = ({
                   {step === "method"
                     ? "Sign in to MindoAI"
                     : step === "email"
-                    ? "Enter your Email"
-                    : "Enter your Twitter Handle"}
+                      ? "Enter your Email"
+                      : "Enter your Twitter Handle"}
                 </Dialog.Title>
 
                 <div className="mt-2 text-sm text-gray-400 text-center">

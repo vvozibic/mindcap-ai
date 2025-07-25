@@ -1,6 +1,7 @@
 import {
   Award,
   CheckCircle,
+  CheckIcon,
   ExternalLink,
   Gift,
   Share2,
@@ -41,7 +42,7 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
 
   const [copied, setCopied] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
-  const referralLink = "https://community.scade.xyz/?ref=oAxdQ5X";
+  const referralLink = `${window.location.origin}/?ref=${user.referralCode}`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(referralLink);
@@ -105,7 +106,7 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
           {/* Referral Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {/* Referrals Count */}
-            <div className="bg-black/30 rounded-lg p-4 border border-gray-700">
+            <div className="bg-black/30 rounded-lg p-4 border border-gray-800">
               <div className="flex items-center mb-2">
                 <Users className="h-5 w-5 text-accent-500 mr-2" />
                 <span className="text-sm font-medium text-gray-400 uppercase tracking-wider">
@@ -116,17 +117,19 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
             </div>
 
             {/* Earned Points */}
-            <div className="bg-black/30 rounded-lg p-4 border border-gray-700">
+            <div className="bg-black/30 rounded-lg p-4 border border-gray-800">
               <div className="flex items-center mb-2">
                 <span className="text-sm font-medium text-gray-400 uppercase tracking-wider">
                   EARNED
                 </span>
               </div>
-              <p className="text-3xl font-bold text-white">0 POINTS</p>
+              <p className="text-3xl font-bold text-white">
+                {user.earnedPoints} POINTS
+              </p>
             </div>
 
             {/* X Score */}
-            <div className="bg-black/30 rounded-lg p-4 border border-gray-700">
+            <div className="bg-black/30 rounded-lg p-4 border border-gray-800">
               <div className="flex items-center mb-2">
                 <XLogo className="h-5 w-5 text-blue-400 mr-2" />
                 <span className="text-sm font-medium text-gray-400">
@@ -139,7 +142,7 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
             </div>
 
             {/* Wallet Score */}
-            <div className="bg-black/30 rounded-lg p-4 border border-gray-700">
+            <div className="bg-black/30 rounded-lg p-4 border border-gray-800">
               <div className="flex items-center mb-2">
                 <Wallet className="h-5 w-5 text-orange-400 mr-2" />
                 <span className="text-sm font-medium text-gray-400">
@@ -150,14 +153,16 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
             </div>
 
             {/* Completed Tasks */}
-            <div className="bg-black/30 rounded-lg p-4 border border-gray-700">
+            <div className="bg-black/30 rounded-lg p-4 border border-gray-800">
               <div className="flex items-center mb-2">
                 <CheckCircle className="h-5 w-5 text-accent-500 mr-2" />
                 <span className="text-sm font-medium text-gray-400">
                   Completed tasks
                 </span>
               </div>
-              <p className="text-3xl font-bold text-white">0</p>
+              <p className="text-3xl font-bold text-white">
+                {user.completedTasks}
+              </p>
             </div>
           </div>
         </div>
@@ -167,7 +172,7 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
           {/* First Mission */}
           <div className="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-gray-800 flex flex-col">
             <div className="flex items-center mb-4">
-              <div className="bg-accent-500 rounded-full w-8 h-8 flex items-center justify-center text-black font-bold text-sm mr-3">
+              <div className="bg-accent-500 rounded-full w-8 h-8 min-w-[31px] flex items-center justify-center text-black font-bold text-sm mr-3">
                 1
               </div>
               <h3 className="text-lg font-bold text-white">
@@ -189,7 +194,7 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
           {/* Second Mission */}
           <div className="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-gray-800 flex flex-col">
             <div className="flex items-center mb-4">
-              <div className="bg-accent-500 rounded-full w-8 h-8 flex items-center justify-center text-black font-bold text-sm mr-3">
+              <div className="bg-accent-500 rounded-full w-8 h-8 min-w-[31px] flex items-center justify-center text-black font-bold text-sm mr-3">
                 2
               </div>
               <h3 className="text-lg font-bold text-white">
@@ -198,16 +203,21 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
             </div>
 
             <div className="mb-4 flex-grow">
-              <div className="flex items-center bg-black/30 rounded-lg p-3 border border-gray-700 mb-3">
+              <div className="flex items-center bg-black/30 rounded-lg p-3 border border-gray-800 mb-3">
                 <span className="text-gray-300 font-mono text-sm flex-1 truncate">
-                  mindo.ref.link
+                  {referralLink}
                 </span>
                 <button
                   onClick={handleCopyLink}
                   className="ml-2 p-2 bg-accent-500 hover:bg-accent-600 text-black rounded-lg transition-colors"
                   title="Copy link"
+                  disabled={copied}
                 >
-                  <ExternalLink className="h-4 w-4" />
+                  {copied ? (
+                    <CheckIcon className="h-4 w-4" />
+                  ) : (
+                    <ExternalLink className="h-4 w-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -221,7 +231,7 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
           {/* Third Mission - Connect Wallet */}
           <div className="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-gray-800 flex flex-col">
             <div className="flex items-center mb-4">
-              <div className="bg-accent-500 rounded-full w-8 h-8 flex items-center justify-center text-black font-bold text-sm mr-3">
+              <div className="bg-accent-500 rounded-full w-8 h-8 min-w-[31px] flex items-center justify-center text-black font-bold text-sm mr-3">
                 3
               </div>
               <h3 className="text-lg font-bold text-white">

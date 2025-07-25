@@ -14,7 +14,9 @@ export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted','ReadCo
 
 export const AdminUserScalarFieldEnumSchema = z.enum(['id','username','password','role','createdAt','updatedAt']);
 
-export const UserScalarFieldEnumSchema = z.enum(['id','email','twitterHandle','createdAt','updatedAt','username','avatarUrl','platform']);
+export const UserScalarFieldEnumSchema = z.enum(['id','createdAt','updatedAt','username','avatarUrl','platform','email','twitterHandle','referralCode','referredById','onboardingStep','completedTasks','earnedPoints','kolId','primaryWalletId']);
+
+export const WalletScalarFieldEnumSchema = z.enum(['id','address','chain','userId','verified','label','createdAt']);
 
 export const NarrativeScalarFieldEnumSchema = z.enum(['id','narrativeId','name','slug','description','projectCount','totalViews','totalPosts','totalMarketCapUsd','marketCapChange24h','marketCapChange7d','marketCapChange30d','marketCapChange90d','mindsharePercent','mindshareChange24h','mindshareChange7d','mindshareChange30d','mindshareChange90d','createdAt','updatedAt','fetchedAt']);
 
@@ -71,16 +73,39 @@ export type AdminUser = z.infer<typeof AdminUserSchema>
 
 export const UserSchema = z.object({
   id: z.number().int(),
-  email: z.string().nullable(),
-  twitterHandle: z.string().nullable(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
   username: z.string().nullable(),
   avatarUrl: z.string().nullable(),
   platform: z.string(),
+  email: z.string().nullable(),
+  twitterHandle: z.string().nullable(),
+  referralCode: z.string().cuid(),
+  referredById: z.number().int().nullable(),
+  onboardingStep: z.number().int(),
+  completedTasks: z.number().int(),
+  earnedPoints: z.number().int(),
+  kolId: z.string().nullable(),
+  primaryWalletId: z.number().int().nullable(),
 })
 
 export type User = z.infer<typeof UserSchema>
+
+/////////////////////////////////////////
+// WALLET SCHEMA
+/////////////////////////////////////////
+
+export const WalletSchema = z.object({
+  id: z.number().int(),
+  address: z.string(),
+  chain: z.string(),
+  userId: z.number().int(),
+  verified: z.boolean(),
+  label: z.string().nullable(),
+  createdAt: z.coerce.date(),
+})
+
+export type Wallet = z.infer<typeof WalletSchema>
 
 /////////////////////////////////////////
 // NARRATIVE SCHEMA
@@ -386,15 +411,76 @@ export const AdminUserSelectSchema: z.ZodType<Prisma.AdminUserSelect> = z.object
 // USER
 //------------------------------------------------------
 
+export const UserIncludeSchema: z.ZodType<Prisma.UserInclude> = z.object({
+  referredBy: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+  referrals: z.union([z.boolean(),z.lazy(() => UserFindManyArgsSchema)]).optional(),
+  kol: z.union([z.boolean(),z.lazy(() => KOLArgsSchema)]).optional(),
+  wallets: z.union([z.boolean(),z.lazy(() => WalletFindManyArgsSchema)]).optional(),
+  primaryWallet: z.union([z.boolean(),z.lazy(() => WalletArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => UserCountOutputTypeArgsSchema)]).optional(),
+}).strict()
+
+export const UserArgsSchema: z.ZodType<Prisma.UserDefaultArgs> = z.object({
+  select: z.lazy(() => UserSelectSchema).optional(),
+  include: z.lazy(() => UserIncludeSchema).optional(),
+}).strict();
+
+export const UserCountOutputTypeArgsSchema: z.ZodType<Prisma.UserCountOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => UserCountOutputTypeSelectSchema).nullish(),
+}).strict();
+
+export const UserCountOutputTypeSelectSchema: z.ZodType<Prisma.UserCountOutputTypeSelect> = z.object({
+  referrals: z.boolean().optional(),
+  wallets: z.boolean().optional(),
+}).strict();
+
 export const UserSelectSchema: z.ZodType<Prisma.UserSelect> = z.object({
   id: z.boolean().optional(),
-  email: z.boolean().optional(),
-  twitterHandle: z.boolean().optional(),
   createdAt: z.boolean().optional(),
   updatedAt: z.boolean().optional(),
   username: z.boolean().optional(),
   avatarUrl: z.boolean().optional(),
   platform: z.boolean().optional(),
+  email: z.boolean().optional(),
+  twitterHandle: z.boolean().optional(),
+  referralCode: z.boolean().optional(),
+  referredById: z.boolean().optional(),
+  onboardingStep: z.boolean().optional(),
+  completedTasks: z.boolean().optional(),
+  earnedPoints: z.boolean().optional(),
+  kolId: z.boolean().optional(),
+  primaryWalletId: z.boolean().optional(),
+  referredBy: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+  referrals: z.union([z.boolean(),z.lazy(() => UserFindManyArgsSchema)]).optional(),
+  kol: z.union([z.boolean(),z.lazy(() => KOLArgsSchema)]).optional(),
+  wallets: z.union([z.boolean(),z.lazy(() => WalletFindManyArgsSchema)]).optional(),
+  primaryWallet: z.union([z.boolean(),z.lazy(() => WalletArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => UserCountOutputTypeArgsSchema)]).optional(),
+}).strict()
+
+// WALLET
+//------------------------------------------------------
+
+export const WalletIncludeSchema: z.ZodType<Prisma.WalletInclude> = z.object({
+  user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+  primaryFor: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+}).strict()
+
+export const WalletArgsSchema: z.ZodType<Prisma.WalletDefaultArgs> = z.object({
+  select: z.lazy(() => WalletSelectSchema).optional(),
+  include: z.lazy(() => WalletIncludeSchema).optional(),
+}).strict();
+
+export const WalletSelectSchema: z.ZodType<Prisma.WalletSelect> = z.object({
+  id: z.boolean().optional(),
+  address: z.boolean().optional(),
+  chain: z.boolean().optional(),
+  userId: z.boolean().optional(),
+  verified: z.boolean().optional(),
+  label: z.boolean().optional(),
+  createdAt: z.boolean().optional(),
+  user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+  primaryFor: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
 }).strict()
 
 // NARRATIVE
@@ -611,6 +697,7 @@ export const ProjectToNarrativeSelectSchema: z.ZodType<Prisma.ProjectToNarrative
 export const KOLIncludeSchema: z.ZodType<Prisma.KOLInclude> = z.object({
   projects: z.union([z.boolean(),z.lazy(() => KOLToProjectFindManyArgsSchema)]).optional(),
   kolSnapshot: z.union([z.boolean(),z.lazy(() => KOLSnapshotFindManyArgsSchema)]).optional(),
+  user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => KOLCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -675,6 +762,7 @@ export const KOLSelectSchema: z.ZodType<Prisma.KOLSelect> = z.object({
   fetchedAt: z.boolean().optional(),
   projects: z.union([z.boolean(),z.lazy(() => KOLToProjectFindManyArgsSchema)]).optional(),
   kolSnapshot: z.union([z.boolean(),z.lazy(() => KOLSnapshotFindManyArgsSchema)]).optional(),
+  user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => KOLCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -877,32 +965,305 @@ export const UserWhereInputSchema: z.ZodType<Prisma.UserWhereInput> = z.object({
   OR: z.lazy(() => UserWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => UserWhereInputSchema),z.lazy(() => UserWhereInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
-  email: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
-  twitterHandle: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   username: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   avatarUrl: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   platform: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  email: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  twitterHandle: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  referralCode: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  referredById: z.union([ z.lazy(() => IntNullableFilterSchema),z.number() ]).optional().nullable(),
+  onboardingStep: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  completedTasks: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  earnedPoints: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  kolId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  primaryWalletId: z.union([ z.lazy(() => IntNullableFilterSchema),z.number() ]).optional().nullable(),
+  referredBy: z.union([ z.lazy(() => UserNullableRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional().nullable(),
+  referrals: z.lazy(() => UserListRelationFilterSchema).optional(),
+  kol: z.union([ z.lazy(() => KOLNullableRelationFilterSchema),z.lazy(() => KOLWhereInputSchema) ]).optional().nullable(),
+  wallets: z.lazy(() => WalletListRelationFilterSchema).optional(),
+  primaryWallet: z.union([ z.lazy(() => WalletNullableRelationFilterSchema),z.lazy(() => WalletWhereInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const UserOrderByWithRelationInputSchema: z.ZodType<Prisma.UserOrderByWithRelationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  email: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
-  twitterHandle: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
   username: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   avatarUrl: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
-  platform: z.lazy(() => SortOrderSchema).optional()
+  platform: z.lazy(() => SortOrderSchema).optional(),
+  email: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  twitterHandle: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  referralCode: z.lazy(() => SortOrderSchema).optional(),
+  referredById: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  onboardingStep: z.lazy(() => SortOrderSchema).optional(),
+  completedTasks: z.lazy(() => SortOrderSchema).optional(),
+  earnedPoints: z.lazy(() => SortOrderSchema).optional(),
+  kolId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  primaryWalletId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  referredBy: z.lazy(() => UserOrderByWithRelationInputSchema).optional(),
+  referrals: z.lazy(() => UserOrderByRelationAggregateInputSchema).optional(),
+  kol: z.lazy(() => KOLOrderByWithRelationInputSchema).optional(),
+  wallets: z.lazy(() => WalletOrderByRelationAggregateInputSchema).optional(),
+  primaryWallet: z.lazy(() => WalletOrderByWithRelationInputSchema).optional()
 }).strict();
 
 export const UserWhereUniqueInputSchema: z.ZodType<Prisma.UserWhereUniqueInput> = z.union([
   z.object({
     id: z.number().int(),
+    username: z.string(),
     email: z.string(),
     twitterHandle: z.string(),
-    username: z.string()
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int()
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    email: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    email: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    email: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    email: z.string(),
+    twitterHandle: z.string(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    email: z.string(),
+    twitterHandle: z.string(),
+    kolId: z.string(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    email: z.string(),
+    twitterHandle: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    email: z.string(),
+    twitterHandle: z.string(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    email: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    email: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    email: z.string(),
+    referralCode: z.string().cuid(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    email: z.string(),
+    referralCode: z.string().cuid(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    email: z.string(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    email: z.string(),
+    kolId: z.string(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    email: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    email: z.string(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    twitterHandle: z.string(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    twitterHandle: z.string(),
+    kolId: z.string(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    twitterHandle: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    twitterHandle: z.string(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    referralCode: z.string().cuid(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    referralCode: z.string().cuid(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    kolId: z.string(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    username: z.string(),
+  }),
+  z.object({
+    id: z.number().int(),
+    email: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    email: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+  }),
+  z.object({
+    id: z.number().int(),
+    email: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    email: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+  }),
+  z.object({
+    id: z.number().int(),
+    email: z.string(),
+    twitterHandle: z.string(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    email: z.string(),
+    twitterHandle: z.string(),
+    kolId: z.string(),
+  }),
+  z.object({
+    id: z.number().int(),
+    email: z.string(),
+    twitterHandle: z.string(),
+    primaryWalletId: z.number().int(),
   }),
   z.object({
     id: z.number().int(),
@@ -912,7 +1273,42 @@ export const UserWhereUniqueInputSchema: z.ZodType<Prisma.UserWhereUniqueInput> 
   z.object({
     id: z.number().int(),
     email: z.string(),
-    username: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    email: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+  }),
+  z.object({
+    id: z.number().int(),
+    email: z.string(),
+    referralCode: z.string().cuid(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    email: z.string(),
+    referralCode: z.string().cuid(),
+  }),
+  z.object({
+    id: z.number().int(),
+    email: z.string(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    email: z.string(),
+    kolId: z.string(),
+  }),
+  z.object({
+    id: z.number().int(),
+    email: z.string(),
+    primaryWalletId: z.number().int(),
   }),
   z.object({
     id: z.number().int(),
@@ -921,7 +1317,42 @@ export const UserWhereUniqueInputSchema: z.ZodType<Prisma.UserWhereUniqueInput> 
   z.object({
     id: z.number().int(),
     twitterHandle: z.string(),
-    username: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+  }),
+  z.object({
+    id: z.number().int(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+  }),
+  z.object({
+    id: z.number().int(),
+    twitterHandle: z.string(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    twitterHandle: z.string(),
+    kolId: z.string(),
+  }),
+  z.object({
+    id: z.number().int(),
+    twitterHandle: z.string(),
+    primaryWalletId: z.number().int(),
   }),
   z.object({
     id: z.number().int(),
@@ -929,43 +1360,367 @@ export const UserWhereUniqueInputSchema: z.ZodType<Prisma.UserWhereUniqueInput> 
   }),
   z.object({
     id: z.number().int(),
-    username: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+  }),
+  z.object({
+    id: z.number().int(),
+    referralCode: z.string().cuid(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    referralCode: z.string().cuid(),
+  }),
+  z.object({
+    id: z.number().int(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    id: z.number().int(),
+    kolId: z.string(),
+  }),
+  z.object({
+    id: z.number().int(),
+    primaryWalletId: z.number().int(),
   }),
   z.object({
     id: z.number().int(),
   }),
   z.object({
+    username: z.string(),
     email: z.string(),
     twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    username: z.string(),
+    email: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+  }),
+  z.object({
+    username: z.string(),
+    email: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    username: z.string(),
+    email: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+  }),
+  z.object({
+    username: z.string(),
+    email: z.string(),
+    twitterHandle: z.string(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    username: z.string(),
+    email: z.string(),
+    twitterHandle: z.string(),
+    kolId: z.string(),
+  }),
+  z.object({
+    username: z.string(),
+    email: z.string(),
+    twitterHandle: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    username: z.string(),
+    email: z.string(),
+    twitterHandle: z.string(),
+  }),
+  z.object({
+    username: z.string(),
+    email: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    username: z.string(),
+    email: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+  }),
+  z.object({
+    username: z.string(),
+    email: z.string(),
+    referralCode: z.string().cuid(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    username: z.string(),
+    email: z.string(),
+    referralCode: z.string().cuid(),
+  }),
+  z.object({
+    username: z.string(),
+    email: z.string(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    username: z.string(),
+    email: z.string(),
+    kolId: z.string(),
+  }),
+  z.object({
+    username: z.string(),
+    email: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    username: z.string(),
+    email: z.string(),
+  }),
+  z.object({
+    username: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    username: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+  }),
+  z.object({
+    username: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    username: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+  }),
+  z.object({
+    username: z.string(),
+    twitterHandle: z.string(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    username: z.string(),
+    twitterHandle: z.string(),
+    kolId: z.string(),
+  }),
+  z.object({
+    username: z.string(),
+    twitterHandle: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    username: z.string(),
+    twitterHandle: z.string(),
+  }),
+  z.object({
+    username: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    username: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+  }),
+  z.object({
+    username: z.string(),
+    referralCode: z.string().cuid(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    username: z.string(),
+    referralCode: z.string().cuid(),
+  }),
+  z.object({
+    username: z.string(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    username: z.string(),
+    kolId: z.string(),
+  }),
+  z.object({
+    username: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
     username: z.string(),
   }),
   z.object({
     email: z.string(),
     twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
   }),
   z.object({
     email: z.string(),
-    username: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+  }),
+  z.object({
+    email: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    email: z.string(),
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+  }),
+  z.object({
+    email: z.string(),
+    twitterHandle: z.string(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    email: z.string(),
+    twitterHandle: z.string(),
+    kolId: z.string(),
+  }),
+  z.object({
+    email: z.string(),
+    twitterHandle: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    email: z.string(),
+    twitterHandle: z.string(),
+  }),
+  z.object({
+    email: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    email: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+  }),
+  z.object({
+    email: z.string(),
+    referralCode: z.string().cuid(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    email: z.string(),
+    referralCode: z.string().cuid(),
+  }),
+  z.object({
+    email: z.string(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    email: z.string(),
+    kolId: z.string(),
+  }),
+  z.object({
+    email: z.string(),
+    primaryWalletId: z.number().int(),
   }),
   z.object({
     email: z.string(),
   }),
   z.object({
     twitterHandle: z.string(),
-    username: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+  }),
+  z.object({
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    twitterHandle: z.string(),
+    referralCode: z.string().cuid(),
+  }),
+  z.object({
+    twitterHandle: z.string(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    twitterHandle: z.string(),
+    kolId: z.string(),
+  }),
+  z.object({
+    twitterHandle: z.string(),
+    primaryWalletId: z.number().int(),
   }),
   z.object({
     twitterHandle: z.string(),
   }),
   z.object({
-    username: z.string(),
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    referralCode: z.string().cuid(),
+    kolId: z.string(),
+  }),
+  z.object({
+    referralCode: z.string().cuid(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    referralCode: z.string().cuid(),
+  }),
+  z.object({
+    kolId: z.string(),
+    primaryWalletId: z.number().int(),
+  }),
+  z.object({
+    kolId: z.string(),
+  }),
+  z.object({
+    primaryWalletId: z.number().int(),
   }),
 ])
 .and(z.object({
   id: z.number().int().optional(),
+  username: z.string().optional(),
   email: z.string().optional(),
   twitterHandle: z.string().optional(),
-  username: z.string().optional(),
+  referralCode: z.string().cuid().optional(),
+  kolId: z.string().optional(),
+  primaryWalletId: z.number().int().optional(),
   AND: z.union([ z.lazy(() => UserWhereInputSchema),z.lazy(() => UserWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => UserWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => UserWhereInputSchema),z.lazy(() => UserWhereInputSchema).array() ]).optional(),
@@ -973,17 +1728,33 @@ export const UserWhereUniqueInputSchema: z.ZodType<Prisma.UserWhereUniqueInput> 
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   avatarUrl: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   platform: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  referredById: z.union([ z.lazy(() => IntNullableFilterSchema),z.number().int() ]).optional().nullable(),
+  onboardingStep: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  completedTasks: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  earnedPoints: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  referredBy: z.union([ z.lazy(() => UserNullableRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional().nullable(),
+  referrals: z.lazy(() => UserListRelationFilterSchema).optional(),
+  kol: z.union([ z.lazy(() => KOLNullableRelationFilterSchema),z.lazy(() => KOLWhereInputSchema) ]).optional().nullable(),
+  wallets: z.lazy(() => WalletListRelationFilterSchema).optional(),
+  primaryWallet: z.union([ z.lazy(() => WalletNullableRelationFilterSchema),z.lazy(() => WalletWhereInputSchema) ]).optional().nullable(),
 }).strict());
 
 export const UserOrderByWithAggregationInputSchema: z.ZodType<Prisma.UserOrderByWithAggregationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  email: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
-  twitterHandle: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
   username: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   avatarUrl: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   platform: z.lazy(() => SortOrderSchema).optional(),
+  email: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  twitterHandle: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  referralCode: z.lazy(() => SortOrderSchema).optional(),
+  referredById: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  onboardingStep: z.lazy(() => SortOrderSchema).optional(),
+  completedTasks: z.lazy(() => SortOrderSchema).optional(),
+  earnedPoints: z.lazy(() => SortOrderSchema).optional(),
+  kolId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  primaryWalletId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   _count: z.lazy(() => UserCountOrderByAggregateInputSchema).optional(),
   _avg: z.lazy(() => UserAvgOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => UserMaxOrderByAggregateInputSchema).optional(),
@@ -996,13 +1767,102 @@ export const UserScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.UserScal
   OR: z.lazy(() => UserScalarWhereWithAggregatesInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => UserScalarWhereWithAggregatesInputSchema),z.lazy(() => UserScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
-  email: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
-  twitterHandle: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
   username: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   avatarUrl: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   platform: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  email: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
+  twitterHandle: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
+  referralCode: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  referredById: z.union([ z.lazy(() => IntNullableWithAggregatesFilterSchema),z.number() ]).optional().nullable(),
+  onboardingStep: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  completedTasks: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  earnedPoints: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  kolId: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
+  primaryWalletId: z.union([ z.lazy(() => IntNullableWithAggregatesFilterSchema),z.number() ]).optional().nullable(),
+}).strict();
+
+export const WalletWhereInputSchema: z.ZodType<Prisma.WalletWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => WalletWhereInputSchema),z.lazy(() => WalletWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => WalletWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => WalletWhereInputSchema),z.lazy(() => WalletWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  address: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  chain: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  userId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  verified: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
+  label: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
+  primaryFor: z.union([ z.lazy(() => UserNullableRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional().nullable(),
+}).strict();
+
+export const WalletOrderByWithRelationInputSchema: z.ZodType<Prisma.WalletOrderByWithRelationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  address: z.lazy(() => SortOrderSchema).optional(),
+  chain: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  verified: z.lazy(() => SortOrderSchema).optional(),
+  label: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional(),
+  user: z.lazy(() => UserOrderByWithRelationInputSchema).optional(),
+  primaryFor: z.lazy(() => UserOrderByWithRelationInputSchema).optional()
+}).strict();
+
+export const WalletWhereUniqueInputSchema: z.ZodType<Prisma.WalletWhereUniqueInput> = z.union([
+  z.object({
+    id: z.number().int(),
+    address: z.string()
+  }),
+  z.object({
+    id: z.number().int(),
+  }),
+  z.object({
+    address: z.string(),
+  }),
+])
+.and(z.object({
+  id: z.number().int().optional(),
+  address: z.string().optional(),
+  AND: z.union([ z.lazy(() => WalletWhereInputSchema),z.lazy(() => WalletWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => WalletWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => WalletWhereInputSchema),z.lazy(() => WalletWhereInputSchema).array() ]).optional(),
+  chain: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  userId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  verified: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
+  label: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
+  primaryFor: z.union([ z.lazy(() => UserNullableRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional().nullable(),
+}).strict());
+
+export const WalletOrderByWithAggregationInputSchema: z.ZodType<Prisma.WalletOrderByWithAggregationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  address: z.lazy(() => SortOrderSchema).optional(),
+  chain: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  verified: z.lazy(() => SortOrderSchema).optional(),
+  label: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional(),
+  _count: z.lazy(() => WalletCountOrderByAggregateInputSchema).optional(),
+  _avg: z.lazy(() => WalletAvgOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => WalletMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => WalletMinOrderByAggregateInputSchema).optional(),
+  _sum: z.lazy(() => WalletSumOrderByAggregateInputSchema).optional()
+}).strict();
+
+export const WalletScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.WalletScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([ z.lazy(() => WalletScalarWhereWithAggregatesInputSchema),z.lazy(() => WalletScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => WalletScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => WalletScalarWhereWithAggregatesInputSchema),z.lazy(() => WalletScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  address: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  chain: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  userId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  verified: z.union([ z.lazy(() => BoolWithAggregatesFilterSchema),z.boolean() ]).optional(),
+  label: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
+  createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
 }).strict();
 
 export const NarrativeWhereInputSchema: z.ZodType<Prisma.NarrativeWhereInput> = z.object({
@@ -1759,7 +2619,8 @@ export const KOLWhereInputSchema: z.ZodType<Prisma.KOLWhereInput> = z.object({
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   fetchedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   projects: z.lazy(() => KOLToProjectListRelationFilterSchema).optional(),
-  kolSnapshot: z.lazy(() => KOLSnapshotListRelationFilterSchema).optional()
+  kolSnapshot: z.lazy(() => KOLSnapshotListRelationFilterSchema).optional(),
+  user: z.union([ z.lazy(() => UserNullableRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const KOLOrderByWithRelationInputSchema: z.ZodType<Prisma.KOLOrderByWithRelationInput> = z.object({
@@ -1808,7 +2669,8 @@ export const KOLOrderByWithRelationInputSchema: z.ZodType<Prisma.KOLOrderByWithR
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
   fetchedAt: z.lazy(() => SortOrderSchema).optional(),
   projects: z.lazy(() => KOLToProjectOrderByRelationAggregateInputSchema).optional(),
-  kolSnapshot: z.lazy(() => KOLSnapshotOrderByRelationAggregateInputSchema).optional()
+  kolSnapshot: z.lazy(() => KOLSnapshotOrderByRelationAggregateInputSchema).optional(),
+  user: z.lazy(() => UserOrderByWithRelationInputSchema).optional()
 }).strict();
 
 export const KOLWhereUniqueInputSchema: z.ZodType<Prisma.KOLWhereUniqueInput> = z.union([
@@ -1888,7 +2750,8 @@ export const KOLWhereUniqueInputSchema: z.ZodType<Prisma.KOLWhereUniqueInput> = 
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   fetchedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   projects: z.lazy(() => KOLToProjectListRelationFilterSchema).optional(),
-  kolSnapshot: z.lazy(() => KOLSnapshotListRelationFilterSchema).optional()
+  kolSnapshot: z.lazy(() => KOLSnapshotListRelationFilterSchema).optional(),
+  user: z.union([ z.lazy(() => UserNullableRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional().nullable(),
 }).strict());
 
 export const KOLOrderByWithAggregationInputSchema: z.ZodType<Prisma.KOLOrderByWithAggregationInput> = z.object({
@@ -2522,77 +3385,201 @@ export const AdminUserUncheckedUpdateManyInputSchema: z.ZodType<Prisma.AdminUser
 }).strict();
 
 export const UserCreateInputSchema: z.ZodType<Prisma.UserCreateInput> = z.object({
-  email: z.string().optional().nullable(),
-  twitterHandle: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   username: z.string().optional().nullable(),
   avatarUrl: z.string().optional().nullable(),
-  platform: z.string().optional()
+  platform: z.string().optional(),
+  email: z.string().optional().nullable(),
+  twitterHandle: z.string().optional().nullable(),
+  referralCode: z.string().cuid().optional(),
+  onboardingStep: z.number().int().optional(),
+  completedTasks: z.number().int().optional(),
+  earnedPoints: z.number().int().optional(),
+  referredBy: z.lazy(() => UserCreateNestedOneWithoutReferralsInputSchema).optional(),
+  referrals: z.lazy(() => UserCreateNestedManyWithoutReferredByInputSchema).optional(),
+  kol: z.lazy(() => KOLCreateNestedOneWithoutUserInputSchema).optional(),
+  wallets: z.lazy(() => WalletCreateNestedManyWithoutUserInputSchema).optional(),
+  primaryWallet: z.lazy(() => WalletCreateNestedOneWithoutPrimaryForInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateInputSchema: z.ZodType<Prisma.UserUncheckedCreateInput> = z.object({
   id: z.number().int().optional(),
-  email: z.string().optional().nullable(),
-  twitterHandle: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   username: z.string().optional().nullable(),
   avatarUrl: z.string().optional().nullable(),
-  platform: z.string().optional()
+  platform: z.string().optional(),
+  email: z.string().optional().nullable(),
+  twitterHandle: z.string().optional().nullable(),
+  referralCode: z.string().cuid().optional(),
+  referredById: z.number().int().optional().nullable(),
+  onboardingStep: z.number().int().optional(),
+  completedTasks: z.number().int().optional(),
+  earnedPoints: z.number().int().optional(),
+  kolId: z.string().optional().nullable(),
+  primaryWalletId: z.number().int().optional().nullable(),
+  referrals: z.lazy(() => UserUncheckedCreateNestedManyWithoutReferredByInputSchema).optional(),
+  wallets: z.lazy(() => WalletUncheckedCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUpdateInputSchema: z.ZodType<Prisma.UserUpdateInput> = z.object({
-  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  twitterHandle: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   avatarUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   platform: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterHandle: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  referralCode: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  onboardingStep: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  completedTasks: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  earnedPoints: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  referredBy: z.lazy(() => UserUpdateOneWithoutReferralsNestedInputSchema).optional(),
+  referrals: z.lazy(() => UserUpdateManyWithoutReferredByNestedInputSchema).optional(),
+  kol: z.lazy(() => KOLUpdateOneWithoutUserNestedInputSchema).optional(),
+  wallets: z.lazy(() => WalletUpdateManyWithoutUserNestedInputSchema).optional(),
+  primaryWallet: z.lazy(() => WalletUpdateOneWithoutPrimaryForNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateInputSchema: z.ZodType<Prisma.UserUncheckedUpdateInput> = z.object({
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  twitterHandle: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   avatarUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   platform: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterHandle: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  referralCode: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  referredById: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  onboardingStep: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  completedTasks: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  earnedPoints: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  kolId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  primaryWalletId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  referrals: z.lazy(() => UserUncheckedUpdateManyWithoutReferredByNestedInputSchema).optional(),
+  wallets: z.lazy(() => WalletUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserCreateManyInputSchema: z.ZodType<Prisma.UserCreateManyInput> = z.object({
   id: z.number().int().optional(),
-  email: z.string().optional().nullable(),
-  twitterHandle: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   username: z.string().optional().nullable(),
   avatarUrl: z.string().optional().nullable(),
-  platform: z.string().optional()
+  platform: z.string().optional(),
+  email: z.string().optional().nullable(),
+  twitterHandle: z.string().optional().nullable(),
+  referralCode: z.string().cuid().optional(),
+  referredById: z.number().int().optional().nullable(),
+  onboardingStep: z.number().int().optional(),
+  completedTasks: z.number().int().optional(),
+  earnedPoints: z.number().int().optional(),
+  kolId: z.string().optional().nullable(),
+  primaryWalletId: z.number().int().optional().nullable()
 }).strict();
 
 export const UserUpdateManyMutationInputSchema: z.ZodType<Prisma.UserUpdateManyMutationInput> = z.object({
-  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  twitterHandle: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   avatarUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   platform: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterHandle: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  referralCode: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  onboardingStep: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  completedTasks: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  earnedPoints: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const UserUncheckedUpdateManyInputSchema: z.ZodType<Prisma.UserUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  twitterHandle: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   avatarUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   platform: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterHandle: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  referralCode: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  referredById: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  onboardingStep: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  completedTasks: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  earnedPoints: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  kolId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  primaryWalletId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+}).strict();
+
+export const WalletCreateInputSchema: z.ZodType<Prisma.WalletCreateInput> = z.object({
+  address: z.string(),
+  chain: z.string(),
+  verified: z.boolean().optional(),
+  label: z.string().optional().nullable(),
+  createdAt: z.coerce.date().optional(),
+  user: z.lazy(() => UserCreateNestedOneWithoutWalletsInputSchema),
+  primaryFor: z.lazy(() => UserCreateNestedOneWithoutPrimaryWalletInputSchema).optional()
+}).strict();
+
+export const WalletUncheckedCreateInputSchema: z.ZodType<Prisma.WalletUncheckedCreateInput> = z.object({
+  id: z.number().int().optional(),
+  address: z.string(),
+  chain: z.string(),
+  userId: z.number().int(),
+  verified: z.boolean().optional(),
+  label: z.string().optional().nullable(),
+  createdAt: z.coerce.date().optional(),
+  primaryFor: z.lazy(() => UserUncheckedCreateNestedOneWithoutPrimaryWalletInputSchema).optional()
+}).strict();
+
+export const WalletUpdateInputSchema: z.ZodType<Prisma.WalletUpdateInput> = z.object({
+  address: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  chain: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  verified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  label: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  user: z.lazy(() => UserUpdateOneRequiredWithoutWalletsNestedInputSchema).optional(),
+  primaryFor: z.lazy(() => UserUpdateOneWithoutPrimaryWalletNestedInputSchema).optional()
+}).strict();
+
+export const WalletUncheckedUpdateInputSchema: z.ZodType<Prisma.WalletUncheckedUpdateInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  address: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  chain: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  verified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  label: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  primaryFor: z.lazy(() => UserUncheckedUpdateOneWithoutPrimaryWalletNestedInputSchema).optional()
+}).strict();
+
+export const WalletCreateManyInputSchema: z.ZodType<Prisma.WalletCreateManyInput> = z.object({
+  id: z.number().int().optional(),
+  address: z.string(),
+  chain: z.string(),
+  userId: z.number().int(),
+  verified: z.boolean().optional(),
+  label: z.string().optional().nullable(),
+  createdAt: z.coerce.date().optional()
+}).strict();
+
+export const WalletUpdateManyMutationInputSchema: z.ZodType<Prisma.WalletUpdateManyMutationInput> = z.object({
+  address: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  chain: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  verified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  label: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const WalletUncheckedUpdateManyInputSchema: z.ZodType<Prisma.WalletUncheckedUpdateManyInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  address: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  chain: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  verified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  label: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const NarrativeCreateInputSchema: z.ZodType<Prisma.NarrativeCreateInput> = z.object({
@@ -3392,7 +4379,8 @@ export const KOLCreateInputSchema: z.ZodType<Prisma.KOLCreateInput> = z.object({
   updatedAt: z.coerce.date().optional(),
   fetchedAt: z.coerce.date().optional(),
   projects: z.lazy(() => KOLToProjectCreateNestedManyWithoutKolInputSchema).optional(),
-  kolSnapshot: z.lazy(() => KOLSnapshotCreateNestedManyWithoutKolInputSchema).optional()
+  kolSnapshot: z.lazy(() => KOLSnapshotCreateNestedManyWithoutKolInputSchema).optional(),
+  user: z.lazy(() => UserCreateNestedOneWithoutKolInputSchema).optional()
 }).strict();
 
 export const KOLUncheckedCreateInputSchema: z.ZodType<Prisma.KOLUncheckedCreateInput> = z.object({
@@ -3441,7 +4429,8 @@ export const KOLUncheckedCreateInputSchema: z.ZodType<Prisma.KOLUncheckedCreateI
   updatedAt: z.coerce.date().optional(),
   fetchedAt: z.coerce.date().optional(),
   projects: z.lazy(() => KOLToProjectUncheckedCreateNestedManyWithoutKolInputSchema).optional(),
-  kolSnapshot: z.lazy(() => KOLSnapshotUncheckedCreateNestedManyWithoutKolInputSchema).optional()
+  kolSnapshot: z.lazy(() => KOLSnapshotUncheckedCreateNestedManyWithoutKolInputSchema).optional(),
+  user: z.lazy(() => UserUncheckedCreateNestedOneWithoutKolInputSchema).optional()
 }).strict();
 
 export const KOLUpdateInputSchema: z.ZodType<Prisma.KOLUpdateInput> = z.object({
@@ -3490,7 +4479,8 @@ export const KOLUpdateInputSchema: z.ZodType<Prisma.KOLUpdateInput> = z.object({
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   fetchedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   projects: z.lazy(() => KOLToProjectUpdateManyWithoutKolNestedInputSchema).optional(),
-  kolSnapshot: z.lazy(() => KOLSnapshotUpdateManyWithoutKolNestedInputSchema).optional()
+  kolSnapshot: z.lazy(() => KOLSnapshotUpdateManyWithoutKolNestedInputSchema).optional(),
+  user: z.lazy(() => UserUpdateOneWithoutKolNestedInputSchema).optional()
 }).strict();
 
 export const KOLUncheckedUpdateInputSchema: z.ZodType<Prisma.KOLUncheckedUpdateInput> = z.object({
@@ -3539,7 +4529,8 @@ export const KOLUncheckedUpdateInputSchema: z.ZodType<Prisma.KOLUncheckedUpdateI
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   fetchedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   projects: z.lazy(() => KOLToProjectUncheckedUpdateManyWithoutKolNestedInputSchema).optional(),
-  kolSnapshot: z.lazy(() => KOLSnapshotUncheckedUpdateManyWithoutKolNestedInputSchema).optional()
+  kolSnapshot: z.lazy(() => KOLSnapshotUncheckedUpdateManyWithoutKolNestedInputSchema).optional(),
+  user: z.lazy(() => UserUncheckedUpdateOneWithoutKolNestedInputSchema).optional()
 }).strict();
 
 export const KOLCreateManyInputSchema: z.ZodType<Prisma.KOLCreateManyInput> = z.object({
@@ -4332,50 +5323,127 @@ export const StringNullableFilterSchema: z.ZodType<Prisma.StringNullableFilter> 
   not: z.union([ z.string(),z.lazy(() => NestedStringNullableFilterSchema) ]).optional().nullable(),
 }).strict();
 
+export const IntNullableFilterSchema: z.ZodType<Prisma.IntNullableFilter> = z.object({
+  equals: z.number().optional().nullable(),
+  in: z.number().array().optional().nullable(),
+  notIn: z.number().array().optional().nullable(),
+  lt: z.number().optional(),
+  lte: z.number().optional(),
+  gt: z.number().optional(),
+  gte: z.number().optional(),
+  not: z.union([ z.number(),z.lazy(() => NestedIntNullableFilterSchema) ]).optional().nullable(),
+}).strict();
+
+export const UserNullableRelationFilterSchema: z.ZodType<Prisma.UserNullableRelationFilter> = z.object({
+  is: z.lazy(() => UserWhereInputSchema).optional().nullable(),
+  isNot: z.lazy(() => UserWhereInputSchema).optional().nullable()
+}).strict();
+
+export const UserListRelationFilterSchema: z.ZodType<Prisma.UserListRelationFilter> = z.object({
+  every: z.lazy(() => UserWhereInputSchema).optional(),
+  some: z.lazy(() => UserWhereInputSchema).optional(),
+  none: z.lazy(() => UserWhereInputSchema).optional()
+}).strict();
+
+export const KOLNullableRelationFilterSchema: z.ZodType<Prisma.KOLNullableRelationFilter> = z.object({
+  is: z.lazy(() => KOLWhereInputSchema).optional().nullable(),
+  isNot: z.lazy(() => KOLWhereInputSchema).optional().nullable()
+}).strict();
+
+export const WalletListRelationFilterSchema: z.ZodType<Prisma.WalletListRelationFilter> = z.object({
+  every: z.lazy(() => WalletWhereInputSchema).optional(),
+  some: z.lazy(() => WalletWhereInputSchema).optional(),
+  none: z.lazy(() => WalletWhereInputSchema).optional()
+}).strict();
+
+export const WalletNullableRelationFilterSchema: z.ZodType<Prisma.WalletNullableRelationFilter> = z.object({
+  is: z.lazy(() => WalletWhereInputSchema).optional().nullable(),
+  isNot: z.lazy(() => WalletWhereInputSchema).optional().nullable()
+}).strict();
+
 export const SortOrderInputSchema: z.ZodType<Prisma.SortOrderInput> = z.object({
   sort: z.lazy(() => SortOrderSchema),
   nulls: z.lazy(() => NullsOrderSchema).optional()
 }).strict();
 
+export const UserOrderByRelationAggregateInputSchema: z.ZodType<Prisma.UserOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const WalletOrderByRelationAggregateInputSchema: z.ZodType<Prisma.WalletOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
 export const UserCountOrderByAggregateInputSchema: z.ZodType<Prisma.UserCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  email: z.lazy(() => SortOrderSchema).optional(),
-  twitterHandle: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
   username: z.lazy(() => SortOrderSchema).optional(),
   avatarUrl: z.lazy(() => SortOrderSchema).optional(),
-  platform: z.lazy(() => SortOrderSchema).optional()
+  platform: z.lazy(() => SortOrderSchema).optional(),
+  email: z.lazy(() => SortOrderSchema).optional(),
+  twitterHandle: z.lazy(() => SortOrderSchema).optional(),
+  referralCode: z.lazy(() => SortOrderSchema).optional(),
+  referredById: z.lazy(() => SortOrderSchema).optional(),
+  onboardingStep: z.lazy(() => SortOrderSchema).optional(),
+  completedTasks: z.lazy(() => SortOrderSchema).optional(),
+  earnedPoints: z.lazy(() => SortOrderSchema).optional(),
+  kolId: z.lazy(() => SortOrderSchema).optional(),
+  primaryWalletId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const UserAvgOrderByAggregateInputSchema: z.ZodType<Prisma.UserAvgOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional()
+  id: z.lazy(() => SortOrderSchema).optional(),
+  referredById: z.lazy(() => SortOrderSchema).optional(),
+  onboardingStep: z.lazy(() => SortOrderSchema).optional(),
+  completedTasks: z.lazy(() => SortOrderSchema).optional(),
+  earnedPoints: z.lazy(() => SortOrderSchema).optional(),
+  primaryWalletId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const UserMaxOrderByAggregateInputSchema: z.ZodType<Prisma.UserMaxOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  email: z.lazy(() => SortOrderSchema).optional(),
-  twitterHandle: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
   username: z.lazy(() => SortOrderSchema).optional(),
   avatarUrl: z.lazy(() => SortOrderSchema).optional(),
-  platform: z.lazy(() => SortOrderSchema).optional()
+  platform: z.lazy(() => SortOrderSchema).optional(),
+  email: z.lazy(() => SortOrderSchema).optional(),
+  twitterHandle: z.lazy(() => SortOrderSchema).optional(),
+  referralCode: z.lazy(() => SortOrderSchema).optional(),
+  referredById: z.lazy(() => SortOrderSchema).optional(),
+  onboardingStep: z.lazy(() => SortOrderSchema).optional(),
+  completedTasks: z.lazy(() => SortOrderSchema).optional(),
+  earnedPoints: z.lazy(() => SortOrderSchema).optional(),
+  kolId: z.lazy(() => SortOrderSchema).optional(),
+  primaryWalletId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const UserMinOrderByAggregateInputSchema: z.ZodType<Prisma.UserMinOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  email: z.lazy(() => SortOrderSchema).optional(),
-  twitterHandle: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
   username: z.lazy(() => SortOrderSchema).optional(),
   avatarUrl: z.lazy(() => SortOrderSchema).optional(),
-  platform: z.lazy(() => SortOrderSchema).optional()
+  platform: z.lazy(() => SortOrderSchema).optional(),
+  email: z.lazy(() => SortOrderSchema).optional(),
+  twitterHandle: z.lazy(() => SortOrderSchema).optional(),
+  referralCode: z.lazy(() => SortOrderSchema).optional(),
+  referredById: z.lazy(() => SortOrderSchema).optional(),
+  onboardingStep: z.lazy(() => SortOrderSchema).optional(),
+  completedTasks: z.lazy(() => SortOrderSchema).optional(),
+  earnedPoints: z.lazy(() => SortOrderSchema).optional(),
+  kolId: z.lazy(() => SortOrderSchema).optional(),
+  primaryWalletId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const UserSumOrderByAggregateInputSchema: z.ZodType<Prisma.UserSumOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional()
+  id: z.lazy(() => SortOrderSchema).optional(),
+  referredById: z.lazy(() => SortOrderSchema).optional(),
+  onboardingStep: z.lazy(() => SortOrderSchema).optional(),
+  completedTasks: z.lazy(() => SortOrderSchema).optional(),
+  earnedPoints: z.lazy(() => SortOrderSchema).optional(),
+  primaryWalletId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const StringNullableWithAggregatesFilterSchema: z.ZodType<Prisma.StringNullableWithAggregatesFilter> = z.object({
@@ -4394,6 +5462,80 @@ export const StringNullableWithAggregatesFilterSchema: z.ZodType<Prisma.StringNu
   _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
   _min: z.lazy(() => NestedStringNullableFilterSchema).optional(),
   _max: z.lazy(() => NestedStringNullableFilterSchema).optional()
+}).strict();
+
+export const IntNullableWithAggregatesFilterSchema: z.ZodType<Prisma.IntNullableWithAggregatesFilter> = z.object({
+  equals: z.number().optional().nullable(),
+  in: z.number().array().optional().nullable(),
+  notIn: z.number().array().optional().nullable(),
+  lt: z.number().optional(),
+  lte: z.number().optional(),
+  gt: z.number().optional(),
+  gte: z.number().optional(),
+  not: z.union([ z.number(),z.lazy(() => NestedIntNullableWithAggregatesFilterSchema) ]).optional().nullable(),
+  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
+  _avg: z.lazy(() => NestedFloatNullableFilterSchema).optional(),
+  _sum: z.lazy(() => NestedIntNullableFilterSchema).optional(),
+  _min: z.lazy(() => NestedIntNullableFilterSchema).optional(),
+  _max: z.lazy(() => NestedIntNullableFilterSchema).optional()
+}).strict();
+
+export const BoolFilterSchema: z.ZodType<Prisma.BoolFilter> = z.object({
+  equals: z.boolean().optional(),
+  not: z.union([ z.boolean(),z.lazy(() => NestedBoolFilterSchema) ]).optional(),
+}).strict();
+
+export const UserRelationFilterSchema: z.ZodType<Prisma.UserRelationFilter> = z.object({
+  is: z.lazy(() => UserWhereInputSchema).optional(),
+  isNot: z.lazy(() => UserWhereInputSchema).optional()
+}).strict();
+
+export const WalletCountOrderByAggregateInputSchema: z.ZodType<Prisma.WalletCountOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  address: z.lazy(() => SortOrderSchema).optional(),
+  chain: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  verified: z.lazy(() => SortOrderSchema).optional(),
+  label: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const WalletAvgOrderByAggregateInputSchema: z.ZodType<Prisma.WalletAvgOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const WalletMaxOrderByAggregateInputSchema: z.ZodType<Prisma.WalletMaxOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  address: z.lazy(() => SortOrderSchema).optional(),
+  chain: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  verified: z.lazy(() => SortOrderSchema).optional(),
+  label: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const WalletMinOrderByAggregateInputSchema: z.ZodType<Prisma.WalletMinOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  address: z.lazy(() => SortOrderSchema).optional(),
+  chain: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  verified: z.lazy(() => SortOrderSchema).optional(),
+  label: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const WalletSumOrderByAggregateInputSchema: z.ZodType<Prisma.WalletSumOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const BoolWithAggregatesFilterSchema: z.ZodType<Prisma.BoolWithAggregatesFilter> = z.object({
+  equals: z.boolean().optional(),
+  not: z.union([ z.boolean(),z.lazy(() => NestedBoolWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedBoolFilterSchema).optional(),
+  _max: z.lazy(() => NestedBoolFilterSchema).optional()
 }).strict();
 
 export const FloatFilterSchema: z.ZodType<Prisma.FloatFilter> = z.object({
@@ -4662,11 +5804,6 @@ export const NarrativeSnapshotSumOrderByAggregateInputSchema: z.ZodType<Prisma.N
   mindshareChange90d: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
-export const BoolFilterSchema: z.ZodType<Prisma.BoolFilter> = z.object({
-  equals: z.boolean().optional(),
-  not: z.union([ z.boolean(),z.lazy(() => NestedBoolFilterSchema) ]).optional(),
-}).strict();
-
 export const BoolNullableFilterSchema: z.ZodType<Prisma.BoolNullableFilter> = z.object({
   equals: z.boolean().optional().nullable(),
   not: z.union([ z.boolean(),z.lazy(() => NestedBoolNullableFilterSchema) ]).optional().nullable(),
@@ -4793,14 +5930,6 @@ export const ProjectSumOrderByAggregateInputSchema: z.ZodType<Prisma.ProjectSumO
   twitterFollowingCount: z.lazy(() => SortOrderSchema).optional(),
   coinMarketCap: z.lazy(() => SortOrderSchema).optional(),
   coinPrice: z.lazy(() => SortOrderSchema).optional()
-}).strict();
-
-export const BoolWithAggregatesFilterSchema: z.ZodType<Prisma.BoolWithAggregatesFilter> = z.object({
-  equals: z.boolean().optional(),
-  not: z.union([ z.boolean(),z.lazy(() => NestedBoolWithAggregatesFilterSchema) ]).optional(),
-  _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _min: z.lazy(() => NestedBoolFilterSchema).optional(),
-  _max: z.lazy(() => NestedBoolFilterSchema).optional()
 }).strict();
 
 export const BoolNullableWithAggregatesFilterSchema: z.ZodType<Prisma.BoolNullableWithAggregatesFilter> = z.object({
@@ -4971,17 +6100,6 @@ export const FloatNullableFilterSchema: z.ZodType<Prisma.FloatNullableFilter> = 
   gt: z.number().optional(),
   gte: z.number().optional(),
   not: z.union([ z.number(),z.lazy(() => NestedFloatNullableFilterSchema) ]).optional().nullable(),
-}).strict();
-
-export const IntNullableFilterSchema: z.ZodType<Prisma.IntNullableFilter> = z.object({
-  equals: z.number().optional().nullable(),
-  in: z.number().array().optional().nullable(),
-  notIn: z.number().array().optional().nullable(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([ z.number(),z.lazy(() => NestedIntNullableFilterSchema) ]).optional().nullable(),
 }).strict();
 
 export const BigIntNullableFilterSchema: z.ZodType<Prisma.BigIntNullableFilter> = z.object({
@@ -5222,22 +6340,6 @@ export const FloatNullableWithAggregatesFilterSchema: z.ZodType<Prisma.FloatNull
   _sum: z.lazy(() => NestedFloatNullableFilterSchema).optional(),
   _min: z.lazy(() => NestedFloatNullableFilterSchema).optional(),
   _max: z.lazy(() => NestedFloatNullableFilterSchema).optional()
-}).strict();
-
-export const IntNullableWithAggregatesFilterSchema: z.ZodType<Prisma.IntNullableWithAggregatesFilter> = z.object({
-  equals: z.number().optional().nullable(),
-  in: z.number().array().optional().nullable(),
-  notIn: z.number().array().optional().nullable(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([ z.number(),z.lazy(() => NestedIntNullableWithAggregatesFilterSchema) ]).optional().nullable(),
-  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
-  _avg: z.lazy(() => NestedFloatNullableFilterSchema).optional(),
-  _sum: z.lazy(() => NestedIntNullableFilterSchema).optional(),
-  _min: z.lazy(() => NestedIntNullableFilterSchema).optional(),
-  _max: z.lazy(() => NestedIntNullableFilterSchema).optional()
 }).strict();
 
 export const BigIntNullableWithAggregatesFilterSchema: z.ZodType<Prisma.BigIntNullableWithAggregatesFilter> = z.object({
@@ -5651,8 +6753,198 @@ export const IntFieldUpdateOperationsInputSchema: z.ZodType<Prisma.IntFieldUpdat
   divide: z.number().optional()
 }).strict();
 
+export const UserCreateNestedOneWithoutReferralsInputSchema: z.ZodType<Prisma.UserCreateNestedOneWithoutReferralsInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutReferralsInputSchema),z.lazy(() => UserUncheckedCreateWithoutReferralsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutReferralsInputSchema).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional()
+}).strict();
+
+export const UserCreateNestedManyWithoutReferredByInputSchema: z.ZodType<Prisma.UserCreateNestedManyWithoutReferredByInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutReferredByInputSchema),z.lazy(() => UserCreateWithoutReferredByInputSchema).array(),z.lazy(() => UserUncheckedCreateWithoutReferredByInputSchema),z.lazy(() => UserUncheckedCreateWithoutReferredByInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => UserCreateOrConnectWithoutReferredByInputSchema),z.lazy(() => UserCreateOrConnectWithoutReferredByInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => UserCreateManyReferredByInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => UserWhereUniqueInputSchema),z.lazy(() => UserWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const KOLCreateNestedOneWithoutUserInputSchema: z.ZodType<Prisma.KOLCreateNestedOneWithoutUserInput> = z.object({
+  create: z.union([ z.lazy(() => KOLCreateWithoutUserInputSchema),z.lazy(() => KOLUncheckedCreateWithoutUserInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => KOLCreateOrConnectWithoutUserInputSchema).optional(),
+  connect: z.lazy(() => KOLWhereUniqueInputSchema).optional()
+}).strict();
+
+export const WalletCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.WalletCreateNestedManyWithoutUserInput> = z.object({
+  create: z.union([ z.lazy(() => WalletCreateWithoutUserInputSchema),z.lazy(() => WalletCreateWithoutUserInputSchema).array(),z.lazy(() => WalletUncheckedCreateWithoutUserInputSchema),z.lazy(() => WalletUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => WalletCreateOrConnectWithoutUserInputSchema),z.lazy(() => WalletCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => WalletCreateManyUserInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => WalletWhereUniqueInputSchema),z.lazy(() => WalletWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const WalletCreateNestedOneWithoutPrimaryForInputSchema: z.ZodType<Prisma.WalletCreateNestedOneWithoutPrimaryForInput> = z.object({
+  create: z.union([ z.lazy(() => WalletCreateWithoutPrimaryForInputSchema),z.lazy(() => WalletUncheckedCreateWithoutPrimaryForInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => WalletCreateOrConnectWithoutPrimaryForInputSchema).optional(),
+  connect: z.lazy(() => WalletWhereUniqueInputSchema).optional()
+}).strict();
+
+export const UserUncheckedCreateNestedManyWithoutReferredByInputSchema: z.ZodType<Prisma.UserUncheckedCreateNestedManyWithoutReferredByInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutReferredByInputSchema),z.lazy(() => UserCreateWithoutReferredByInputSchema).array(),z.lazy(() => UserUncheckedCreateWithoutReferredByInputSchema),z.lazy(() => UserUncheckedCreateWithoutReferredByInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => UserCreateOrConnectWithoutReferredByInputSchema),z.lazy(() => UserCreateOrConnectWithoutReferredByInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => UserCreateManyReferredByInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => UserWhereUniqueInputSchema),z.lazy(() => UserWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const WalletUncheckedCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.WalletUncheckedCreateNestedManyWithoutUserInput> = z.object({
+  create: z.union([ z.lazy(() => WalletCreateWithoutUserInputSchema),z.lazy(() => WalletCreateWithoutUserInputSchema).array(),z.lazy(() => WalletUncheckedCreateWithoutUserInputSchema),z.lazy(() => WalletUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => WalletCreateOrConnectWithoutUserInputSchema),z.lazy(() => WalletCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => WalletCreateManyUserInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => WalletWhereUniqueInputSchema),z.lazy(() => WalletWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
 export const NullableStringFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableStringFieldUpdateOperationsInput> = z.object({
   set: z.string().optional().nullable()
+}).strict();
+
+export const UserUpdateOneWithoutReferralsNestedInputSchema: z.ZodType<Prisma.UserUpdateOneWithoutReferralsNestedInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutReferralsInputSchema),z.lazy(() => UserUncheckedCreateWithoutReferralsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutReferralsInputSchema).optional(),
+  upsert: z.lazy(() => UserUpsertWithoutReferralsInputSchema).optional(),
+  disconnect: z.union([ z.boolean(),z.lazy(() => UserWhereInputSchema) ]).optional(),
+  delete: z.union([ z.boolean(),z.lazy(() => UserWhereInputSchema) ]).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => UserUpdateToOneWithWhereWithoutReferralsInputSchema),z.lazy(() => UserUpdateWithoutReferralsInputSchema),z.lazy(() => UserUncheckedUpdateWithoutReferralsInputSchema) ]).optional(),
+}).strict();
+
+export const UserUpdateManyWithoutReferredByNestedInputSchema: z.ZodType<Prisma.UserUpdateManyWithoutReferredByNestedInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutReferredByInputSchema),z.lazy(() => UserCreateWithoutReferredByInputSchema).array(),z.lazy(() => UserUncheckedCreateWithoutReferredByInputSchema),z.lazy(() => UserUncheckedCreateWithoutReferredByInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => UserCreateOrConnectWithoutReferredByInputSchema),z.lazy(() => UserCreateOrConnectWithoutReferredByInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => UserUpsertWithWhereUniqueWithoutReferredByInputSchema),z.lazy(() => UserUpsertWithWhereUniqueWithoutReferredByInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => UserCreateManyReferredByInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => UserWhereUniqueInputSchema),z.lazy(() => UserWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => UserWhereUniqueInputSchema),z.lazy(() => UserWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => UserWhereUniqueInputSchema),z.lazy(() => UserWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => UserWhereUniqueInputSchema),z.lazy(() => UserWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => UserUpdateWithWhereUniqueWithoutReferredByInputSchema),z.lazy(() => UserUpdateWithWhereUniqueWithoutReferredByInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => UserUpdateManyWithWhereWithoutReferredByInputSchema),z.lazy(() => UserUpdateManyWithWhereWithoutReferredByInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => UserScalarWhereInputSchema),z.lazy(() => UserScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const KOLUpdateOneWithoutUserNestedInputSchema: z.ZodType<Prisma.KOLUpdateOneWithoutUserNestedInput> = z.object({
+  create: z.union([ z.lazy(() => KOLCreateWithoutUserInputSchema),z.lazy(() => KOLUncheckedCreateWithoutUserInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => KOLCreateOrConnectWithoutUserInputSchema).optional(),
+  upsert: z.lazy(() => KOLUpsertWithoutUserInputSchema).optional(),
+  disconnect: z.union([ z.boolean(),z.lazy(() => KOLWhereInputSchema) ]).optional(),
+  delete: z.union([ z.boolean(),z.lazy(() => KOLWhereInputSchema) ]).optional(),
+  connect: z.lazy(() => KOLWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => KOLUpdateToOneWithWhereWithoutUserInputSchema),z.lazy(() => KOLUpdateWithoutUserInputSchema),z.lazy(() => KOLUncheckedUpdateWithoutUserInputSchema) ]).optional(),
+}).strict();
+
+export const WalletUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prisma.WalletUpdateManyWithoutUserNestedInput> = z.object({
+  create: z.union([ z.lazy(() => WalletCreateWithoutUserInputSchema),z.lazy(() => WalletCreateWithoutUserInputSchema).array(),z.lazy(() => WalletUncheckedCreateWithoutUserInputSchema),z.lazy(() => WalletUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => WalletCreateOrConnectWithoutUserInputSchema),z.lazy(() => WalletCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => WalletUpsertWithWhereUniqueWithoutUserInputSchema),z.lazy(() => WalletUpsertWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => WalletCreateManyUserInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => WalletWhereUniqueInputSchema),z.lazy(() => WalletWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => WalletWhereUniqueInputSchema),z.lazy(() => WalletWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => WalletWhereUniqueInputSchema),z.lazy(() => WalletWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => WalletWhereUniqueInputSchema),z.lazy(() => WalletWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => WalletUpdateWithWhereUniqueWithoutUserInputSchema),z.lazy(() => WalletUpdateWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => WalletUpdateManyWithWhereWithoutUserInputSchema),z.lazy(() => WalletUpdateManyWithWhereWithoutUserInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => WalletScalarWhereInputSchema),z.lazy(() => WalletScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const WalletUpdateOneWithoutPrimaryForNestedInputSchema: z.ZodType<Prisma.WalletUpdateOneWithoutPrimaryForNestedInput> = z.object({
+  create: z.union([ z.lazy(() => WalletCreateWithoutPrimaryForInputSchema),z.lazy(() => WalletUncheckedCreateWithoutPrimaryForInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => WalletCreateOrConnectWithoutPrimaryForInputSchema).optional(),
+  upsert: z.lazy(() => WalletUpsertWithoutPrimaryForInputSchema).optional(),
+  disconnect: z.union([ z.boolean(),z.lazy(() => WalletWhereInputSchema) ]).optional(),
+  delete: z.union([ z.boolean(),z.lazy(() => WalletWhereInputSchema) ]).optional(),
+  connect: z.lazy(() => WalletWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => WalletUpdateToOneWithWhereWithoutPrimaryForInputSchema),z.lazy(() => WalletUpdateWithoutPrimaryForInputSchema),z.lazy(() => WalletUncheckedUpdateWithoutPrimaryForInputSchema) ]).optional(),
+}).strict();
+
+export const NullableIntFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableIntFieldUpdateOperationsInput> = z.object({
+  set: z.number().optional().nullable(),
+  increment: z.number().optional(),
+  decrement: z.number().optional(),
+  multiply: z.number().optional(),
+  divide: z.number().optional()
+}).strict();
+
+export const UserUncheckedUpdateManyWithoutReferredByNestedInputSchema: z.ZodType<Prisma.UserUncheckedUpdateManyWithoutReferredByNestedInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutReferredByInputSchema),z.lazy(() => UserCreateWithoutReferredByInputSchema).array(),z.lazy(() => UserUncheckedCreateWithoutReferredByInputSchema),z.lazy(() => UserUncheckedCreateWithoutReferredByInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => UserCreateOrConnectWithoutReferredByInputSchema),z.lazy(() => UserCreateOrConnectWithoutReferredByInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => UserUpsertWithWhereUniqueWithoutReferredByInputSchema),z.lazy(() => UserUpsertWithWhereUniqueWithoutReferredByInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => UserCreateManyReferredByInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => UserWhereUniqueInputSchema),z.lazy(() => UserWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => UserWhereUniqueInputSchema),z.lazy(() => UserWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => UserWhereUniqueInputSchema),z.lazy(() => UserWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => UserWhereUniqueInputSchema),z.lazy(() => UserWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => UserUpdateWithWhereUniqueWithoutReferredByInputSchema),z.lazy(() => UserUpdateWithWhereUniqueWithoutReferredByInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => UserUpdateManyWithWhereWithoutReferredByInputSchema),z.lazy(() => UserUpdateManyWithWhereWithoutReferredByInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => UserScalarWhereInputSchema),z.lazy(() => UserScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const WalletUncheckedUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prisma.WalletUncheckedUpdateManyWithoutUserNestedInput> = z.object({
+  create: z.union([ z.lazy(() => WalletCreateWithoutUserInputSchema),z.lazy(() => WalletCreateWithoutUserInputSchema).array(),z.lazy(() => WalletUncheckedCreateWithoutUserInputSchema),z.lazy(() => WalletUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => WalletCreateOrConnectWithoutUserInputSchema),z.lazy(() => WalletCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => WalletUpsertWithWhereUniqueWithoutUserInputSchema),z.lazy(() => WalletUpsertWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => WalletCreateManyUserInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => WalletWhereUniqueInputSchema),z.lazy(() => WalletWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => WalletWhereUniqueInputSchema),z.lazy(() => WalletWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => WalletWhereUniqueInputSchema),z.lazy(() => WalletWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => WalletWhereUniqueInputSchema),z.lazy(() => WalletWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => WalletUpdateWithWhereUniqueWithoutUserInputSchema),z.lazy(() => WalletUpdateWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => WalletUpdateManyWithWhereWithoutUserInputSchema),z.lazy(() => WalletUpdateManyWithWhereWithoutUserInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => WalletScalarWhereInputSchema),z.lazy(() => WalletScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const UserCreateNestedOneWithoutWalletsInputSchema: z.ZodType<Prisma.UserCreateNestedOneWithoutWalletsInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutWalletsInputSchema),z.lazy(() => UserUncheckedCreateWithoutWalletsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutWalletsInputSchema).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional()
+}).strict();
+
+export const UserCreateNestedOneWithoutPrimaryWalletInputSchema: z.ZodType<Prisma.UserCreateNestedOneWithoutPrimaryWalletInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutPrimaryWalletInputSchema),z.lazy(() => UserUncheckedCreateWithoutPrimaryWalletInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutPrimaryWalletInputSchema).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional()
+}).strict();
+
+export const UserUncheckedCreateNestedOneWithoutPrimaryWalletInputSchema: z.ZodType<Prisma.UserUncheckedCreateNestedOneWithoutPrimaryWalletInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutPrimaryWalletInputSchema),z.lazy(() => UserUncheckedCreateWithoutPrimaryWalletInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutPrimaryWalletInputSchema).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional()
+}).strict();
+
+export const BoolFieldUpdateOperationsInputSchema: z.ZodType<Prisma.BoolFieldUpdateOperationsInput> = z.object({
+  set: z.boolean().optional()
+}).strict();
+
+export const UserUpdateOneRequiredWithoutWalletsNestedInputSchema: z.ZodType<Prisma.UserUpdateOneRequiredWithoutWalletsNestedInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutWalletsInputSchema),z.lazy(() => UserUncheckedCreateWithoutWalletsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutWalletsInputSchema).optional(),
+  upsert: z.lazy(() => UserUpsertWithoutWalletsInputSchema).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => UserUpdateToOneWithWhereWithoutWalletsInputSchema),z.lazy(() => UserUpdateWithoutWalletsInputSchema),z.lazy(() => UserUncheckedUpdateWithoutWalletsInputSchema) ]).optional(),
+}).strict();
+
+export const UserUpdateOneWithoutPrimaryWalletNestedInputSchema: z.ZodType<Prisma.UserUpdateOneWithoutPrimaryWalletNestedInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutPrimaryWalletInputSchema),z.lazy(() => UserUncheckedCreateWithoutPrimaryWalletInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutPrimaryWalletInputSchema).optional(),
+  upsert: z.lazy(() => UserUpsertWithoutPrimaryWalletInputSchema).optional(),
+  disconnect: z.union([ z.boolean(),z.lazy(() => UserWhereInputSchema) ]).optional(),
+  delete: z.union([ z.boolean(),z.lazy(() => UserWhereInputSchema) ]).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => UserUpdateToOneWithWhereWithoutPrimaryWalletInputSchema),z.lazy(() => UserUpdateWithoutPrimaryWalletInputSchema),z.lazy(() => UserUncheckedUpdateWithoutPrimaryWalletInputSchema) ]).optional(),
+}).strict();
+
+export const UserUncheckedUpdateOneWithoutPrimaryWalletNestedInputSchema: z.ZodType<Prisma.UserUncheckedUpdateOneWithoutPrimaryWalletNestedInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutPrimaryWalletInputSchema),z.lazy(() => UserUncheckedCreateWithoutPrimaryWalletInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutPrimaryWalletInputSchema).optional(),
+  upsert: z.lazy(() => UserUpsertWithoutPrimaryWalletInputSchema).optional(),
+  disconnect: z.union([ z.boolean(),z.lazy(() => UserWhereInputSchema) ]).optional(),
+  delete: z.union([ z.boolean(),z.lazy(() => UserWhereInputSchema) ]).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => UserUpdateToOneWithWhereWithoutPrimaryWalletInputSchema),z.lazy(() => UserUpdateWithoutPrimaryWalletInputSchema),z.lazy(() => UserUncheckedUpdateWithoutPrimaryWalletInputSchema) ]).optional(),
 }).strict();
 
 export const ProjectToNarrativeCreateNestedManyWithoutNarrativeInputSchema: z.ZodType<Prisma.ProjectToNarrativeCreateNestedManyWithoutNarrativeInput> = z.object({
@@ -5859,10 +7151,6 @@ export const KOLToProjectUncheckedCreateNestedManyWithoutProjectInputSchema: z.Z
   connect: z.union([ z.lazy(() => KOLToProjectWhereUniqueInputSchema),z.lazy(() => KOLToProjectWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
-export const BoolFieldUpdateOperationsInputSchema: z.ZodType<Prisma.BoolFieldUpdateOperationsInput> = z.object({
-  set: z.boolean().optional()
-}).strict();
-
 export const NullableBoolFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableBoolFieldUpdateOperationsInput> = z.object({
   set: z.boolean().optional().nullable()
 }).strict();
@@ -6051,6 +7339,12 @@ export const KOLSnapshotCreateNestedManyWithoutKolInputSchema: z.ZodType<Prisma.
   connect: z.union([ z.lazy(() => KOLSnapshotWhereUniqueInputSchema),z.lazy(() => KOLSnapshotWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
+export const UserCreateNestedOneWithoutKolInputSchema: z.ZodType<Prisma.UserCreateNestedOneWithoutKolInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutKolInputSchema),z.lazy(() => UserUncheckedCreateWithoutKolInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutKolInputSchema).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional()
+}).strict();
+
 export const KOLToProjectUncheckedCreateNestedManyWithoutKolInputSchema: z.ZodType<Prisma.KOLToProjectUncheckedCreateNestedManyWithoutKolInput> = z.object({
   create: z.union([ z.lazy(() => KOLToProjectCreateWithoutKolInputSchema),z.lazy(() => KOLToProjectCreateWithoutKolInputSchema).array(),z.lazy(() => KOLToProjectUncheckedCreateWithoutKolInputSchema),z.lazy(() => KOLToProjectUncheckedCreateWithoutKolInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => KOLToProjectCreateOrConnectWithoutKolInputSchema),z.lazy(() => KOLToProjectCreateOrConnectWithoutKolInputSchema).array() ]).optional(),
@@ -6065,15 +7359,13 @@ export const KOLSnapshotUncheckedCreateNestedManyWithoutKolInputSchema: z.ZodTyp
   connect: z.union([ z.lazy(() => KOLSnapshotWhereUniqueInputSchema),z.lazy(() => KOLSnapshotWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
-export const NullableFloatFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableFloatFieldUpdateOperationsInput> = z.object({
-  set: z.number().optional().nullable(),
-  increment: z.number().optional(),
-  decrement: z.number().optional(),
-  multiply: z.number().optional(),
-  divide: z.number().optional()
+export const UserUncheckedCreateNestedOneWithoutKolInputSchema: z.ZodType<Prisma.UserUncheckedCreateNestedOneWithoutKolInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutKolInputSchema),z.lazy(() => UserUncheckedCreateWithoutKolInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutKolInputSchema).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional()
 }).strict();
 
-export const NullableIntFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableIntFieldUpdateOperationsInput> = z.object({
+export const NullableFloatFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableFloatFieldUpdateOperationsInput> = z.object({
   set: z.number().optional().nullable(),
   increment: z.number().optional(),
   decrement: z.number().optional(),
@@ -6117,6 +7409,16 @@ export const KOLSnapshotUpdateManyWithoutKolNestedInputSchema: z.ZodType<Prisma.
   deleteMany: z.union([ z.lazy(() => KOLSnapshotScalarWhereInputSchema),z.lazy(() => KOLSnapshotScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
+export const UserUpdateOneWithoutKolNestedInputSchema: z.ZodType<Prisma.UserUpdateOneWithoutKolNestedInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutKolInputSchema),z.lazy(() => UserUncheckedCreateWithoutKolInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutKolInputSchema).optional(),
+  upsert: z.lazy(() => UserUpsertWithoutKolInputSchema).optional(),
+  disconnect: z.union([ z.boolean(),z.lazy(() => UserWhereInputSchema) ]).optional(),
+  delete: z.union([ z.boolean(),z.lazy(() => UserWhereInputSchema) ]).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => UserUpdateToOneWithWhereWithoutKolInputSchema),z.lazy(() => UserUpdateWithoutKolInputSchema),z.lazy(() => UserUncheckedUpdateWithoutKolInputSchema) ]).optional(),
+}).strict();
+
 export const KOLToProjectUncheckedUpdateManyWithoutKolNestedInputSchema: z.ZodType<Prisma.KOLToProjectUncheckedUpdateManyWithoutKolNestedInput> = z.object({
   create: z.union([ z.lazy(() => KOLToProjectCreateWithoutKolInputSchema),z.lazy(() => KOLToProjectCreateWithoutKolInputSchema).array(),z.lazy(() => KOLToProjectUncheckedCreateWithoutKolInputSchema),z.lazy(() => KOLToProjectUncheckedCreateWithoutKolInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => KOLToProjectCreateOrConnectWithoutKolInputSchema),z.lazy(() => KOLToProjectCreateOrConnectWithoutKolInputSchema).array() ]).optional(),
@@ -6143,6 +7445,16 @@ export const KOLSnapshotUncheckedUpdateManyWithoutKolNestedInputSchema: z.ZodTyp
   update: z.union([ z.lazy(() => KOLSnapshotUpdateWithWhereUniqueWithoutKolInputSchema),z.lazy(() => KOLSnapshotUpdateWithWhereUniqueWithoutKolInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => KOLSnapshotUpdateManyWithWhereWithoutKolInputSchema),z.lazy(() => KOLSnapshotUpdateManyWithWhereWithoutKolInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => KOLSnapshotScalarWhereInputSchema),z.lazy(() => KOLSnapshotScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const UserUncheckedUpdateOneWithoutKolNestedInputSchema: z.ZodType<Prisma.UserUncheckedUpdateOneWithoutKolNestedInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutKolInputSchema),z.lazy(() => UserUncheckedCreateWithoutKolInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutKolInputSchema).optional(),
+  upsert: z.lazy(() => UserUpsertWithoutKolInputSchema).optional(),
+  disconnect: z.union([ z.boolean(),z.lazy(() => UserWhereInputSchema) ]).optional(),
+  delete: z.union([ z.boolean(),z.lazy(() => UserWhereInputSchema) ]).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => UserUpdateToOneWithWhereWithoutKolInputSchema),z.lazy(() => UserUpdateWithoutKolInputSchema),z.lazy(() => UserUncheckedUpdateWithoutKolInputSchema) ]).optional(),
 }).strict();
 
 export const KOLCreateNestedOneWithoutKolSnapshotInputSchema: z.ZodType<Prisma.KOLCreateNestedOneWithoutKolSnapshotInput> = z.object({
@@ -6339,6 +7651,17 @@ export const NestedStringNullableFilterSchema: z.ZodType<Prisma.NestedStringNull
   not: z.union([ z.string(),z.lazy(() => NestedStringNullableFilterSchema) ]).optional().nullable(),
 }).strict();
 
+export const NestedIntNullableFilterSchema: z.ZodType<Prisma.NestedIntNullableFilter> = z.object({
+  equals: z.number().optional().nullable(),
+  in: z.number().array().optional().nullable(),
+  notIn: z.number().array().optional().nullable(),
+  lt: z.number().optional(),
+  lte: z.number().optional(),
+  gt: z.number().optional(),
+  gte: z.number().optional(),
+  not: z.union([ z.number(),z.lazy(() => NestedIntNullableFilterSchema) ]).optional().nullable(),
+}).strict();
+
 export const NestedStringNullableWithAggregatesFilterSchema: z.ZodType<Prisma.NestedStringNullableWithAggregatesFilter> = z.object({
   equals: z.string().optional().nullable(),
   in: z.string().array().optional().nullable(),
@@ -6356,7 +7679,7 @@ export const NestedStringNullableWithAggregatesFilterSchema: z.ZodType<Prisma.Ne
   _max: z.lazy(() => NestedStringNullableFilterSchema).optional()
 }).strict();
 
-export const NestedIntNullableFilterSchema: z.ZodType<Prisma.NestedIntNullableFilter> = z.object({
+export const NestedIntNullableWithAggregatesFilterSchema: z.ZodType<Prisma.NestedIntNullableWithAggregatesFilter> = z.object({
   equals: z.number().optional().nullable(),
   in: z.number().array().optional().nullable(),
   notIn: z.number().array().optional().nullable(),
@@ -6364,7 +7687,36 @@ export const NestedIntNullableFilterSchema: z.ZodType<Prisma.NestedIntNullableFi
   lte: z.number().optional(),
   gt: z.number().optional(),
   gte: z.number().optional(),
-  not: z.union([ z.number(),z.lazy(() => NestedIntNullableFilterSchema) ]).optional().nullable(),
+  not: z.union([ z.number(),z.lazy(() => NestedIntNullableWithAggregatesFilterSchema) ]).optional().nullable(),
+  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
+  _avg: z.lazy(() => NestedFloatNullableFilterSchema).optional(),
+  _sum: z.lazy(() => NestedIntNullableFilterSchema).optional(),
+  _min: z.lazy(() => NestedIntNullableFilterSchema).optional(),
+  _max: z.lazy(() => NestedIntNullableFilterSchema).optional()
+}).strict();
+
+export const NestedFloatNullableFilterSchema: z.ZodType<Prisma.NestedFloatNullableFilter> = z.object({
+  equals: z.number().optional().nullable(),
+  in: z.number().array().optional().nullable(),
+  notIn: z.number().array().optional().nullable(),
+  lt: z.number().optional(),
+  lte: z.number().optional(),
+  gt: z.number().optional(),
+  gte: z.number().optional(),
+  not: z.union([ z.number(),z.lazy(() => NestedFloatNullableFilterSchema) ]).optional().nullable(),
+}).strict();
+
+export const NestedBoolFilterSchema: z.ZodType<Prisma.NestedBoolFilter> = z.object({
+  equals: z.boolean().optional(),
+  not: z.union([ z.boolean(),z.lazy(() => NestedBoolFilterSchema) ]).optional(),
+}).strict();
+
+export const NestedBoolWithAggregatesFilterSchema: z.ZodType<Prisma.NestedBoolWithAggregatesFilter> = z.object({
+  equals: z.boolean().optional(),
+  not: z.union([ z.boolean(),z.lazy(() => NestedBoolWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedBoolFilterSchema).optional(),
+  _max: z.lazy(() => NestedBoolFilterSchema).optional()
 }).strict();
 
 export const NestedFloatWithAggregatesFilterSchema: z.ZodType<Prisma.NestedFloatWithAggregatesFilter> = z.object({
@@ -6383,22 +7735,9 @@ export const NestedFloatWithAggregatesFilterSchema: z.ZodType<Prisma.NestedFloat
   _max: z.lazy(() => NestedFloatFilterSchema).optional()
 }).strict();
 
-export const NestedBoolFilterSchema: z.ZodType<Prisma.NestedBoolFilter> = z.object({
-  equals: z.boolean().optional(),
-  not: z.union([ z.boolean(),z.lazy(() => NestedBoolFilterSchema) ]).optional(),
-}).strict();
-
 export const NestedBoolNullableFilterSchema: z.ZodType<Prisma.NestedBoolNullableFilter> = z.object({
   equals: z.boolean().optional().nullable(),
   not: z.union([ z.boolean(),z.lazy(() => NestedBoolNullableFilterSchema) ]).optional().nullable(),
-}).strict();
-
-export const NestedBoolWithAggregatesFilterSchema: z.ZodType<Prisma.NestedBoolWithAggregatesFilter> = z.object({
-  equals: z.boolean().optional(),
-  not: z.union([ z.boolean(),z.lazy(() => NestedBoolWithAggregatesFilterSchema) ]).optional(),
-  _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _min: z.lazy(() => NestedBoolFilterSchema).optional(),
-  _max: z.lazy(() => NestedBoolFilterSchema).optional()
 }).strict();
 
 export const NestedBoolNullableWithAggregatesFilterSchema: z.ZodType<Prisma.NestedBoolNullableWithAggregatesFilter> = z.object({
@@ -6407,17 +7746,6 @@ export const NestedBoolNullableWithAggregatesFilterSchema: z.ZodType<Prisma.Nest
   _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
   _min: z.lazy(() => NestedBoolNullableFilterSchema).optional(),
   _max: z.lazy(() => NestedBoolNullableFilterSchema).optional()
-}).strict();
-
-export const NestedFloatNullableFilterSchema: z.ZodType<Prisma.NestedFloatNullableFilter> = z.object({
-  equals: z.number().optional().nullable(),
-  in: z.number().array().optional().nullable(),
-  notIn: z.number().array().optional().nullable(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([ z.number(),z.lazy(() => NestedFloatNullableFilterSchema) ]).optional().nullable(),
 }).strict();
 
 export const NestedBigIntNullableFilterSchema: z.ZodType<Prisma.NestedBigIntNullableFilter> = z.object({
@@ -6445,22 +7773,6 @@ export const NestedFloatNullableWithAggregatesFilterSchema: z.ZodType<Prisma.Nes
   _sum: z.lazy(() => NestedFloatNullableFilterSchema).optional(),
   _min: z.lazy(() => NestedFloatNullableFilterSchema).optional(),
   _max: z.lazy(() => NestedFloatNullableFilterSchema).optional()
-}).strict();
-
-export const NestedIntNullableWithAggregatesFilterSchema: z.ZodType<Prisma.NestedIntNullableWithAggregatesFilter> = z.object({
-  equals: z.number().optional().nullable(),
-  in: z.number().array().optional().nullable(),
-  notIn: z.number().array().optional().nullable(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([ z.number(),z.lazy(() => NestedIntNullableWithAggregatesFilterSchema) ]).optional().nullable(),
-  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
-  _avg: z.lazy(() => NestedFloatNullableFilterSchema).optional(),
-  _sum: z.lazy(() => NestedIntNullableFilterSchema).optional(),
-  _min: z.lazy(() => NestedIntNullableFilterSchema).optional(),
-  _max: z.lazy(() => NestedIntNullableFilterSchema).optional()
 }).strict();
 
 export const NestedBigIntNullableWithAggregatesFilterSchema: z.ZodType<Prisma.NestedBigIntNullableWithAggregatesFilter> = z.object({
@@ -6521,6 +7833,684 @@ export const NestedEnumRewardPoolStatusWithAggregatesFilterSchema: z.ZodType<Pri
   _count: z.lazy(() => NestedIntFilterSchema).optional(),
   _min: z.lazy(() => NestedEnumRewardPoolStatusFilterSchema).optional(),
   _max: z.lazy(() => NestedEnumRewardPoolStatusFilterSchema).optional()
+}).strict();
+
+export const UserCreateWithoutReferralsInputSchema: z.ZodType<Prisma.UserCreateWithoutReferralsInput> = z.object({
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  username: z.string().optional().nullable(),
+  avatarUrl: z.string().optional().nullable(),
+  platform: z.string().optional(),
+  email: z.string().optional().nullable(),
+  twitterHandle: z.string().optional().nullable(),
+  referralCode: z.string().cuid().optional(),
+  onboardingStep: z.number().int().optional(),
+  completedTasks: z.number().int().optional(),
+  earnedPoints: z.number().int().optional(),
+  referredBy: z.lazy(() => UserCreateNestedOneWithoutReferralsInputSchema).optional(),
+  kol: z.lazy(() => KOLCreateNestedOneWithoutUserInputSchema).optional(),
+  wallets: z.lazy(() => WalletCreateNestedManyWithoutUserInputSchema).optional(),
+  primaryWallet: z.lazy(() => WalletCreateNestedOneWithoutPrimaryForInputSchema).optional()
+}).strict();
+
+export const UserUncheckedCreateWithoutReferralsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutReferralsInput> = z.object({
+  id: z.number().int().optional(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  username: z.string().optional().nullable(),
+  avatarUrl: z.string().optional().nullable(),
+  platform: z.string().optional(),
+  email: z.string().optional().nullable(),
+  twitterHandle: z.string().optional().nullable(),
+  referralCode: z.string().cuid().optional(),
+  referredById: z.number().int().optional().nullable(),
+  onboardingStep: z.number().int().optional(),
+  completedTasks: z.number().int().optional(),
+  earnedPoints: z.number().int().optional(),
+  kolId: z.string().optional().nullable(),
+  primaryWalletId: z.number().int().optional().nullable(),
+  wallets: z.lazy(() => WalletUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+}).strict();
+
+export const UserCreateOrConnectWithoutReferralsInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutReferralsInput> = z.object({
+  where: z.lazy(() => UserWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => UserCreateWithoutReferralsInputSchema),z.lazy(() => UserUncheckedCreateWithoutReferralsInputSchema) ]),
+}).strict();
+
+export const UserCreateWithoutReferredByInputSchema: z.ZodType<Prisma.UserCreateWithoutReferredByInput> = z.object({
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  username: z.string().optional().nullable(),
+  avatarUrl: z.string().optional().nullable(),
+  platform: z.string().optional(),
+  email: z.string().optional().nullable(),
+  twitterHandle: z.string().optional().nullable(),
+  referralCode: z.string().cuid().optional(),
+  onboardingStep: z.number().int().optional(),
+  completedTasks: z.number().int().optional(),
+  earnedPoints: z.number().int().optional(),
+  referrals: z.lazy(() => UserCreateNestedManyWithoutReferredByInputSchema).optional(),
+  kol: z.lazy(() => KOLCreateNestedOneWithoutUserInputSchema).optional(),
+  wallets: z.lazy(() => WalletCreateNestedManyWithoutUserInputSchema).optional(),
+  primaryWallet: z.lazy(() => WalletCreateNestedOneWithoutPrimaryForInputSchema).optional()
+}).strict();
+
+export const UserUncheckedCreateWithoutReferredByInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutReferredByInput> = z.object({
+  id: z.number().int().optional(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  username: z.string().optional().nullable(),
+  avatarUrl: z.string().optional().nullable(),
+  platform: z.string().optional(),
+  email: z.string().optional().nullable(),
+  twitterHandle: z.string().optional().nullable(),
+  referralCode: z.string().cuid().optional(),
+  onboardingStep: z.number().int().optional(),
+  completedTasks: z.number().int().optional(),
+  earnedPoints: z.number().int().optional(),
+  kolId: z.string().optional().nullable(),
+  primaryWalletId: z.number().int().optional().nullable(),
+  referrals: z.lazy(() => UserUncheckedCreateNestedManyWithoutReferredByInputSchema).optional(),
+  wallets: z.lazy(() => WalletUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+}).strict();
+
+export const UserCreateOrConnectWithoutReferredByInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutReferredByInput> = z.object({
+  where: z.lazy(() => UserWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => UserCreateWithoutReferredByInputSchema),z.lazy(() => UserUncheckedCreateWithoutReferredByInputSchema) ]),
+}).strict();
+
+export const UserCreateManyReferredByInputEnvelopeSchema: z.ZodType<Prisma.UserCreateManyReferredByInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => UserCreateManyReferredByInputSchema),z.lazy(() => UserCreateManyReferredByInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
+export const KOLCreateWithoutUserInputSchema: z.ZodType<Prisma.KOLCreateWithoutUserInput> = z.object({
+  id: z.string().optional(),
+  hidden: z.boolean().optional(),
+  isAlsoProject: z.boolean().optional(),
+  twitterId: z.string(),
+  twitterUsername: z.string(),
+  twitterDisplayName: z.string(),
+  twitterAvatarUrl: z.string(),
+  twitterDescription: z.string(),
+  twitterDescriptionLink: z.string().optional().nullable(),
+  twitterFollowersCount: z.number().int(),
+  twitterFollowingCount: z.number().int(),
+  twitterIsVerified: z.boolean(),
+  twitterGoldBadge: z.boolean().optional().nullable(),
+  twitterLang: z.string(),
+  twitterCreatedAt: z.coerce.date(),
+  kolScore: z.number().optional().nullable(),
+  kolScorePercentFromTotal: z.number().optional().nullable(),
+  smartFollowersCount: z.number().int().optional().nullable(),
+  threadsCount: z.number().int().optional().nullable(),
+  engagementRate: z.number().optional().nullable(),
+  smartEngagement: z.number().optional().nullable(),
+  avgViews: z.number().int().optional().nullable(),
+  avgLikes: z.number().int().optional().nullable(),
+  totalPosts: z.number().int().optional().nullable(),
+  totalViews: z.bigint().optional().nullable(),
+  totalInteractions: z.bigint().optional().nullable(),
+  totalOrganicPosts: z.number().int().optional().nullable(),
+  totalOrganicViews: z.bigint().optional().nullable(),
+  totalOrganicInteractions: z.bigint().optional().nullable(),
+  totalAccountPosts: z.number().int().optional().nullable(),
+  totalAccountViews: z.bigint().optional().nullable(),
+  totalAccountInteractions: z.bigint().optional().nullable(),
+  totalAccountComments: z.number().int().optional().nullable(),
+  totalAccountLikes: z.number().int().optional().nullable(),
+  totalAccountRetweets: z.number().int().optional().nullable(),
+  totalAccountReplies: z.number().int().optional().nullable(),
+  totalPostsChange: z.number().optional().nullable(),
+  totalInteractionsChange: z.number().optional().nullable(),
+  totalViewsChange: z.number().optional().nullable(),
+  followersChange: z.number().optional().nullable(),
+  smartEngagementChange: z.number().optional().nullable(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  fetchedAt: z.coerce.date().optional(),
+  projects: z.lazy(() => KOLToProjectCreateNestedManyWithoutKolInputSchema).optional(),
+  kolSnapshot: z.lazy(() => KOLSnapshotCreateNestedManyWithoutKolInputSchema).optional()
+}).strict();
+
+export const KOLUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.KOLUncheckedCreateWithoutUserInput> = z.object({
+  id: z.string().optional(),
+  hidden: z.boolean().optional(),
+  isAlsoProject: z.boolean().optional(),
+  twitterId: z.string(),
+  twitterUsername: z.string(),
+  twitterDisplayName: z.string(),
+  twitterAvatarUrl: z.string(),
+  twitterDescription: z.string(),
+  twitterDescriptionLink: z.string().optional().nullable(),
+  twitterFollowersCount: z.number().int(),
+  twitterFollowingCount: z.number().int(),
+  twitterIsVerified: z.boolean(),
+  twitterGoldBadge: z.boolean().optional().nullable(),
+  twitterLang: z.string(),
+  twitterCreatedAt: z.coerce.date(),
+  kolScore: z.number().optional().nullable(),
+  kolScorePercentFromTotal: z.number().optional().nullable(),
+  smartFollowersCount: z.number().int().optional().nullable(),
+  threadsCount: z.number().int().optional().nullable(),
+  engagementRate: z.number().optional().nullable(),
+  smartEngagement: z.number().optional().nullable(),
+  avgViews: z.number().int().optional().nullable(),
+  avgLikes: z.number().int().optional().nullable(),
+  totalPosts: z.number().int().optional().nullable(),
+  totalViews: z.bigint().optional().nullable(),
+  totalInteractions: z.bigint().optional().nullable(),
+  totalOrganicPosts: z.number().int().optional().nullable(),
+  totalOrganicViews: z.bigint().optional().nullable(),
+  totalOrganicInteractions: z.bigint().optional().nullable(),
+  totalAccountPosts: z.number().int().optional().nullable(),
+  totalAccountViews: z.bigint().optional().nullable(),
+  totalAccountInteractions: z.bigint().optional().nullable(),
+  totalAccountComments: z.number().int().optional().nullable(),
+  totalAccountLikes: z.number().int().optional().nullable(),
+  totalAccountRetweets: z.number().int().optional().nullable(),
+  totalAccountReplies: z.number().int().optional().nullable(),
+  totalPostsChange: z.number().optional().nullable(),
+  totalInteractionsChange: z.number().optional().nullable(),
+  totalViewsChange: z.number().optional().nullable(),
+  followersChange: z.number().optional().nullable(),
+  smartEngagementChange: z.number().optional().nullable(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  fetchedAt: z.coerce.date().optional(),
+  projects: z.lazy(() => KOLToProjectUncheckedCreateNestedManyWithoutKolInputSchema).optional(),
+  kolSnapshot: z.lazy(() => KOLSnapshotUncheckedCreateNestedManyWithoutKolInputSchema).optional()
+}).strict();
+
+export const KOLCreateOrConnectWithoutUserInputSchema: z.ZodType<Prisma.KOLCreateOrConnectWithoutUserInput> = z.object({
+  where: z.lazy(() => KOLWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => KOLCreateWithoutUserInputSchema),z.lazy(() => KOLUncheckedCreateWithoutUserInputSchema) ]),
+}).strict();
+
+export const WalletCreateWithoutUserInputSchema: z.ZodType<Prisma.WalletCreateWithoutUserInput> = z.object({
+  address: z.string(),
+  chain: z.string(),
+  verified: z.boolean().optional(),
+  label: z.string().optional().nullable(),
+  createdAt: z.coerce.date().optional(),
+  primaryFor: z.lazy(() => UserCreateNestedOneWithoutPrimaryWalletInputSchema).optional()
+}).strict();
+
+export const WalletUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.WalletUncheckedCreateWithoutUserInput> = z.object({
+  id: z.number().int().optional(),
+  address: z.string(),
+  chain: z.string(),
+  verified: z.boolean().optional(),
+  label: z.string().optional().nullable(),
+  createdAt: z.coerce.date().optional(),
+  primaryFor: z.lazy(() => UserUncheckedCreateNestedOneWithoutPrimaryWalletInputSchema).optional()
+}).strict();
+
+export const WalletCreateOrConnectWithoutUserInputSchema: z.ZodType<Prisma.WalletCreateOrConnectWithoutUserInput> = z.object({
+  where: z.lazy(() => WalletWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => WalletCreateWithoutUserInputSchema),z.lazy(() => WalletUncheckedCreateWithoutUserInputSchema) ]),
+}).strict();
+
+export const WalletCreateManyUserInputEnvelopeSchema: z.ZodType<Prisma.WalletCreateManyUserInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => WalletCreateManyUserInputSchema),z.lazy(() => WalletCreateManyUserInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
+export const WalletCreateWithoutPrimaryForInputSchema: z.ZodType<Prisma.WalletCreateWithoutPrimaryForInput> = z.object({
+  address: z.string(),
+  chain: z.string(),
+  verified: z.boolean().optional(),
+  label: z.string().optional().nullable(),
+  createdAt: z.coerce.date().optional(),
+  user: z.lazy(() => UserCreateNestedOneWithoutWalletsInputSchema)
+}).strict();
+
+export const WalletUncheckedCreateWithoutPrimaryForInputSchema: z.ZodType<Prisma.WalletUncheckedCreateWithoutPrimaryForInput> = z.object({
+  id: z.number().int().optional(),
+  address: z.string(),
+  chain: z.string(),
+  userId: z.number().int(),
+  verified: z.boolean().optional(),
+  label: z.string().optional().nullable(),
+  createdAt: z.coerce.date().optional()
+}).strict();
+
+export const WalletCreateOrConnectWithoutPrimaryForInputSchema: z.ZodType<Prisma.WalletCreateOrConnectWithoutPrimaryForInput> = z.object({
+  where: z.lazy(() => WalletWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => WalletCreateWithoutPrimaryForInputSchema),z.lazy(() => WalletUncheckedCreateWithoutPrimaryForInputSchema) ]),
+}).strict();
+
+export const UserUpsertWithoutReferralsInputSchema: z.ZodType<Prisma.UserUpsertWithoutReferralsInput> = z.object({
+  update: z.union([ z.lazy(() => UserUpdateWithoutReferralsInputSchema),z.lazy(() => UserUncheckedUpdateWithoutReferralsInputSchema) ]),
+  create: z.union([ z.lazy(() => UserCreateWithoutReferralsInputSchema),z.lazy(() => UserUncheckedCreateWithoutReferralsInputSchema) ]),
+  where: z.lazy(() => UserWhereInputSchema).optional()
+}).strict();
+
+export const UserUpdateToOneWithWhereWithoutReferralsInputSchema: z.ZodType<Prisma.UserUpdateToOneWithWhereWithoutReferralsInput> = z.object({
+  where: z.lazy(() => UserWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => UserUpdateWithoutReferralsInputSchema),z.lazy(() => UserUncheckedUpdateWithoutReferralsInputSchema) ]),
+}).strict();
+
+export const UserUpdateWithoutReferralsInputSchema: z.ZodType<Prisma.UserUpdateWithoutReferralsInput> = z.object({
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  username: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  avatarUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  platform: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterHandle: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  referralCode: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  onboardingStep: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  completedTasks: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  earnedPoints: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  referredBy: z.lazy(() => UserUpdateOneWithoutReferralsNestedInputSchema).optional(),
+  kol: z.lazy(() => KOLUpdateOneWithoutUserNestedInputSchema).optional(),
+  wallets: z.lazy(() => WalletUpdateManyWithoutUserNestedInputSchema).optional(),
+  primaryWallet: z.lazy(() => WalletUpdateOneWithoutPrimaryForNestedInputSchema).optional()
+}).strict();
+
+export const UserUncheckedUpdateWithoutReferralsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutReferralsInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  username: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  avatarUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  platform: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterHandle: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  referralCode: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  referredById: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  onboardingStep: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  completedTasks: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  earnedPoints: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  kolId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  primaryWalletId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  wallets: z.lazy(() => WalletUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+}).strict();
+
+export const UserUpsertWithWhereUniqueWithoutReferredByInputSchema: z.ZodType<Prisma.UserUpsertWithWhereUniqueWithoutReferredByInput> = z.object({
+  where: z.lazy(() => UserWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => UserUpdateWithoutReferredByInputSchema),z.lazy(() => UserUncheckedUpdateWithoutReferredByInputSchema) ]),
+  create: z.union([ z.lazy(() => UserCreateWithoutReferredByInputSchema),z.lazy(() => UserUncheckedCreateWithoutReferredByInputSchema) ]),
+}).strict();
+
+export const UserUpdateWithWhereUniqueWithoutReferredByInputSchema: z.ZodType<Prisma.UserUpdateWithWhereUniqueWithoutReferredByInput> = z.object({
+  where: z.lazy(() => UserWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => UserUpdateWithoutReferredByInputSchema),z.lazy(() => UserUncheckedUpdateWithoutReferredByInputSchema) ]),
+}).strict();
+
+export const UserUpdateManyWithWhereWithoutReferredByInputSchema: z.ZodType<Prisma.UserUpdateManyWithWhereWithoutReferredByInput> = z.object({
+  where: z.lazy(() => UserScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => UserUpdateManyMutationInputSchema),z.lazy(() => UserUncheckedUpdateManyWithoutReferredByInputSchema) ]),
+}).strict();
+
+export const UserScalarWhereInputSchema: z.ZodType<Prisma.UserScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => UserScalarWhereInputSchema),z.lazy(() => UserScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => UserScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => UserScalarWhereInputSchema),z.lazy(() => UserScalarWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  username: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  avatarUrl: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  platform: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  email: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  twitterHandle: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  referralCode: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  referredById: z.union([ z.lazy(() => IntNullableFilterSchema),z.number() ]).optional().nullable(),
+  onboardingStep: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  completedTasks: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  earnedPoints: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  kolId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  primaryWalletId: z.union([ z.lazy(() => IntNullableFilterSchema),z.number() ]).optional().nullable(),
+}).strict();
+
+export const KOLUpsertWithoutUserInputSchema: z.ZodType<Prisma.KOLUpsertWithoutUserInput> = z.object({
+  update: z.union([ z.lazy(() => KOLUpdateWithoutUserInputSchema),z.lazy(() => KOLUncheckedUpdateWithoutUserInputSchema) ]),
+  create: z.union([ z.lazy(() => KOLCreateWithoutUserInputSchema),z.lazy(() => KOLUncheckedCreateWithoutUserInputSchema) ]),
+  where: z.lazy(() => KOLWhereInputSchema).optional()
+}).strict();
+
+export const KOLUpdateToOneWithWhereWithoutUserInputSchema: z.ZodType<Prisma.KOLUpdateToOneWithWhereWithoutUserInput> = z.object({
+  where: z.lazy(() => KOLWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => KOLUpdateWithoutUserInputSchema),z.lazy(() => KOLUncheckedUpdateWithoutUserInputSchema) ]),
+}).strict();
+
+export const KOLUpdateWithoutUserInputSchema: z.ZodType<Prisma.KOLUpdateWithoutUserInput> = z.object({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  hidden: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  isAlsoProject: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterUsername: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterDisplayName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterAvatarUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterDescription: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterDescriptionLink: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterFollowersCount: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterFollowingCount: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterIsVerified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterGoldBadge: z.union([ z.boolean(),z.lazy(() => NullableBoolFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterLang: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterCreatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  kolScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  kolScorePercentFromTotal: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  smartFollowersCount: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  threadsCount: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  engagementRate: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  smartEngagement: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  avgViews: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  avgLikes: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalPosts: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalViews: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalInteractions: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalOrganicPosts: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalOrganicViews: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalOrganicInteractions: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountPosts: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountViews: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountInteractions: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountComments: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountLikes: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountRetweets: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountReplies: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalPostsChange: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalInteractionsChange: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalViewsChange: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  followersChange: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  smartEngagementChange: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  fetchedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  projects: z.lazy(() => KOLToProjectUpdateManyWithoutKolNestedInputSchema).optional(),
+  kolSnapshot: z.lazy(() => KOLSnapshotUpdateManyWithoutKolNestedInputSchema).optional()
+}).strict();
+
+export const KOLUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.KOLUncheckedUpdateWithoutUserInput> = z.object({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  hidden: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  isAlsoProject: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterUsername: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterDisplayName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterAvatarUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterDescription: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterDescriptionLink: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterFollowersCount: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterFollowingCount: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterIsVerified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterGoldBadge: z.union([ z.boolean(),z.lazy(() => NullableBoolFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterLang: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterCreatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  kolScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  kolScorePercentFromTotal: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  smartFollowersCount: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  threadsCount: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  engagementRate: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  smartEngagement: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  avgViews: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  avgLikes: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalPosts: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalViews: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalInteractions: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalOrganicPosts: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalOrganicViews: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalOrganicInteractions: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountPosts: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountViews: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountInteractions: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountComments: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountLikes: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountRetweets: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountReplies: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalPostsChange: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalInteractionsChange: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalViewsChange: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  followersChange: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  smartEngagementChange: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  fetchedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  projects: z.lazy(() => KOLToProjectUncheckedUpdateManyWithoutKolNestedInputSchema).optional(),
+  kolSnapshot: z.lazy(() => KOLSnapshotUncheckedUpdateManyWithoutKolNestedInputSchema).optional()
+}).strict();
+
+export const WalletUpsertWithWhereUniqueWithoutUserInputSchema: z.ZodType<Prisma.WalletUpsertWithWhereUniqueWithoutUserInput> = z.object({
+  where: z.lazy(() => WalletWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => WalletUpdateWithoutUserInputSchema),z.lazy(() => WalletUncheckedUpdateWithoutUserInputSchema) ]),
+  create: z.union([ z.lazy(() => WalletCreateWithoutUserInputSchema),z.lazy(() => WalletUncheckedCreateWithoutUserInputSchema) ]),
+}).strict();
+
+export const WalletUpdateWithWhereUniqueWithoutUserInputSchema: z.ZodType<Prisma.WalletUpdateWithWhereUniqueWithoutUserInput> = z.object({
+  where: z.lazy(() => WalletWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => WalletUpdateWithoutUserInputSchema),z.lazy(() => WalletUncheckedUpdateWithoutUserInputSchema) ]),
+}).strict();
+
+export const WalletUpdateManyWithWhereWithoutUserInputSchema: z.ZodType<Prisma.WalletUpdateManyWithWhereWithoutUserInput> = z.object({
+  where: z.lazy(() => WalletScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => WalletUpdateManyMutationInputSchema),z.lazy(() => WalletUncheckedUpdateManyWithoutUserInputSchema) ]),
+}).strict();
+
+export const WalletScalarWhereInputSchema: z.ZodType<Prisma.WalletScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => WalletScalarWhereInputSchema),z.lazy(() => WalletScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => WalletScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => WalletScalarWhereInputSchema),z.lazy(() => WalletScalarWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  address: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  chain: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  userId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  verified: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
+  label: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+}).strict();
+
+export const WalletUpsertWithoutPrimaryForInputSchema: z.ZodType<Prisma.WalletUpsertWithoutPrimaryForInput> = z.object({
+  update: z.union([ z.lazy(() => WalletUpdateWithoutPrimaryForInputSchema),z.lazy(() => WalletUncheckedUpdateWithoutPrimaryForInputSchema) ]),
+  create: z.union([ z.lazy(() => WalletCreateWithoutPrimaryForInputSchema),z.lazy(() => WalletUncheckedCreateWithoutPrimaryForInputSchema) ]),
+  where: z.lazy(() => WalletWhereInputSchema).optional()
+}).strict();
+
+export const WalletUpdateToOneWithWhereWithoutPrimaryForInputSchema: z.ZodType<Prisma.WalletUpdateToOneWithWhereWithoutPrimaryForInput> = z.object({
+  where: z.lazy(() => WalletWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => WalletUpdateWithoutPrimaryForInputSchema),z.lazy(() => WalletUncheckedUpdateWithoutPrimaryForInputSchema) ]),
+}).strict();
+
+export const WalletUpdateWithoutPrimaryForInputSchema: z.ZodType<Prisma.WalletUpdateWithoutPrimaryForInput> = z.object({
+  address: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  chain: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  verified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  label: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  user: z.lazy(() => UserUpdateOneRequiredWithoutWalletsNestedInputSchema).optional()
+}).strict();
+
+export const WalletUncheckedUpdateWithoutPrimaryForInputSchema: z.ZodType<Prisma.WalletUncheckedUpdateWithoutPrimaryForInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  address: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  chain: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  verified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  label: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const UserCreateWithoutWalletsInputSchema: z.ZodType<Prisma.UserCreateWithoutWalletsInput> = z.object({
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  username: z.string().optional().nullable(),
+  avatarUrl: z.string().optional().nullable(),
+  platform: z.string().optional(),
+  email: z.string().optional().nullable(),
+  twitterHandle: z.string().optional().nullable(),
+  referralCode: z.string().cuid().optional(),
+  onboardingStep: z.number().int().optional(),
+  completedTasks: z.number().int().optional(),
+  earnedPoints: z.number().int().optional(),
+  referredBy: z.lazy(() => UserCreateNestedOneWithoutReferralsInputSchema).optional(),
+  referrals: z.lazy(() => UserCreateNestedManyWithoutReferredByInputSchema).optional(),
+  kol: z.lazy(() => KOLCreateNestedOneWithoutUserInputSchema).optional(),
+  primaryWallet: z.lazy(() => WalletCreateNestedOneWithoutPrimaryForInputSchema).optional()
+}).strict();
+
+export const UserUncheckedCreateWithoutWalletsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutWalletsInput> = z.object({
+  id: z.number().int().optional(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  username: z.string().optional().nullable(),
+  avatarUrl: z.string().optional().nullable(),
+  platform: z.string().optional(),
+  email: z.string().optional().nullable(),
+  twitterHandle: z.string().optional().nullable(),
+  referralCode: z.string().cuid().optional(),
+  referredById: z.number().int().optional().nullable(),
+  onboardingStep: z.number().int().optional(),
+  completedTasks: z.number().int().optional(),
+  earnedPoints: z.number().int().optional(),
+  kolId: z.string().optional().nullable(),
+  primaryWalletId: z.number().int().optional().nullable(),
+  referrals: z.lazy(() => UserUncheckedCreateNestedManyWithoutReferredByInputSchema).optional()
+}).strict();
+
+export const UserCreateOrConnectWithoutWalletsInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutWalletsInput> = z.object({
+  where: z.lazy(() => UserWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => UserCreateWithoutWalletsInputSchema),z.lazy(() => UserUncheckedCreateWithoutWalletsInputSchema) ]),
+}).strict();
+
+export const UserCreateWithoutPrimaryWalletInputSchema: z.ZodType<Prisma.UserCreateWithoutPrimaryWalletInput> = z.object({
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  username: z.string().optional().nullable(),
+  avatarUrl: z.string().optional().nullable(),
+  platform: z.string().optional(),
+  email: z.string().optional().nullable(),
+  twitterHandle: z.string().optional().nullable(),
+  referralCode: z.string().cuid().optional(),
+  onboardingStep: z.number().int().optional(),
+  completedTasks: z.number().int().optional(),
+  earnedPoints: z.number().int().optional(),
+  referredBy: z.lazy(() => UserCreateNestedOneWithoutReferralsInputSchema).optional(),
+  referrals: z.lazy(() => UserCreateNestedManyWithoutReferredByInputSchema).optional(),
+  kol: z.lazy(() => KOLCreateNestedOneWithoutUserInputSchema).optional(),
+  wallets: z.lazy(() => WalletCreateNestedManyWithoutUserInputSchema).optional()
+}).strict();
+
+export const UserUncheckedCreateWithoutPrimaryWalletInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutPrimaryWalletInput> = z.object({
+  id: z.number().int().optional(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  username: z.string().optional().nullable(),
+  avatarUrl: z.string().optional().nullable(),
+  platform: z.string().optional(),
+  email: z.string().optional().nullable(),
+  twitterHandle: z.string().optional().nullable(),
+  referralCode: z.string().cuid().optional(),
+  referredById: z.number().int().optional().nullable(),
+  onboardingStep: z.number().int().optional(),
+  completedTasks: z.number().int().optional(),
+  earnedPoints: z.number().int().optional(),
+  kolId: z.string().optional().nullable(),
+  referrals: z.lazy(() => UserUncheckedCreateNestedManyWithoutReferredByInputSchema).optional(),
+  wallets: z.lazy(() => WalletUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+}).strict();
+
+export const UserCreateOrConnectWithoutPrimaryWalletInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutPrimaryWalletInput> = z.object({
+  where: z.lazy(() => UserWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => UserCreateWithoutPrimaryWalletInputSchema),z.lazy(() => UserUncheckedCreateWithoutPrimaryWalletInputSchema) ]),
+}).strict();
+
+export const UserUpsertWithoutWalletsInputSchema: z.ZodType<Prisma.UserUpsertWithoutWalletsInput> = z.object({
+  update: z.union([ z.lazy(() => UserUpdateWithoutWalletsInputSchema),z.lazy(() => UserUncheckedUpdateWithoutWalletsInputSchema) ]),
+  create: z.union([ z.lazy(() => UserCreateWithoutWalletsInputSchema),z.lazy(() => UserUncheckedCreateWithoutWalletsInputSchema) ]),
+  where: z.lazy(() => UserWhereInputSchema).optional()
+}).strict();
+
+export const UserUpdateToOneWithWhereWithoutWalletsInputSchema: z.ZodType<Prisma.UserUpdateToOneWithWhereWithoutWalletsInput> = z.object({
+  where: z.lazy(() => UserWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => UserUpdateWithoutWalletsInputSchema),z.lazy(() => UserUncheckedUpdateWithoutWalletsInputSchema) ]),
+}).strict();
+
+export const UserUpdateWithoutWalletsInputSchema: z.ZodType<Prisma.UserUpdateWithoutWalletsInput> = z.object({
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  username: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  avatarUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  platform: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterHandle: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  referralCode: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  onboardingStep: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  completedTasks: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  earnedPoints: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  referredBy: z.lazy(() => UserUpdateOneWithoutReferralsNestedInputSchema).optional(),
+  referrals: z.lazy(() => UserUpdateManyWithoutReferredByNestedInputSchema).optional(),
+  kol: z.lazy(() => KOLUpdateOneWithoutUserNestedInputSchema).optional(),
+  primaryWallet: z.lazy(() => WalletUpdateOneWithoutPrimaryForNestedInputSchema).optional()
+}).strict();
+
+export const UserUncheckedUpdateWithoutWalletsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutWalletsInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  username: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  avatarUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  platform: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterHandle: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  referralCode: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  referredById: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  onboardingStep: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  completedTasks: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  earnedPoints: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  kolId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  primaryWalletId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  referrals: z.lazy(() => UserUncheckedUpdateManyWithoutReferredByNestedInputSchema).optional()
+}).strict();
+
+export const UserUpsertWithoutPrimaryWalletInputSchema: z.ZodType<Prisma.UserUpsertWithoutPrimaryWalletInput> = z.object({
+  update: z.union([ z.lazy(() => UserUpdateWithoutPrimaryWalletInputSchema),z.lazy(() => UserUncheckedUpdateWithoutPrimaryWalletInputSchema) ]),
+  create: z.union([ z.lazy(() => UserCreateWithoutPrimaryWalletInputSchema),z.lazy(() => UserUncheckedCreateWithoutPrimaryWalletInputSchema) ]),
+  where: z.lazy(() => UserWhereInputSchema).optional()
+}).strict();
+
+export const UserUpdateToOneWithWhereWithoutPrimaryWalletInputSchema: z.ZodType<Prisma.UserUpdateToOneWithWhereWithoutPrimaryWalletInput> = z.object({
+  where: z.lazy(() => UserWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => UserUpdateWithoutPrimaryWalletInputSchema),z.lazy(() => UserUncheckedUpdateWithoutPrimaryWalletInputSchema) ]),
+}).strict();
+
+export const UserUpdateWithoutPrimaryWalletInputSchema: z.ZodType<Prisma.UserUpdateWithoutPrimaryWalletInput> = z.object({
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  username: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  avatarUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  platform: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterHandle: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  referralCode: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  onboardingStep: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  completedTasks: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  earnedPoints: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  referredBy: z.lazy(() => UserUpdateOneWithoutReferralsNestedInputSchema).optional(),
+  referrals: z.lazy(() => UserUpdateManyWithoutReferredByNestedInputSchema).optional(),
+  kol: z.lazy(() => KOLUpdateOneWithoutUserNestedInputSchema).optional(),
+  wallets: z.lazy(() => WalletUpdateManyWithoutUserNestedInputSchema).optional()
+}).strict();
+
+export const UserUncheckedUpdateWithoutPrimaryWalletInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutPrimaryWalletInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  username: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  avatarUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  platform: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterHandle: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  referralCode: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  referredById: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  onboardingStep: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  completedTasks: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  earnedPoints: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  kolId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  referrals: z.lazy(() => UserUncheckedUpdateManyWithoutReferredByNestedInputSchema).optional(),
+  wallets: z.lazy(() => WalletUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const ProjectToNarrativeCreateWithoutNarrativeInputSchema: z.ZodType<Prisma.ProjectToNarrativeCreateWithoutNarrativeInput> = z.object({
@@ -7782,6 +9772,48 @@ export const KOLSnapshotCreateManyKolInputEnvelopeSchema: z.ZodType<Prisma.KOLSn
   skipDuplicates: z.boolean().optional()
 }).strict();
 
+export const UserCreateWithoutKolInputSchema: z.ZodType<Prisma.UserCreateWithoutKolInput> = z.object({
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  username: z.string().optional().nullable(),
+  avatarUrl: z.string().optional().nullable(),
+  platform: z.string().optional(),
+  email: z.string().optional().nullable(),
+  twitterHandle: z.string().optional().nullable(),
+  referralCode: z.string().cuid().optional(),
+  onboardingStep: z.number().int().optional(),
+  completedTasks: z.number().int().optional(),
+  earnedPoints: z.number().int().optional(),
+  referredBy: z.lazy(() => UserCreateNestedOneWithoutReferralsInputSchema).optional(),
+  referrals: z.lazy(() => UserCreateNestedManyWithoutReferredByInputSchema).optional(),
+  wallets: z.lazy(() => WalletCreateNestedManyWithoutUserInputSchema).optional(),
+  primaryWallet: z.lazy(() => WalletCreateNestedOneWithoutPrimaryForInputSchema).optional()
+}).strict();
+
+export const UserUncheckedCreateWithoutKolInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutKolInput> = z.object({
+  id: z.number().int().optional(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  username: z.string().optional().nullable(),
+  avatarUrl: z.string().optional().nullable(),
+  platform: z.string().optional(),
+  email: z.string().optional().nullable(),
+  twitterHandle: z.string().optional().nullable(),
+  referralCode: z.string().cuid().optional(),
+  referredById: z.number().int().optional().nullable(),
+  onboardingStep: z.number().int().optional(),
+  completedTasks: z.number().int().optional(),
+  earnedPoints: z.number().int().optional(),
+  primaryWalletId: z.number().int().optional().nullable(),
+  referrals: z.lazy(() => UserUncheckedCreateNestedManyWithoutReferredByInputSchema).optional(),
+  wallets: z.lazy(() => WalletUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+}).strict();
+
+export const UserCreateOrConnectWithoutKolInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutKolInput> = z.object({
+  where: z.lazy(() => UserWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => UserCreateWithoutKolInputSchema),z.lazy(() => UserUncheckedCreateWithoutKolInputSchema) ]),
+}).strict();
+
 export const KOLToProjectUpsertWithWhereUniqueWithoutKolInputSchema: z.ZodType<Prisma.KOLToProjectUpsertWithWhereUniqueWithoutKolInput> = z.object({
   where: z.lazy(() => KOLToProjectWhereUniqueInputSchema),
   update: z.union([ z.lazy(() => KOLToProjectUpdateWithoutKolInputSchema),z.lazy(() => KOLToProjectUncheckedUpdateWithoutKolInputSchema) ]),
@@ -7848,6 +9880,54 @@ export const KOLSnapshotScalarWhereInputSchema: z.ZodType<Prisma.KOLSnapshotScal
   fetchedDate: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
 }).strict();
 
+export const UserUpsertWithoutKolInputSchema: z.ZodType<Prisma.UserUpsertWithoutKolInput> = z.object({
+  update: z.union([ z.lazy(() => UserUpdateWithoutKolInputSchema),z.lazy(() => UserUncheckedUpdateWithoutKolInputSchema) ]),
+  create: z.union([ z.lazy(() => UserCreateWithoutKolInputSchema),z.lazy(() => UserUncheckedCreateWithoutKolInputSchema) ]),
+  where: z.lazy(() => UserWhereInputSchema).optional()
+}).strict();
+
+export const UserUpdateToOneWithWhereWithoutKolInputSchema: z.ZodType<Prisma.UserUpdateToOneWithWhereWithoutKolInput> = z.object({
+  where: z.lazy(() => UserWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => UserUpdateWithoutKolInputSchema),z.lazy(() => UserUncheckedUpdateWithoutKolInputSchema) ]),
+}).strict();
+
+export const UserUpdateWithoutKolInputSchema: z.ZodType<Prisma.UserUpdateWithoutKolInput> = z.object({
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  username: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  avatarUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  platform: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterHandle: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  referralCode: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  onboardingStep: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  completedTasks: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  earnedPoints: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  referredBy: z.lazy(() => UserUpdateOneWithoutReferralsNestedInputSchema).optional(),
+  referrals: z.lazy(() => UserUpdateManyWithoutReferredByNestedInputSchema).optional(),
+  wallets: z.lazy(() => WalletUpdateManyWithoutUserNestedInputSchema).optional(),
+  primaryWallet: z.lazy(() => WalletUpdateOneWithoutPrimaryForNestedInputSchema).optional()
+}).strict();
+
+export const UserUncheckedUpdateWithoutKolInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutKolInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  username: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  avatarUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  platform: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterHandle: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  referralCode: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  referredById: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  onboardingStep: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  completedTasks: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  earnedPoints: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  primaryWalletId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  referrals: z.lazy(() => UserUncheckedUpdateManyWithoutReferredByNestedInputSchema).optional(),
+  wallets: z.lazy(() => WalletUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+}).strict();
+
 export const KOLCreateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.KOLCreateWithoutKolSnapshotInput> = z.object({
   id: z.string().optional(),
   hidden: z.boolean().optional(),
@@ -7893,7 +9973,8 @@ export const KOLCreateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.KOLCreateW
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   fetchedAt: z.coerce.date().optional(),
-  projects: z.lazy(() => KOLToProjectCreateNestedManyWithoutKolInputSchema).optional()
+  projects: z.lazy(() => KOLToProjectCreateNestedManyWithoutKolInputSchema).optional(),
+  user: z.lazy(() => UserCreateNestedOneWithoutKolInputSchema).optional()
 }).strict();
 
 export const KOLUncheckedCreateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.KOLUncheckedCreateWithoutKolSnapshotInput> = z.object({
@@ -7941,7 +10022,8 @@ export const KOLUncheckedCreateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.K
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   fetchedAt: z.coerce.date().optional(),
-  projects: z.lazy(() => KOLToProjectUncheckedCreateNestedManyWithoutKolInputSchema).optional()
+  projects: z.lazy(() => KOLToProjectUncheckedCreateNestedManyWithoutKolInputSchema).optional(),
+  user: z.lazy(() => UserUncheckedCreateNestedOneWithoutKolInputSchema).optional()
 }).strict();
 
 export const KOLCreateOrConnectWithoutKolSnapshotInputSchema: z.ZodType<Prisma.KOLCreateOrConnectWithoutKolSnapshotInput> = z.object({
@@ -8005,7 +10087,8 @@ export const KOLUpdateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.KOLUpdateW
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   fetchedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  projects: z.lazy(() => KOLToProjectUpdateManyWithoutKolNestedInputSchema).optional()
+  projects: z.lazy(() => KOLToProjectUpdateManyWithoutKolNestedInputSchema).optional(),
+  user: z.lazy(() => UserUpdateOneWithoutKolNestedInputSchema).optional()
 }).strict();
 
 export const KOLUncheckedUpdateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.KOLUncheckedUpdateWithoutKolSnapshotInput> = z.object({
@@ -8053,7 +10136,8 @@ export const KOLUncheckedUpdateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.K
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   fetchedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  projects: z.lazy(() => KOLToProjectUncheckedUpdateManyWithoutKolNestedInputSchema).optional()
+  projects: z.lazy(() => KOLToProjectUncheckedUpdateManyWithoutKolNestedInputSchema).optional(),
+  user: z.lazy(() => UserUncheckedUpdateOneWithoutKolNestedInputSchema).optional()
 }).strict();
 
 export const KOLCreateWithoutProjectsInputSchema: z.ZodType<Prisma.KOLCreateWithoutProjectsInput> = z.object({
@@ -8101,7 +10185,8 @@ export const KOLCreateWithoutProjectsInputSchema: z.ZodType<Prisma.KOLCreateWith
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   fetchedAt: z.coerce.date().optional(),
-  kolSnapshot: z.lazy(() => KOLSnapshotCreateNestedManyWithoutKolInputSchema).optional()
+  kolSnapshot: z.lazy(() => KOLSnapshotCreateNestedManyWithoutKolInputSchema).optional(),
+  user: z.lazy(() => UserCreateNestedOneWithoutKolInputSchema).optional()
 }).strict();
 
 export const KOLUncheckedCreateWithoutProjectsInputSchema: z.ZodType<Prisma.KOLUncheckedCreateWithoutProjectsInput> = z.object({
@@ -8149,7 +10234,8 @@ export const KOLUncheckedCreateWithoutProjectsInputSchema: z.ZodType<Prisma.KOLU
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   fetchedAt: z.coerce.date().optional(),
-  kolSnapshot: z.lazy(() => KOLSnapshotUncheckedCreateNestedManyWithoutKolInputSchema).optional()
+  kolSnapshot: z.lazy(() => KOLSnapshotUncheckedCreateNestedManyWithoutKolInputSchema).optional(),
+  user: z.lazy(() => UserUncheckedCreateNestedOneWithoutKolInputSchema).optional()
 }).strict();
 
 export const KOLCreateOrConnectWithoutProjectsInputSchema: z.ZodType<Prisma.KOLCreateOrConnectWithoutProjectsInput> = z.object({
@@ -8282,7 +10368,8 @@ export const KOLUpdateWithoutProjectsInputSchema: z.ZodType<Prisma.KOLUpdateWith
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   fetchedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  kolSnapshot: z.lazy(() => KOLSnapshotUpdateManyWithoutKolNestedInputSchema).optional()
+  kolSnapshot: z.lazy(() => KOLSnapshotUpdateManyWithoutKolNestedInputSchema).optional(),
+  user: z.lazy(() => UserUpdateOneWithoutKolNestedInputSchema).optional()
 }).strict();
 
 export const KOLUncheckedUpdateWithoutProjectsInputSchema: z.ZodType<Prisma.KOLUncheckedUpdateWithoutProjectsInput> = z.object({
@@ -8330,7 +10417,8 @@ export const KOLUncheckedUpdateWithoutProjectsInputSchema: z.ZodType<Prisma.KOLU
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   fetchedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  kolSnapshot: z.lazy(() => KOLSnapshotUncheckedUpdateManyWithoutKolNestedInputSchema).optional()
+  kolSnapshot: z.lazy(() => KOLSnapshotUncheckedUpdateManyWithoutKolNestedInputSchema).optional(),
+  user: z.lazy(() => UserUncheckedUpdateOneWithoutKolNestedInputSchema).optional()
 }).strict();
 
 export const ProjectUpsertWithoutKolsInputSchema: z.ZodType<Prisma.ProjectUpsertWithoutKolsInput> = z.object({
@@ -8550,6 +10638,114 @@ export const ProjectUncheckedUpdateWithoutRewardPoolsInputSchema: z.ZodType<Pris
   projectSnapshot: z.lazy(() => ProjectSnapshotUncheckedUpdateManyWithoutProjectNestedInputSchema).optional(),
   narrativeLinks: z.lazy(() => ProjectToNarrativeUncheckedUpdateManyWithoutProjectNestedInputSchema).optional(),
   kols: z.lazy(() => KOLToProjectUncheckedUpdateManyWithoutProjectNestedInputSchema).optional()
+}).strict();
+
+export const UserCreateManyReferredByInputSchema: z.ZodType<Prisma.UserCreateManyReferredByInput> = z.object({
+  id: z.number().int().optional(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  username: z.string().optional().nullable(),
+  avatarUrl: z.string().optional().nullable(),
+  platform: z.string().optional(),
+  email: z.string().optional().nullable(),
+  twitterHandle: z.string().optional().nullable(),
+  referralCode: z.string().cuid().optional(),
+  onboardingStep: z.number().int().optional(),
+  completedTasks: z.number().int().optional(),
+  earnedPoints: z.number().int().optional(),
+  kolId: z.string().optional().nullable(),
+  primaryWalletId: z.number().int().optional().nullable()
+}).strict();
+
+export const WalletCreateManyUserInputSchema: z.ZodType<Prisma.WalletCreateManyUserInput> = z.object({
+  id: z.number().int().optional(),
+  address: z.string(),
+  chain: z.string(),
+  verified: z.boolean().optional(),
+  label: z.string().optional().nullable(),
+  createdAt: z.coerce.date().optional()
+}).strict();
+
+export const UserUpdateWithoutReferredByInputSchema: z.ZodType<Prisma.UserUpdateWithoutReferredByInput> = z.object({
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  username: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  avatarUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  platform: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterHandle: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  referralCode: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  onboardingStep: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  completedTasks: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  earnedPoints: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  referrals: z.lazy(() => UserUpdateManyWithoutReferredByNestedInputSchema).optional(),
+  kol: z.lazy(() => KOLUpdateOneWithoutUserNestedInputSchema).optional(),
+  wallets: z.lazy(() => WalletUpdateManyWithoutUserNestedInputSchema).optional(),
+  primaryWallet: z.lazy(() => WalletUpdateOneWithoutPrimaryForNestedInputSchema).optional()
+}).strict();
+
+export const UserUncheckedUpdateWithoutReferredByInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutReferredByInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  username: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  avatarUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  platform: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterHandle: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  referralCode: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  onboardingStep: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  completedTasks: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  earnedPoints: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  kolId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  primaryWalletId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  referrals: z.lazy(() => UserUncheckedUpdateManyWithoutReferredByNestedInputSchema).optional(),
+  wallets: z.lazy(() => WalletUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+}).strict();
+
+export const UserUncheckedUpdateManyWithoutReferredByInputSchema: z.ZodType<Prisma.UserUncheckedUpdateManyWithoutReferredByInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  username: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  avatarUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  platform: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterHandle: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  referralCode: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  onboardingStep: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  completedTasks: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  earnedPoints: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  kolId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  primaryWalletId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+}).strict();
+
+export const WalletUpdateWithoutUserInputSchema: z.ZodType<Prisma.WalletUpdateWithoutUserInput> = z.object({
+  address: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  chain: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  verified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  label: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  primaryFor: z.lazy(() => UserUpdateOneWithoutPrimaryWalletNestedInputSchema).optional()
+}).strict();
+
+export const WalletUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.WalletUncheckedUpdateWithoutUserInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  address: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  chain: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  verified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  label: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  primaryFor: z.lazy(() => UserUncheckedUpdateOneWithoutPrimaryWalletNestedInputSchema).optional()
+}).strict();
+
+export const WalletUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Prisma.WalletUncheckedUpdateManyWithoutUserInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  address: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  chain: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  verified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  label: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const ProjectToNarrativeCreateManyNarrativeInputSchema: z.ZodType<Prisma.ProjectToNarrativeCreateManyNarrativeInput> = z.object({
@@ -9231,6 +11427,7 @@ export const AdminUserFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.AdminUserFin
 
 export const UserFindFirstArgsSchema: z.ZodType<Prisma.UserFindFirstArgs> = z.object({
   select: UserSelectSchema.optional(),
+  include: UserIncludeSchema.optional(),
   where: UserWhereInputSchema.optional(),
   orderBy: z.union([ UserOrderByWithRelationInputSchema.array(),UserOrderByWithRelationInputSchema ]).optional(),
   cursor: UserWhereUniqueInputSchema.optional(),
@@ -9241,6 +11438,7 @@ export const UserFindFirstArgsSchema: z.ZodType<Prisma.UserFindFirstArgs> = z.ob
 
 export const UserFindFirstOrThrowArgsSchema: z.ZodType<Prisma.UserFindFirstOrThrowArgs> = z.object({
   select: UserSelectSchema.optional(),
+  include: UserIncludeSchema.optional(),
   where: UserWhereInputSchema.optional(),
   orderBy: z.union([ UserOrderByWithRelationInputSchema.array(),UserOrderByWithRelationInputSchema ]).optional(),
   cursor: UserWhereUniqueInputSchema.optional(),
@@ -9251,6 +11449,7 @@ export const UserFindFirstOrThrowArgsSchema: z.ZodType<Prisma.UserFindFirstOrThr
 
 export const UserFindManyArgsSchema: z.ZodType<Prisma.UserFindManyArgs> = z.object({
   select: UserSelectSchema.optional(),
+  include: UserIncludeSchema.optional(),
   where: UserWhereInputSchema.optional(),
   orderBy: z.union([ UserOrderByWithRelationInputSchema.array(),UserOrderByWithRelationInputSchema ]).optional(),
   cursor: UserWhereUniqueInputSchema.optional(),
@@ -9278,12 +11477,76 @@ export const UserGroupByArgsSchema: z.ZodType<Prisma.UserGroupByArgs> = z.object
 
 export const UserFindUniqueArgsSchema: z.ZodType<Prisma.UserFindUniqueArgs> = z.object({
   select: UserSelectSchema.optional(),
+  include: UserIncludeSchema.optional(),
   where: UserWhereUniqueInputSchema,
 }).strict() ;
 
 export const UserFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.UserFindUniqueOrThrowArgs> = z.object({
   select: UserSelectSchema.optional(),
+  include: UserIncludeSchema.optional(),
   where: UserWhereUniqueInputSchema,
+}).strict() ;
+
+export const WalletFindFirstArgsSchema: z.ZodType<Prisma.WalletFindFirstArgs> = z.object({
+  select: WalletSelectSchema.optional(),
+  include: WalletIncludeSchema.optional(),
+  where: WalletWhereInputSchema.optional(),
+  orderBy: z.union([ WalletOrderByWithRelationInputSchema.array(),WalletOrderByWithRelationInputSchema ]).optional(),
+  cursor: WalletWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ WalletScalarFieldEnumSchema,WalletScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const WalletFindFirstOrThrowArgsSchema: z.ZodType<Prisma.WalletFindFirstOrThrowArgs> = z.object({
+  select: WalletSelectSchema.optional(),
+  include: WalletIncludeSchema.optional(),
+  where: WalletWhereInputSchema.optional(),
+  orderBy: z.union([ WalletOrderByWithRelationInputSchema.array(),WalletOrderByWithRelationInputSchema ]).optional(),
+  cursor: WalletWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ WalletScalarFieldEnumSchema,WalletScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const WalletFindManyArgsSchema: z.ZodType<Prisma.WalletFindManyArgs> = z.object({
+  select: WalletSelectSchema.optional(),
+  include: WalletIncludeSchema.optional(),
+  where: WalletWhereInputSchema.optional(),
+  orderBy: z.union([ WalletOrderByWithRelationInputSchema.array(),WalletOrderByWithRelationInputSchema ]).optional(),
+  cursor: WalletWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ WalletScalarFieldEnumSchema,WalletScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const WalletAggregateArgsSchema: z.ZodType<Prisma.WalletAggregateArgs> = z.object({
+  where: WalletWhereInputSchema.optional(),
+  orderBy: z.union([ WalletOrderByWithRelationInputSchema.array(),WalletOrderByWithRelationInputSchema ]).optional(),
+  cursor: WalletWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const WalletGroupByArgsSchema: z.ZodType<Prisma.WalletGroupByArgs> = z.object({
+  where: WalletWhereInputSchema.optional(),
+  orderBy: z.union([ WalletOrderByWithAggregationInputSchema.array(),WalletOrderByWithAggregationInputSchema ]).optional(),
+  by: WalletScalarFieldEnumSchema.array(),
+  having: WalletScalarWhereWithAggregatesInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const WalletFindUniqueArgsSchema: z.ZodType<Prisma.WalletFindUniqueArgs> = z.object({
+  select: WalletSelectSchema.optional(),
+  include: WalletIncludeSchema.optional(),
+  where: WalletWhereUniqueInputSchema,
+}).strict() ;
+
+export const WalletFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.WalletFindUniqueOrThrowArgs> = z.object({
+  select: WalletSelectSchema.optional(),
+  include: WalletIncludeSchema.optional(),
+  where: WalletWhereUniqueInputSchema,
 }).strict() ;
 
 export const NarrativeFindFirstArgsSchema: z.ZodType<Prisma.NarrativeFindFirstArgs> = z.object({
@@ -9945,11 +12208,13 @@ export const AdminUserDeleteManyArgsSchema: z.ZodType<Prisma.AdminUserDeleteMany
 
 export const UserCreateArgsSchema: z.ZodType<Prisma.UserCreateArgs> = z.object({
   select: UserSelectSchema.optional(),
+  include: UserIncludeSchema.optional(),
   data: z.union([ UserCreateInputSchema,UserUncheckedCreateInputSchema ]).optional(),
 }).strict() ;
 
 export const UserUpsertArgsSchema: z.ZodType<Prisma.UserUpsertArgs> = z.object({
   select: UserSelectSchema.optional(),
+  include: UserIncludeSchema.optional(),
   where: UserWhereUniqueInputSchema,
   create: z.union([ UserCreateInputSchema,UserUncheckedCreateInputSchema ]),
   update: z.union([ UserUpdateInputSchema,UserUncheckedUpdateInputSchema ]),
@@ -9967,11 +12232,13 @@ export const UserCreateManyAndReturnArgsSchema: z.ZodType<Prisma.UserCreateManyA
 
 export const UserDeleteArgsSchema: z.ZodType<Prisma.UserDeleteArgs> = z.object({
   select: UserSelectSchema.optional(),
+  include: UserIncludeSchema.optional(),
   where: UserWhereUniqueInputSchema,
 }).strict() ;
 
 export const UserUpdateArgsSchema: z.ZodType<Prisma.UserUpdateArgs> = z.object({
   select: UserSelectSchema.optional(),
+  include: UserIncludeSchema.optional(),
   data: z.union([ UserUpdateInputSchema,UserUncheckedUpdateInputSchema ]),
   where: UserWhereUniqueInputSchema,
 }).strict() ;
@@ -9983,6 +12250,52 @@ export const UserUpdateManyArgsSchema: z.ZodType<Prisma.UserUpdateManyArgs> = z.
 
 export const UserDeleteManyArgsSchema: z.ZodType<Prisma.UserDeleteManyArgs> = z.object({
   where: UserWhereInputSchema.optional(),
+}).strict() ;
+
+export const WalletCreateArgsSchema: z.ZodType<Prisma.WalletCreateArgs> = z.object({
+  select: WalletSelectSchema.optional(),
+  include: WalletIncludeSchema.optional(),
+  data: z.union([ WalletCreateInputSchema,WalletUncheckedCreateInputSchema ]),
+}).strict() ;
+
+export const WalletUpsertArgsSchema: z.ZodType<Prisma.WalletUpsertArgs> = z.object({
+  select: WalletSelectSchema.optional(),
+  include: WalletIncludeSchema.optional(),
+  where: WalletWhereUniqueInputSchema,
+  create: z.union([ WalletCreateInputSchema,WalletUncheckedCreateInputSchema ]),
+  update: z.union([ WalletUpdateInputSchema,WalletUncheckedUpdateInputSchema ]),
+}).strict() ;
+
+export const WalletCreateManyArgsSchema: z.ZodType<Prisma.WalletCreateManyArgs> = z.object({
+  data: z.union([ WalletCreateManyInputSchema,WalletCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const WalletCreateManyAndReturnArgsSchema: z.ZodType<Prisma.WalletCreateManyAndReturnArgs> = z.object({
+  data: z.union([ WalletCreateManyInputSchema,WalletCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const WalletDeleteArgsSchema: z.ZodType<Prisma.WalletDeleteArgs> = z.object({
+  select: WalletSelectSchema.optional(),
+  include: WalletIncludeSchema.optional(),
+  where: WalletWhereUniqueInputSchema,
+}).strict() ;
+
+export const WalletUpdateArgsSchema: z.ZodType<Prisma.WalletUpdateArgs> = z.object({
+  select: WalletSelectSchema.optional(),
+  include: WalletIncludeSchema.optional(),
+  data: z.union([ WalletUpdateInputSchema,WalletUncheckedUpdateInputSchema ]),
+  where: WalletWhereUniqueInputSchema,
+}).strict() ;
+
+export const WalletUpdateManyArgsSchema: z.ZodType<Prisma.WalletUpdateManyArgs> = z.object({
+  data: z.union([ WalletUpdateManyMutationInputSchema,WalletUncheckedUpdateManyInputSchema ]),
+  where: WalletWhereInputSchema.optional(),
+}).strict() ;
+
+export const WalletDeleteManyArgsSchema: z.ZodType<Prisma.WalletDeleteManyArgs> = z.object({
+  where: WalletWhereInputSchema.optional(),
 }).strict() ;
 
 export const NarrativeCreateArgsSchema: z.ZodType<Prisma.NarrativeCreateArgs> = z.object({

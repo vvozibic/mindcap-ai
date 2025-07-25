@@ -99,6 +99,10 @@ export interface User {
   createdAt?: string; // ISO string
   updatedAt?: string; // ISO string
   isAuthenticated?: boolean;
+  referralCode?: string;
+  onboardingStep?: number;
+  completedTasks?: number;
+  earnedPoints?: number;
 }
 
 export type Narrative = {

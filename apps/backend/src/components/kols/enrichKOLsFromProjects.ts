@@ -6,19 +6,31 @@ import { getKOLsInProjects } from "../../external-api/protokols/methods/kols";
 const prisma = new PrismaClient();
 const limit = pLimit(5);
 
+const usernames = [
+  "TollanUniverse",
+  "0G_labs",
+  "XEN_Crypto",
+  "OrderlyNetwork",
+  "TrophyHunt_Me",
+  "bonk_inu",
+];
+
 export async function enrichKOLsFromProjects() {
   const projects = await prisma.project.findMany({
     // where: {
-    //   twitterUsername: "0G_labs",
+    //   twitterUsername: {
+    //     in: usernames,
+    //   },
+    //   kols: {},
     // },
     orderBy: {
       coinMarketCap: "desc",
     },
   });
-  console.log(`🔍 Найдено проектов: ${projects.slice(0, 50).length}`);
+  console.log(`🔍 Найдено проектов: ${projects.length}`);
 
   await Promise.all(
-    projects.slice(0, 50).map((project) =>
+    projects.map((project) =>
       limit(async () => {
         try {
           const { data: kols } = await getKOLsInProjects(project.twitterId);

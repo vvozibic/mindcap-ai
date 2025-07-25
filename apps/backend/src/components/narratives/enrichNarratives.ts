@@ -1,3 +1,14 @@
+// MEXC_Official
+// Cointelegraph
+// lookonchain
+// CoinDesk
+// coingecko
+// WatcherGuru
+// whalewatchalert
+// BSCNews
+// WhaleInsider
+// CryptosR_Us
+
 import { PrismaClient } from "@prisma/client";
 import {
   getNarrativeDetails,

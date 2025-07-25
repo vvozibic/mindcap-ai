@@ -30,6 +30,16 @@ function ClientLayout() {
       .catch(() => setUser({ isAuthenticated: false }));
   }, []);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const ref = urlParams.get("ref");
+      if (ref) {
+        document.cookie = `referral_code=${ref}; path=/; max-age=${60 * 60 * 24 * 7}; samesite=strict`;
+      }
+    }
+  }, []);
+
   const handleLogin = (user: User) => {
     setUser({ ...user, isAuthenticated: true });
   };

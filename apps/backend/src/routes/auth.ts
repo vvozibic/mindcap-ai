@@ -1,5 +1,7 @@
+import cookie from "cookie";
 import express from "express";
 
+import { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
 import fetch from "node-fetch";
 import querystring from "querystring";
@@ -13,6 +15,8 @@ import {
 } from "../controllers/auth";
 import { authenticateToken } from "../middleware/auth";
 import { authTwitter } from "../middleware/authTwitter";
+
+const prisma = new PrismaClient();
 
 const authRoutes = express.Router();
 
@@ -110,6 +114,63 @@ authRoutes.get("/callback/twitter", async (req, res) => {
   enrichUser(userData?.data?.username).catch(console.error);
   updateKOLByUsername(userData?.data?.username).catch(console.error);
 
+  // Читаем куки
+  const cookies = cookie.parse(req.headers.cookie || "");
+  const referralCode = cookies["referral_code"];
+
+  if (userData?.data?.username) {
+    const newUser = await prisma.user.upsert({
+      where: { username: userData.data.username },
+      update: {
+        avatarUrl: userData.data.profile_image_url,
+        platform: "twitter",
+      },
+      create: {
+        username: userData.data.username,
+        avatarUrl: userData.data.profile_image_url,
+        platform: "twitter",
+      },
+    });
+
+    if (
+      referralCode &&
+      !newUser.referredById &&
+      referralCode !== newUser.referralCode // защита от self-referral
+    ) {
+      const referrer = await prisma.user.findUnique({
+        where: { referralCode },
+      });
+
+      if (referrer && referrer.id !== newUser.id) {
+        await prisma.user.update({
+          where: { id: newUser.id },
+          data: {
+            referredById: referrer.id,
+          },
+        });
+
+        // Начисление очков, если нужно:
+        // await prisma.user.update({
+        //   where: { id: referrer.id },
+        //   data: {
+        //     earnedPoints: { increment: 10 },
+        //   },
+        // });
+
+        console.log(
+          `🎉 User ${newUser.username} referred by ${referrer.username}`
+        );
+      }
+    }
+
+    // Очищаем куку
+    res.setHeader(
+      "Set-Cookie",
+      "referral_code=; Max-Age=0; Path=/; HttpOnly; SameSite=Strict"
+    );
+  }
+
+  // Устанавливаем куки для токена и пользователя
   res.cookie("twitter_token", data?.access_token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
