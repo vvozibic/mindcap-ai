@@ -18,7 +18,7 @@ export async function enrichNarratives() {
         const { data } = await getNarrativeDetails(n.slug);
 
         if (!data) {
-          await logToDb("SKIP", `No data returned for ${n.slug}`, n.slug);
+          // await logToDb("SKIP", `No data returned for ${n.slug}`, n.slug);
           continue;
         }
 
@@ -98,7 +98,7 @@ export async function enrichNarratives() {
         });
 
         console.log(`✅ Synced: ${data.slug}`);
-        await logToDb("SUCCESS", `Narrative synced: ${data.slug}`, data.slug);
+        // await logToDb("SUCCESS", `Narrative synced: ${data.slug}`, data.slug);
       } catch (err: any) {
         console.error(`❌ Failed to process ${n.slug}:`, err);
         await logToDb(
@@ -110,7 +110,7 @@ export async function enrichNarratives() {
     }
 
     console.log("✅ Narratives enrichment complete");
-    await logToDb("SUCCESS", `Narratives enrichment complete`);
+    // await logToDb("SUCCESS", `Narratives enrichment complete`);
   } catch (error) {
     console.error("❌ Failed to enrich narratives:", error);
     await logToDb("FATAL", `Failed to enrich narratives: ${error.message}`);

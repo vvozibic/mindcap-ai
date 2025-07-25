@@ -132,7 +132,7 @@ export async function enrichProjectsByNarratives() {
           console.log(
             `✅ Нарратив ${narrative.slug}: ${projects.length} проектов`
           );
-          await logToDb("SUCCESS", `Projects from ${narrative.slug} enriched`);
+          // await logToDb("SUCCESS", `Projects from ${narrative.slug} enriched`);
         } catch (err: any) {
           console.error(`❌ Ошибка обогащения ${narrative.slug}:`, err.message);
           await logToDb(

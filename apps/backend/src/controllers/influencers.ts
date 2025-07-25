@@ -203,11 +203,23 @@ export const getInfluencerById = async (req: Request, res: Response) => {
 
 export const getInfluencerByUsername = async (req: Request, res: Response) => {
   const { username } = req.params;
-  const proj = await prisma.kOL.findUnique({
+  const kol = await prisma.kOL.findUnique({
     where: { twitterUsername: username },
   });
-  if (!proj) return res.status(404).json({ error: "Not found" });
-  res.json(proj);
+  if (!kol) {
+    await updateKOLByUsername(username);
+
+    const updatedKol = await prisma.kOL.findUnique({
+      where: { twitterUsername: username },
+    });
+
+    if (!updatedKol) {
+      return res.status(404).json({ error: "Not found" });
+    } else {
+      sendJson(res, updatedKol);
+    }
+  }
+  sendJson(res, kol);
 };
 
 export const createInfluencer = async (req: Request, res: Response) => {

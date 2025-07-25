@@ -26,12 +26,12 @@ export async function enrichUser(screenName: string, skipIfExists = true) {
     await prisma.user.upsert({
       where: { username },
       update: {
-        username: data.display_name,
+        username: data.username,
         avatarUrl: data.avatar_url,
         platform: "twitter",
       },
       create: {
-        username: data.display_name,
+        username: data.username,
         avatarUrl: data.avatar_url,
         platform: "twitter",
       },

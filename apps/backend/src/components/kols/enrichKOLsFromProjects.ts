@@ -8,14 +8,17 @@ const limit = pLimit(5);
 
 export async function enrichKOLsFromProjects() {
   const projects = await prisma.project.findMany({
-    where: {
-      twitterUsername: "0G_labs",
+    // where: {
+    //   twitterUsername: "0G_labs",
+    // },
+    orderBy: {
+      coinMarketCap: "desc",
     },
   });
-  console.log(`🔍 Найдено проектов: ${projects.length}`);
+  console.log(`🔍 Найдено проектов: ${projects.slice(0, 50).length}`);
 
   await Promise.all(
-    projects.map((project) =>
+    projects.slice(0, 50).map((project) =>
       limit(async () => {
         try {
           const { data: kols } = await getKOLsInProjects(project.twitterId);
@@ -85,10 +88,10 @@ export async function enrichKOLsFromProjects() {
             });
           }
 
-          await logToDb(
-            "SUCCESS",
-            `KOLs from ${project.twitterDisplayName} enriched`
-          );
+          // await logToDb(
+          //   "SUCCESS",
+          //   `KOLs from ${project.twitterDisplayName} enriched`
+          // );
         } catch (err: any) {
           console.error(
             `❌ Ошибка обогащения ${project.twitterDisplayName}:`,

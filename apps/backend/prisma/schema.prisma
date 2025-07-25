@@ -17,14 +17,49 @@ model AdminUser {
 }
 
 model User {
-  id            Int      @id @default(autoincrement())
-  email         String?  @unique
-  twitterHandle String?  @unique
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now())
-  username      String?  @unique
-  avatarUrl     String?
-  platform      String   @default("twitter")
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  username  String?  @unique
+  avatarUrl String?
+  platform  String   @default("twitter")
+
+  email         String? @unique // legacy
+  twitterHandle String? @unique // legacy
+
+  // Referral system
+  referralCode String @unique @default(cuid())
+  referredById Int?
+  referredBy   User?  @relation("UserReferrals", fields: [referredById], references: [id])
+  referrals    User[] @relation("UserReferrals")
+
+  // Onboarding
+  onboardingStep Int @default(0) // 0 = start, 1 = follow, 2 = invite, 3 = wallet
+  completedTasks Int @default(0)
+  earnedPoints   Int @default(0)
+
+  kol   KOL?    @relation(fields: [kolId], references: [id])
+  kolId String? @unique
+
+  wallets         Wallet[]
+  primaryWalletId Int?     @unique
+  primaryWallet   Wallet?  @relation("PrimaryWallet", fields: [primaryWalletId], references: [id])
+}
+
+model Wallet {
+  id        Int      @id @default(autoincrement())
+  address   String   @unique
+  chain     String
+  userId    Int
+  verified  Boolean  @default(false)
+  label     String? // например, "main", "zkSync", "mint", если нужно
+  createdAt DateTime @default(now())
+
+  user       User  @relation(fields: [userId], references: [id])
+  primaryFor User? @relation("PrimaryWallet")
+
+  @@index([userId])
 }
 
 model Narrative {
@@ -271,6 +306,7 @@ model KOL {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   fetchedAt DateTime @default(now())
+  user      User?
 
   @@unique([twitterId])
   @@unique([twitterUsername])
