@@ -222,9 +222,12 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
               </div>
             </div>
 
-            <button className="w-full bg-accent-500 hover:bg-accent-600 text-black py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-colors mt-auto">
+            <button
+              onClick={handleCopyLink}
+              className="w-full bg-accent-500 hover:bg-accent-600 text-black py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-colors mt-auto"
+            >
               <UserPlus className="h-5 w-5 mr-2" />
-              Invite your friends
+              {copied ? "Copied" : "Invite your friends"}
             </button>
           </div>
 
@@ -246,10 +249,10 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
 
             <button
               onClick={handleConnectWallet}
-              className="w-full bg-accent-500 hover:bg-accent-600 text-black py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-colors mt-auto"
+              className="w-full disabled bg-accent-500 hover:bg-accent-600 text-black py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-colors mt-auto"
             >
               <Wallet className="h-5 w-5 mr-2" />
-              Connect Wallet
+              Connect Wallet Soon
             </button>
           </div>
         </div>

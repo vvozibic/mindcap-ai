@@ -4,7 +4,11 @@ import { getProfile } from "../../external-api/protokols/methods/kols";
 
 const prisma = new PrismaClient();
 
-export async function enrichUser(screenName: string, skipIfExists = true) {
+export async function enrichUser(
+  screenName: string,
+  skipIfExists = true,
+  referralCodeFromCookie?: string
+) {
   const username = screenName.toLowerCase();
 
   try {
@@ -22,8 +26,7 @@ export async function enrichUser(screenName: string, skipIfExists = true) {
     const stats = await getProfile(username);
     const data = stats?.data;
     if (!data) return;
-
-    await prisma.user.upsert({
+    const user = await prisma.user.upsert({
       where: { username },
       update: {
         username: data.username,
@@ -36,6 +39,34 @@ export async function enrichUser(screenName: string, skipIfExists = true) {
         platform: "twitter",
       },
     });
+
+    if (
+      referralCodeFromCookie &&
+      !user.referredById &&
+      referralCodeFromCookie !== user.referralCode
+    ) {
+      const referrer = await prisma.user.findUnique({
+        where: { referralCode: referralCodeFromCookie },
+      });
+
+      if (referrer && referrer.id !== user.id) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            referredById: referrer.id,
+          },
+        });
+
+        await prisma.user.update({
+          where: { id: referrer.id },
+          data: {
+            earnedPoints: { increment: 10 },
+          },
+        });
+
+        console.log(`🎉 ${user.username} referred by ${referrer.username}`);
+      }
+    }
 
     console.log(`✅ User saved: ${username}`);
   } catch (err: any) {
