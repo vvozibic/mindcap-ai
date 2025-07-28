@@ -1,4 +1,3 @@
-import cookie from "cookie";
 import express from "express";
 
 import { PrismaClient } from "@prisma/client";
@@ -40,7 +39,7 @@ const clientId = process.env.TWITTER_CLIENT_ID!;
 const clientSecret = process.env.TWITTER_CLIENT_SECRET!;
 const redirectUri = process.env.TWITTER_REDIRECT_URI!;
 
-const state = crypto.randomBytes(16).toString("hex");
+// ✅ Генерируем code_verifier/challenge для PKCE
 const codeVerifier = crypto.randomBytes(32).toString("hex");
 const codeChallenge = crypto
   .createHash("sha256")
@@ -49,6 +48,15 @@ const codeChallenge = crypto
 
 // Step 1: Redirect to Twitter
 authRoutes.get("/twitter", (req, res) => {
+  // ✅ Генерируем уникальный state для каждого запроса
+  const ref = req.query.ref as string | undefined; // если пришёл ?ref=abcd
+  const statePayload = {
+    nonce: crypto.randomBytes(16).toString("hex"),
+    ref: ref || null,
+  };
+  const state = Buffer.from(JSON.stringify(statePayload)).toString("base64url");
+
+  // ✅ Собираем OAuth URL
   const query = querystring.stringify({
     response_type: "code",
     client_id: clientId,
@@ -111,10 +119,21 @@ authRoutes.get("/callback/twitter", async (req, res) => {
 
   console.log("Twitter auth callback userData", userData);
 
-  const cookies = cookie.parse(req.headers.cookie || "");
-  const referralCode = cookies["referral_code"];
+  const stateParam = req.query.state as string;
+  let referralCodeFromState: string | null = null;
 
-  enrichUser(userData?.data?.username, true, referralCode).catch(console.error);
+  try {
+    const decoded = JSON.parse(Buffer.from(stateParam, "base64url").toString());
+    referralCodeFromState = decoded.ref;
+  } catch (err) {
+    console.warn("Failed to parse OAuth state", err);
+  }
+
+  await enrichUser(
+    userData?.data?.username,
+    false,
+    referralCodeFromState
+  ).catch(console.error);
   updateKOLByUsername(userData?.data?.username).catch(console.error);
 
   // Удаляем куки с реферальным кодом

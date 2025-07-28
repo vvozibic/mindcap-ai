@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 export async function enrichUser(
   screenName: string,
   skipIfExists = true,
-  referralCodeFromCookie?: string
+  referralCodeFrom?: string
 ) {
   const username = screenName.toLowerCase();
 
@@ -25,7 +25,9 @@ export async function enrichUser(
 
     const stats = await getProfile(username);
     const data = stats?.data;
+
     if (!data) return;
+
     const user = await prisma.user.upsert({
       where: { username },
       update: {
@@ -41,12 +43,12 @@ export async function enrichUser(
     });
 
     if (
-      referralCodeFromCookie &&
+      referralCodeFrom &&
       !user.referredById &&
-      referralCodeFromCookie !== user.referralCode
+      referralCodeFrom !== user.referralCode
     ) {
       const referrer = await prisma.user.findUnique({
-        where: { referralCode: referralCodeFromCookie },
+        where: { referralCode: referralCodeFrom },
       });
 
       if (referrer && referrer.id !== user.id) {

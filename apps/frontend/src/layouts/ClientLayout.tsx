@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import LoginModal from "../components/LoginModal";
 import Navbar from "../components/Navbar";
+import { useReferralTracker } from "../hooks/useReferral";
 import ForBusinessPage from "../pages/ForBusinessPage";
 import HomePage from "../pages/HomePage";
 import ProjectPage from "../pages/ProjectPage";
@@ -30,15 +31,7 @@ function ClientLayout() {
       .catch(() => setUser({ isAuthenticated: false }));
   }, []);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const urlParams = new URLSearchParams(window.location.search);
-      const ref = urlParams.get("ref");
-      if (ref) {
-        document.cookie = `referral_code=${ref}; path=/; max-age=${60 * 60 * 24 * 7}; samesite=strict`;
-      }
-    }
-  }, []);
+  useReferralTracker();
 
   const handleLogin = (user: User) => {
     setUser({ ...user, isAuthenticated: true });
