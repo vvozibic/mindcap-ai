@@ -44,7 +44,7 @@ export async function enrichKOLsFromProjects() {
             const kol = await prisma.kOL.upsert({
               where: { twitterId: k.id },
               update: {
-                hidden: false,
+                // hidden: false,
                 twitterUsername: k.username,
                 twitterDisplayName: k.display_name,
                 twitterAvatarUrl: k.avatar_url,
