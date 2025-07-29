@@ -2,15 +2,13 @@ import {
   Clock,
   DollarSign,
   ExternalLink,
-  Eye,
-  Newspaper,
   TrendingUp,
   Users,
 } from "lucide-react";
 import React, { useState } from "react";
-import { Influencer, ProtokolsProject, RewardPool } from "../../types";
-import { formatMindsharePercent } from "../../utils/formatMindhsarePercent";
-import InfluencerDetailOverlay from "../Infuencer/InfluencerDetailOverlay";
+import { KOL, Project, RewardPool } from "../../types";
+import { formatNumber } from "../../utils/formatNumber";
+import InfluencerDetailOverlay from "../KOL/KOLDetailOverlay";
 import { Skeleton } from "../Skeleton";
 import { TableSkeleton } from "../TableSkeleton";
 import XLogo from "../XLogo";
@@ -19,13 +17,13 @@ interface ProjectDetailOverlayProps {
   isOpen: boolean;
   isModal?: boolean;
   onClose: () => void;
-  project: ProtokolsProject | null;
+  project: Project | null;
   activeTab: "overview" | "pools";
   setActiveTab: (t: "overview" | "pools") => void;
   isAuthenticated: boolean;
   onLogin: () => void;
   projectPools: RewardPool[];
-  topKOLs: Influencer[];
+  topKOLs: KOL[];
   handleBackToList: () => void;
   selectedPool: RewardPool | null;
   handlePoolSelect: (p: RewardPool) => void;
@@ -48,12 +46,11 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
   handlePoolSelect,
   selectedPool,
 }) => {
-  const [selectedInfluencer, setSelectedInfluencer] =
-    useState<Influencer | null>(null);
+  const [selectedKOL, setSelectedKOL] = useState<KOL | null>(null);
   const [isDetailOverlayOpen, setIsDetailOverlayOpen] = useState(false);
 
-  const handleInfluencerClick = (kol: Influencer) => {
-    setSelectedInfluencer(kol);
+  const handleInfluencerClick = (kol: KOL) => {
+    setSelectedKOL(kol);
     setIsDetailOverlayOpen(true);
   };
 
@@ -72,13 +69,15 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
     <>
       <div className="flex items-center mb-1 pb-4 border-b border-primary-700">
         <img
-          src={project?.avatarUrl || "/default-project-avatar.png"}
-          alt={project.name}
+          src={project?.twitterAvatarUrl || "/default-project-avatar.png"}
+          alt={project.twitterUsername}
           className="h-16 w-16 rounded-full border-2 border-accent-500"
         />
         <div className="ml-4">
-          <h3 className="text-xl font-bold text-white">{project.name}</h3>
-          <p className="text-gray-300">{project.description}</p>
+          <h3 className="text-xl font-bold text-white">
+            {project.twitterDisplayName}
+          </h3>
+          <p className="text-gray-300">{project.twitterDescription}</p>
         </div>
       </div>
 
@@ -131,7 +130,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                       Mindshare
                     </h6>
                     <p className="text-lg font-bold text-gray-200">
-                      {project?.mindsharePercent?.toFixed(2)}%
+                      {project?.mindshare?.toFixed(2)}%
                     </p>
                   </div>
                 </div>
@@ -143,12 +142,12 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                       Followers
                     </h6>
                     <p className="text-lg font-bold text-gray-200">
-                      {project?.followersCount?.toLocaleString()}
+                      {project?.twitterFollowersCount?.toLocaleString()}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center">
+                {/* <div className="flex items-center">
                   <Eye className="h-5 w-5 text-accent-500" />
                   <div className="ml-3">
                     <h6 className="text-xs font-medium text-gray-400">Views</h6>
@@ -166,7 +165,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                       {project?.totalPosts?.toLocaleString()}
                     </p>
                   </div>
-                </div>
+                </div> */}
               </div>
 
               <div className="flex items-center">
@@ -192,7 +191,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                           About the Project
                         </h5>
                         <div className="bg-primary-700 rounded-lg p-4 mb-6">
-                          <p className="text-gray-300">{project.description}</p>
+                          <p className="text-gray-300">{project.twitterDescription}</p>
                           <div className="mt-4 pt-4 border-t border-primary-700">
                             <h6 className="text-sm font-medium text-gray-300 mb-2">
                               Categories
@@ -211,7 +210,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
             <div className="bg-primary-700 rounded-lg p-4">
               <div className="grid grid-cols-2 gap-4">
                 <a
-                  href={project?.website || "/"}
+                  href={`https://x.com/${project.twitterUsername}` || "/"}
                   target="_blank"
                   className="flex items-center text-gray-300 hover:text-accent-500"
                 >
@@ -341,10 +340,10 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
       {activeTab === "overview" ? (
         <div className="space-y-8">
           {/* Top KOLs for this project - Now at the top and spanning full width */}
-          {Boolean(topKOLs?.length) && (
+          {Boolean(topKOLs?.length) ? (
             <div className="col-span-2">
-              <h5 className="text-lg font-medium text-gray-300 mb-3">
-                Top KOLs Engaging with {project.name}
+              <h5 className="text-lg font-medium text-gray-300 mb-3 mt-6">
+                Top KOLs Engaging with {project.twitterUsername}
               </h5>
               <div className="bg-primary-700 rounded-lg overflow-hidden">
                 <div className="overflow-x-auto">
@@ -360,10 +359,10 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                             Rank
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
-                            Influencer
+                            KOL
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
-                            Mindo Share
+                            Mindo score
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
                             Smart Followers
@@ -400,17 +399,20 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                               <div className="flex items-center">
                                 <img
                                   className="h-10 w-10 rounded-full"
-                                  src={kol.avatarUrl || "/default-avatar.png"}
-                                  alt={kol.name}
+                                  src={
+                                    kol.twitterAvatarUrl ||
+                                    "/default-avatar.png"
+                                  }
+                                  alt={kol.twitterDisplayName}
                                 />
                                 <div className="ml-4 max-w-[300px]">
                                   <div className="text-sm font-medium text-white">
-                                    {kol.name}
+                                    {kol.twitterUsername}
                                   </div>
                                   <div className="text-sm text-text-muted">
-                                    {kol.username}
+                                    {kol.twitterDisplayName}
                                   </div>
-                                  <div className="flex mt-1 space-x-1">
+                                  {/* <div className="flex mt-1 space-x-1">
                                     {kol.badges?.split(",").map((badge, i) => (
                                       <span
                                         key={i}
@@ -419,21 +421,24 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                                         {badge}
                                       </span>
                                     ))}
-                                  </div>
+                                  </div> */}
                                 </div>
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white font-medium">
-                              {formatMindsharePercent(kol?.mindshareNum)}
+                              {formatNumber(
+                                Number(kol?.mindoMetric?.toFixed(2)) || 0
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                              {kol.smartFollowers}
+                              {kol.smartFollowersCount?.toLocaleString() || "0"}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                              {kol.followersCountNumeric}
+                              {kol.twitterFollowersCount?.toLocaleString() ||
+                                "0"}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                              {kol.kolScore}
+                              {kol.kolScore?.toLocaleString() || "0"}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                               {kol?.engagementRate
@@ -442,7 +447,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                               {kol?.postingFrequency
-                                ? `${kol.postingFrequency}/day`
+                                ? `~${kol.postingFrequency}/day`
                                 : "-"}
                             </td>
                           </tr>
@@ -453,6 +458,8 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                 </div>
               </div>
             </div>
+          ) : (
+            <TableSkeleton />
           )}
         </div>
       ) : (
@@ -491,15 +498,15 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                           selectedPool.status === "active"
                             ? "bg-green-900 text-green-200"
                             : selectedPool.status === "upcoming"
-                            ? "bg-blue-900 text-blue-200"
-                            : "bg-gray-700 text-gray-200"
+                              ? "bg-blue-900 text-blue-200"
+                              : "bg-gray-700 text-gray-200"
                         }`}
                       >
                         {selectedPool.status === "active"
                           ? "Active"
                           : selectedPool.status === "upcoming"
-                          ? "Upcoming"
-                          : "Completed"}
+                            ? "Upcoming"
+                            : "Completed"}
                       </span>
                       <span className="ml-2 text-gray-400 text-sm">
                         <Clock className="inline-block h-4 w-4 mr-1" />
@@ -796,15 +803,15 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                           pool.status === "active"
                             ? "bg-green-900 text-green-200"
                             : pool.status === "upcoming"
-                            ? "bg-blue-900 text-blue-200"
-                            : "bg-gray-700 text-gray-200"
+                              ? "bg-blue-900 text-blue-200"
+                              : "bg-gray-700 text-gray-200"
                         }`}
                       >
                         {pool.status === "active"
                           ? "Active"
                           : pool.status === "upcoming"
-                          ? "Upcoming"
-                          : "Completed"}
+                            ? "Upcoming"
+                            : "Completed"}
                       </span>
                     </div>
 
@@ -892,8 +899,8 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
       <InfluencerDetailOverlay
         isOpen={isDetailOverlayOpen}
         onClose={closeDetailOverlay}
-        influencer={selectedInfluencer}
-        allInfluencers={topKOLs.filter((k) => k && k.id)}
+        kol={selectedKOL}
+        allKOLs={topKOLs.filter((k) => k && k.id)}
       />
     </>
   );

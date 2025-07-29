@@ -1,6 +1,6 @@
 import { Edit, Plus, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { ProtokolsProject } from "../../types";
+import { Project } from "../../types";
 import { formatNumber } from "../../utils/formatNumber";
 import ProjectForm from "./ProjectForm";
 import { TableSkeleton } from "./TableSkeleton";
@@ -8,7 +8,7 @@ import { TableSkeleton } from "./TableSkeleton";
 interface ProjectsTableProps {}
 
 const ProjectsTable: React.FC<ProjectsTableProps> = ({}) => {
-  const [projects, setProjects] = useState<ProtokolsProject[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
 
@@ -74,9 +74,9 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({}) => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Followers
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Views
-              </th>
+              </th> */}
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Market Cap
               </th>
@@ -93,27 +93,27 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({}) => {
             {projects.map((project) => (
               <tr key={project.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {project.name}
+                  {project.twitterUsername}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   @{project.twitterUsername}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {project.mindsharePercent?.toFixed(2)}%
+                  {project.mindshare?.toFixed(2)}%
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {project.followersCount?.toLocaleString()}
+                  {project.twitterFollowersCount?.toLocaleString()}
                 </td>
+                {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {project.?.toLocaleString()}
+                </td> */}
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {project.totalViews?.toLocaleString()}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {project.marketCap
-                    ? `$${formatNumber(project.marketCap)}`
+                  {project.coinMarketCap
+                    ? `$${formatNumber(project.coinMarketCap)}`
                     : "-"}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {project.price ? `$${project.price.toFixed(2)}` : "-"}
+                  {project.coinPrice ? `$${project.coinPrice.toFixed(2)}` : "-"}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button

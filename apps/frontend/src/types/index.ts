@@ -1,77 +1,92 @@
 export interface Project {
-  id: string; // cuid (Prisma)
-  name: string;
-  slug: string; // уникальный идентификатор (равен id в Coingecko)
-  avatarUrl?: string | null;
-  category?: string | null;
-  categories?: string[] | null;
-  website?: string | null;
-  description?: string | null;
-  marketCap?: string | null;
-  launchDate?: string | null; // DateTime → string
-  twitter?: string | null;
-  telegram?: string | null;
-  discord?: string | null;
-  rawData?: any | null;
+  id: string;
+  stage?: string;
 
-  featured: boolean | string;
+  featured: boolean;
+  hidden: boolean;
 
-  // Поля анализа
-  mindshare?: string | null;
-  kolAttention?: string | null;
-  engagement?: string | null;
-  trustScore?: string | null;
-  rewardPoolUsd?: string | null;
-  rewardRank?: string | null;
+  mindshare: number;
 
-  createdAt?: string;
-  updatedAt?: string;
+  twitterId: string;
+  twitterUsername: string;
+  twitterDisplayName: string;
+  twitterAvatarUrl: string;
+  twitterDescription: string;
+  twitterDescriptionLink?: string;
+  twitterFollowersCount: number;
+  twitterFollowingCount: number;
+  twitterIsVerified: boolean;
+  twitterGoldBadge?: boolean;
+  twitterLang: string;
+  twitterCreatedAt: string;
+
+  coinSymbol: string;
+  coinMarketCap: number;
+  coinPrice: number;
+  coinContractAddress?: string;
+  coinName: string;
+  coinImageUrl?: string;
+
+  createdAt: string;
+  updatedAt: string;
+  fetchedAt: string;
+
+  narrativeLinks: Narrative[];
 }
+export interface KOL {
+  id: string;
 
-export interface Influencer {
-  id: string; // cuid (Prisma)
-  rank?: string; // ранг в списке
-  name: string;
-  username: string; // уникальный
-  avatarUrl?: string | null;
-  badges?: string | null;
-  bio?: string | null;
-  platform?: string | null; // "twitter" и т.п.
-  businessAccount?: boolean;
-  followers?: string | null;
-  followings?: string | null;
-  expertise?: string | null;
-  profileUrl?: string | null;
-  twitterScoutJsonRaw?: any | null;
+  twitterId: string;
+  twitterUsername: string;
+  twitterDisplayName: string;
+  twitterAvatarUrl: string | null;
+  twitterDescription: string | null;
+  twitterFollowersCount: number;
+  twitterFollowingCount: number;
+  twitterIsVerified: boolean;
+  twitterLang: string;
+  twitterGoldBadge: boolean | null;
+  twitterCreatedAt: string; // ISO string
 
-  followingsNumeric: number;
-  followersCountNumeric: number;
-  tweetsCountNumeric: number;
-  avgLikes: number;
-  avgViews: number;
-  engagementRate: number;
-  kolScore: number;
-  totalPosts: number;
-  totalLikes: number;
-  totalViews: number;
-  totalReplies: number;
-  totalComments: number;
-  totalRetweets: number;
-  twitterRegisterDate: string;
-
+  // Frontend specific
+  kolScorePercentFromTotal?: number;
   postingFrequency?: string;
 
-  mindshareNum: number;
-  pow?: string | null;
-  poi?: string | null;
-  poe?: string | null;
-  smartFollowers?: string | null;
-  followersCount?: string | null;
+  kolScore: number | null;
+  smartFollowersCount: number | null;
+  followersChange: number | null;
+  smartEngagement: number | null;
+  smartEngagementChange: number | null;
+  engagementRate: number | null;
+  avgViews: number | null;
+  avgLikes: number | null;
+  threadsCount: number | null;
+  totalPosts: number | null;
+  totalViews: number | null;
+  totalInteractions: number | null;
+  totalOrganicPosts: number | null;
+  totalOrganicViews: number | null;
+  totalOrganicInteractions: number | null;
+  totalAccountPosts: number | null;
+  totalAccountViews: number | null;
+  totalAccountInteractions: number | null;
+  totalAccountComments: number | null;
+  totalAccountLikes: number | null;
+  totalAccountRetweets: number | null;
+  totalAccountReplies: number | null;
+  totalPostsChange: number | null;
+  totalViewsChange: number | null;
+  totalInteractionsChange: number | null;
 
-  moneyScore?: string | null;
+  mindoMetric: number;
+  proofOfWork: number;
+  qualityScore: number;
 
-  createdAt?: string;
-  updatedAt?: string;
+  projects: any;
+
+  fetchedAt: string; // ISO string
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface User {
@@ -84,6 +99,10 @@ export interface User {
   createdAt?: string; // ISO string
   updatedAt?: string; // ISO string
   isAuthenticated?: boolean;
+  referralCode?: string;
+  onboardingStep?: number;
+  completedTasks?: number;
+  earnedPoints?: number;
 }
 
 export type Narrative = {
@@ -121,40 +140,6 @@ export interface RewardPool {
 
   requirements: string[]; // ["Minimum 5 minutes video length", ...]
 
-  project: ProtokolsProject;
+  project: Project;
   projectId: string;
-}
-
-export interface ProtokolsProject {
-  id: string;
-  name: string;
-  symbol: string;
-  featured: boolean;
-  hidden: boolean;
-  slug?: string;
-  stage?: string;
-  website?: string;
-  avatarUrl?: string;
-  description?: string;
-  twitterUsername: string;
-  twitterId: string;
-  isVerified: boolean;
-  followersCount: number;
-  followingCount: number;
-  twitterCreatedAt: string;
-  coingeckoImageUrl?: string;
-  marketCap?: number;
-  price?: number;
-  contractAddress?: string;
-  totalViews: number;
-  totalPosts: number;
-  mindsharePercent: number;
-  mindshareChange24h: number;
-  mindshareChange7d: number;
-  mindshareChange30d: number;
-  mindshareChange90d: number;
-  createdAt: string;
-  updatedAt: string;
-  rewardPools: RewardPool[];
-  narrativeLinks?: Narrative[]; // Новое поле
 }

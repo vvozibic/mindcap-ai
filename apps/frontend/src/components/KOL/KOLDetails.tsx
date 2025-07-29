@@ -4,7 +4,6 @@ import {
   CheckCircle,
   ExternalLink,
   Eye,
-  FileText,
   Heart,
   MessageCircle,
   Share2,
@@ -16,33 +15,34 @@ import {
   Users,
 } from "lucide-react";
 import React from "react";
-import { Influencer } from "../../types";
-import { getInfluencerDetailData } from "./utils";
+import { KOL } from "../../types";
+import { formatNumber } from "../../utils/formatNumber";
+import { getKOLDetailData } from "./utils";
 
-interface InfluencerDetailOverlayProps {
-  influencer: Influencer | null;
+interface KOLDetailOverlayProps {
+  kol: KOL | null;
 }
 
-const InfluencerDetails: React.FC<InfluencerDetailOverlayProps> = ({
-  influencer,
-}) => {
-  const detailData = getInfluencerDetailData(influencer);
+const KOLDetails: React.FC<KOLDetailOverlayProps> = ({ kol }) => {
+  const detailData = getKOLDetailData(kol);
 
-  if (!influencer || !detailData) return null;
+  if (!kol) return null;
 
   return (
     <div className="w-full transform overflow-hidden rounded-2xl bg-primary-800 p-6 text-left align-middle shadow-xl transition-all border border-primary-700">
       <div className="flex items-center mb-6 pb-4 border-b border-primary-700">
         <img
-          src={influencer?.avatarUrl || "/default-avatar.png"}
-          alt={influencer.name}
+          src={kol?.twitterAvatarUrl || "/default-avatar.png"}
+          alt={kol.twitterDisplayName}
           className="h-16 w-16 rounded-full border-2 border-accent-500"
         />
         <div className="ml-4">
-          <div className="text-xl font-bold text-white">{influencer.name}</div>
-          <p className="text-gray-300">{influencer.username}</p>
-          <div className="flex mt-1 space-x-1">
-            {influencer.badges?.split(",").map((badge, index) => (
+          <div className="text-xl font-bold text-white">
+            {kol.twitterDisplayName}
+          </div>
+          <p className="text-gray-300">@{kol.twitterUsername}</p>
+          {/* <div className="flex mt-1 space-x-1">
+            {kol.badges?.split(",").map((badge, index) => (
               <span
                 key={index}
                 className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-600 text-accent-500"
@@ -50,7 +50,7 @@ const InfluencerDetails: React.FC<InfluencerDetailOverlayProps> = ({
                 {badge}
               </span>
             ))}
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -81,7 +81,7 @@ const InfluencerDetails: React.FC<InfluencerDetailOverlayProps> = ({
                     Followers
                   </h6>
                   <p className="text-lg font-bold text-gray-200">
-                    {detailData?.followers}
+                    {detailData?.followers?.toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -93,7 +93,7 @@ const InfluencerDetails: React.FC<InfluencerDetailOverlayProps> = ({
                     Following
                   </h6>
                   <p className="text-lg font-bold text-gray-200">
-                    {detailData?.following || "0"}
+                    {detailData?.following?.toLocaleString() || "0"}
                   </p>
                 </div>
               </div>
@@ -105,7 +105,7 @@ const InfluencerDetails: React.FC<InfluencerDetailOverlayProps> = ({
                     Smart Followers
                   </h6>
                   <p className="text-lg font-bold text-gray-200">
-                    {detailData?.smartFollowers || "0"}
+                    {detailData?.smartFollowers?.toLocaleString() || "0"}
                   </p>
                 </div>
               </div>
@@ -190,7 +190,7 @@ const InfluencerDetails: React.FC<InfluencerDetailOverlayProps> = ({
             </div>
           </div>
 
-          <h5 className="text-md font-medium text-gray-300 mb-3">
+          <h5 className="text-md font-medium text-gray-300 mb-3 mt-6">
             Social Channels
           </h5>
           <div className="bg-primary-700 rounded-lg p-4">
@@ -210,32 +210,48 @@ const InfluencerDetails: React.FC<InfluencerDetailOverlayProps> = ({
           <h4 className="text-lg font-medium text-gray-200 mb-4">Analytics</h4>
 
           <div className="flex items-center mb-4">
-            <FileText className="h-5 w-5 text-accent-500" />
-            <div className="ml-3">
+            {/* <FileText className="h-5 w-5 text-accent-500" /> */}
+            <div className="">
               <h5 className="text-sm font-medium text-gray-300">Total Posts</h5>
               <div className="flex items-baseline">
                 <p className="text-xl font-bold text-gray-200">
-                  {detailData?.totalPosts}
+                  {detailData?.totalPosts?.toLocaleString()}
                 </p>
                 <span className="ml-2 text-xs text-gray-400">Lifetime</span>
               </div>
             </div>
             <div className="ml-8">
-              <h5 className="text-sm font-medium text-gray-300">Mindo Share</h5>
+              <h5 className="text-sm font-medium text-gray-300">Mindo score</h5>
               <div className="flex items-baseline">
                 <p className="text-xl font-bold text-gray-200">
-                  {Number((detailData?.mindshare || 0) * 100).toFixed(2)}%
+                  {formatNumber(
+                    Number(detailData?.mindoMetric?.toFixed(2)) || 0
+                  )}
                 </p>
               </div>
             </div>
-            <div className="ml-8">
-              <h5 className="text-sm font-medium text-gray-300">KOL score</h5>
-              <div className="flex items-baseline">
-                <p className="text-xl font-bold text-gray-200">
-                  {detailData?.kolScore}
-                </p>
+            {Boolean(detailData?.proofOfWork) && (
+              <div className="ml-8">
+                <h5 className="text-sm font-medium text-gray-300">POW</h5>
+                <div className="flex items-baseline">
+                  <p className="text-xl font-bold text-gray-200">
+                    {formatNumber(
+                      Number(detailData?.proofOfWork?.toFixed(2)) || 0
+                    )}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
+            {Boolean(detailData?.qualityScore) && (
+              <div className="ml-8">
+                <h5 className="text-sm font-medium text-gray-300">KOL score</h5>
+                <div className="flex items-baseline">
+                  <p className="text-xl font-bold text-gray-200">
+                    {detailData?.kolScore?.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           <h5 className="text-md font-medium text-gray-300 mb-3">
@@ -291,14 +307,14 @@ const InfluencerDetails: React.FC<InfluencerDetailOverlayProps> = ({
                 <Eye className="h-5 w-5 text-white-500 mb-1" />
                 <p className="text-xs font-medium text-gray-400">Views</p>
                 <p className="text-lg font-bold text-gray-200">
-                  {detailData?.views}
+                  {detailData?.views?.toLocaleString()}
                 </p>
               </div>
               <div className="flex flex-col items-center">
                 <Heart className="h-5 w-5 text-red-500 mb-1" />
                 <p className="text-xs font-medium text-gray-400">Likes</p>
                 <p className="text-lg font-bold text-gray-200">
-                  {detailData?.likes}
+                  {detailData?.likes?.toLocaleString()}
                 </p>
               </div>
 
@@ -306,7 +322,7 @@ const InfluencerDetails: React.FC<InfluencerDetailOverlayProps> = ({
                 <MessageCircle className="h-5 w-5 text-blue-500 mb-1" />
                 <p className="text-xs font-medium text-gray-400">Comments</p>
                 <p className="text-lg font-bold text-gray-200">
-                  {detailData?.comments}
+                  {detailData?.comments?.toLocaleString()}
                 </p>
               </div>
 
@@ -314,7 +330,7 @@ const InfluencerDetails: React.FC<InfluencerDetailOverlayProps> = ({
                 <Share2 className="h-5 w-5 text-green-500 mb-1" />
                 <p className="text-xs font-medium text-gray-400">Retweets</p>
                 <p className="text-lg font-bold text-gray-200">
-                  {detailData?.retwets}
+                  {detailData?.retwets?.toLocaleString()}
                 </p>
               </div>
             </div>
@@ -345,21 +361,21 @@ const InfluencerDetails: React.FC<InfluencerDetailOverlayProps> = ({
               <div>
                 <p className="text-xs text-gray-400">Avg. Comments/Post</p>
                 <p className="text-gray-200 font-medium">
-                  {detailData?.avgCommentsPerPost}
+                  {detailData?.avgCommentsPerPost?.toLocaleString()}
                 </p>
               </div>
 
               <div>
                 <p className="text-xs text-gray-400">Avg. Retweets/Post</p>
                 <p className="text-gray-200 font-medium">
-                  {detailData?.avgRetweetsPerPost}
+                  {detailData?.avgRetweetsPerPost?.toLocaleString()}
                 </p>
               </div>
 
               <div>
                 <p className="text-xs text-gray-400">Avg. Engagement/Post</p>
                 <p className="text-gray-200 font-medium">
-                  {detailData?.avgEngagementPerPost}
+                  {detailData?.avgEngagementPerPost?.toLocaleString()}
                 </p>
               </div>
 
@@ -377,4 +393,4 @@ const InfluencerDetails: React.FC<InfluencerDetailOverlayProps> = ({
   );
 };
 
-export default InfluencerDetails;
+export default KOLDetails;

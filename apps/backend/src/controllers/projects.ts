@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
+import { sendJson } from "../utils/sendJson";
 // import { parseLinks, serializeLinks } from "../utils/links";
 
 const prisma = new PrismaClient();
@@ -11,30 +12,26 @@ export const getAllProjects = async (_: Request, res: Response) => {
     },
     select: {
       id: true,
-      name: true,
-      slug: true,
-      avatarUrl: true,
-      category: true,
-      categories: true,
-      website: true,
-      description: true,
-      marketCap: true,
-      launchDate: true,
+      twitterUsername: true,
+      twitterAvatarUrl: true,
+      twitterDescription: true,
+      coinMarketCap: true,
+      // launchDate: true,
       mindshare: true,
-      kolAttention: true,
-      engagement: true,
-      trustScore: true,
-      rewardPoolUsd: true,
-      rewardRank: true,
-      twitter: true,
+      // kolAttention: true,
+      // engagement: true,
+      // trustScore: true,
+      // rewardPoolUsd: true,
+      // rewardRank: true,
+      // twitter: true,
       createdAt: true,
       updatedAt: true,
       featured: true,
     },
-    orderBy: [{ marketCap: "desc" }],
+    orderBy: [{ coinMarketCap: "desc" }],
   });
 
-  res.json(projects);
+  sendJson(res, projects);
 };
 
 export const getFeaturedProjects = async (_: Request, res: Response) => {
@@ -44,30 +41,25 @@ export const getFeaturedProjects = async (_: Request, res: Response) => {
     },
     select: {
       id: true,
-      name: true,
-      slug: true,
-      avatarUrl: true,
-      category: true,
-      categories: true,
-      website: true,
-      description: true,
-      marketCap: true,
-      launchDate: true,
+      twitterUsername: true,
+      twitterAvatarUrl: true,
+      twitterDescription: true,
+      coinMarketCap: true,
+      // launchDate: true,
       mindshare: true,
-      kolAttention: true,
-      engagement: true,
-      trustScore: true,
-      rewardPoolUsd: true,
-      rewardRank: true,
-      twitter: true,
+      // kolAttention: true,
+      // engagement: true,
+      // trustScore: true,
+      // rewardPoolUsd: true,
+      // rewardRank: true,
+      // twitter: true,
       createdAt: true,
       updatedAt: true,
-      featured: true,
     },
-    orderBy: [{ marketCap: "desc" }],
+    orderBy: [{ coinMarketCap: "desc" }],
   });
 
-  res.json(projects);
+  sendJson(res, projects);
 };
 
 // export const getAllProjects = async (req: Request, res: Response) => {
@@ -92,7 +84,8 @@ export const getProject = async (req: Request, res: Response) => {
   const { id } = req.params;
   const proj = await prisma.project.findUnique({ where: { id } });
   if (!proj) return res.status(404).json({ error: "Not found" });
-  res.json(proj);
+
+  sendJson(res, proj);
 };
 
 export const createProject = async (req: Request, res: Response) => {
@@ -120,9 +113,9 @@ export const updateProject = async (req: Request, res: Response) => {
 export const deleteProject = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  await prisma.mention.deleteMany({
-    where: { projectId: id },
-  });
+  // await prisma.mention.deleteMany({
+  //   where: { projectId: id },
+  // });
 
   await prisma.project.delete({
     where: { id },
@@ -133,19 +126,19 @@ export const deleteProject = async (req: Request, res: Response) => {
 
 // Narratives from protokols
 export const getAllProtokolsProjects = async (_: Request, res: Response) => {
-  const projects = await prisma.protokolsProject.findMany({
-    orderBy: { marketCap: "desc" },
+  const projects = await prisma.project.findMany({
+    orderBy: { coinMarketCap: "desc" },
     include: {
       narrativeLinks: {
         select: {
-          projectMindsharePercent: true,
+          mindsharePercent: true,
           narrative: {
             select: {
               id: true,
               name: true,
               slug: true,
               mindsharePercent: true,
-              marketCapUsd: true,
+              // marketCapUsd: true,
               totalViews: true,
             },
           },
@@ -154,28 +147,28 @@ export const getAllProtokolsProjects = async (_: Request, res: Response) => {
     },
   });
 
-  res.json(projects);
+  sendJson(res, projects);
 };
 
 export const getFeaturedProtokolsProjects = async (
   _: Request,
   res: Response
 ) => {
-  const projects = await prisma.protokolsProject.findMany({
+  const projects = await prisma.project.findMany({
     where: {
       featured: true,
     },
     include: {
       narrativeLinks: {
         select: {
-          projectMindsharePercent: true,
+          mindsharePercent: true,
           narrative: {
             select: {
               id: true,
               name: true,
               slug: true,
               mindsharePercent: true,
-              marketCapUsd: true,
+              // marketCapUsd: true,
               totalViews: true,
             },
           },
@@ -183,10 +176,10 @@ export const getFeaturedProtokolsProjects = async (
       },
       rewardPools: true,
     },
-    orderBy: [{ marketCap: "desc" }],
+    orderBy: [{ coinMarketCap: "desc" }],
   });
 
-  res.json(projects);
+  sendJson(res, projects);
 };
 export const getPaginatedProtokolsProjects = async (
   req: Request,
@@ -194,27 +187,27 @@ export const getPaginatedProtokolsProjects = async (
 ) => {
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 20;
-  const sortField = (req.query.sortField as string) || "marketCap";
+  const sortField = (req.query.sortField as string) || "coinMarketCap";
   const sortDirection =
     (req.query.sortDirection as string) === "asc" ? "asc" : "desc";
   const skip = (page - 1) * limit;
 
   // Валидация допустимых полей сортировки
   const allowedSortFields = [
-    "marketCap",
-    "price",
-    "mindsharePercent",
-    "followersCount",
-    "totalViews",
+    "coinMarketCap",
+    "coinPrice",
+    "mindshare",
+    "twitterFollowersCount",
+    // "totalViews",
   ];
 
   const safeSortField = allowedSortFields.includes(sortField as any)
     ? (sortField as (typeof allowedSortFields)[number])
-    : "mindsharePercent";
+    : "mindshare";
 
   const [total, projects] = await Promise.all([
-    prisma.protokolsProject.count(),
-    prisma.protokolsProject.findMany({
+    prisma.project.count(),
+    prisma.project.findMany({
       skip,
       take: limit,
       orderBy: {
@@ -223,14 +216,13 @@ export const getPaginatedProtokolsProjects = async (
       include: {
         narrativeLinks: {
           select: {
-            projectMindsharePercent: true,
+            mindsharePercent: true,
             narrative: {
               select: {
                 id: true,
                 name: true,
                 slug: true,
                 mindsharePercent: true,
-                marketCapUsd: true,
                 totalViews: true,
               },
             },
@@ -241,7 +233,7 @@ export const getPaginatedProtokolsProjects = async (
     }),
   ]);
 
-  res.json({
+  sendJson(res, {
     data: projects,
     total,
     page,
@@ -251,19 +243,18 @@ export const getPaginatedProtokolsProjects = async (
 
 export const getProtokolsProjectById = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const project = await prisma.protokolsProject.findUnique({
+  const project = await prisma.project.findUnique({
     where: { id },
     include: {
       narrativeLinks: {
         select: {
-          projectMindsharePercent: true,
+          mindsharePercent: true,
           narrative: {
             select: {
               id: true,
               name: true,
               slug: true,
               mindsharePercent: true,
-              marketCapUsd: true,
               totalViews: true,
             },
           },
@@ -274,27 +265,27 @@ export const getProtokolsProjectById = async (req: Request, res: Response) => {
   });
 
   if (!project) return res.status(404).json({ error: "Not found" });
-  res.json(project);
+
+  sendJson(res, project);
 };
 
 export const getProtokolsProjectBySlug = async (
   req: Request,
   res: Response
 ) => {
-  const { slug } = req.params;
-  const project = await prisma.protokolsProject.findFirst({
-    where: { slug },
+  const { twitterUsername } = req.params;
+  const project = await prisma.project.findUnique({
+    where: { twitterUsername },
     include: {
       narrativeLinks: {
         select: {
-          projectMindsharePercent: true,
+          mindsharePercent: true,
           narrative: {
             select: {
               id: true,
               name: true,
               slug: true,
               mindsharePercent: true,
-              marketCapUsd: true,
               totalViews: true,
             },
           },
@@ -305,76 +296,150 @@ export const getProtokolsProjectBySlug = async (
   });
 
   if (!project) return res.status(404).json({ error: "Not found" });
-  res.json(project);
+
+  sendJson(res, project);
 };
+
+export const allowedSortFields = {
+  mindoMetric: `SUM(kp."mindoMetric")`,
+  proofOfWork: `SUM(kp."proofOfWork")`,
+  qualityScore: `SUM(kp."qualityScore")`,
+  totalPosts: `SUM(kp."totalPosts")`,
+  totalComments: `SUM(kp."totalComments")`,
+  kolScore: `k."kolScore"`,
+  engagementRate: `k."engagementRate"`,
+  smartFollowersCount: `k."smartFollowersCount"`,
+  twitterFollowersCount: `k."twitterFollowersCount"`,
+  tweetsCountNumeric: `k."tweetsCountNumeric"`,
+} as const;
+
+export type SortField = keyof typeof allowedSortFields;
+
+export function getSortSql(sortField: string, sortDirection: string): string {
+  const direction = sortDirection === "asc" ? "ASC" : "DESC";
+  const expr = allowedSortFields[sortField as SortField];
+  if (!expr) throw new Error(`Invalid sortField: ${sortField}`);
+  return `${expr} ${direction}`;
+}
 
 export const getInfluencersByProject = async (req: Request, res: Response) => {
   const { projectId } = req.params;
+  const limit = parseInt(req.query.limit as string) || 100;
+  const page = parseInt(req.query.page as string) || 1;
+  const skip = (page - 1) * limit;
+  const sortField = (req.query.sortField as string) || "mindoMetric";
+  const sortDirection = req.query.sortDirection === "asc" ? "asc" : "desc";
 
   if (!projectId) {
     return res.status(400).json({ error: "Missing projectId in params" });
   }
 
-  try {
-    const influencers = await prisma.influencer.findMany({
-      where: {
-        projects: {
-          some: {
-            projectId,
-          },
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-        badges: true,
-        username: true,
-        avatarUrl: true,
-        platform: true,
-        followingsNumeric: true,
-        followersCountNumeric: true,
-        smartFollowers: true,
-        tweetsCountNumeric: true,
-        avgLikes: true,
-        avgViews: true,
-        engagementRate: true,
-        kolScore: true,
-        totalPosts: true,
-        totalLikes: true,
-        totalReplies: true,
-        totalRetweets: true,
-        totalViews: true,
-        totalComments: true,
-        twitterRegisterDate: true,
-        expertise: true,
-        bio: true,
-        profileUrl: true,
-        mindsharePercent: true,
-        mindshareNum: true,
-        smartFollowersPercent: true,
-        pow: true,
-        poi: true,
-        poe: true,
-        moneyScore: true,
-        verified: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-      orderBy: {
-        kolScore: "desc", // сортировка по весу, если нужно
-      },
-    });
-
-    res.json(influencers);
-  } catch (err) {
-    console.error("Failed to fetch influencers for project:", err);
-    res.status(500).json({ error: "Internal server error" });
+  if (!allowedSortFields[sortField as keyof typeof allowedSortFields]) {
+    return res.status(400).json({ error: `Invalid sortField: ${sortField}` });
   }
+
+  const orderByClause = getSortSql(sortField, sortDirection);
+
+  const data = await prisma.$queryRawUnsafe<any[]>(
+    `
+    SELECT
+    k.id,
+    k."hidden",
+    k."twitterId",
+    k."twitterUsername",
+    k."twitterDisplayName",
+    k."twitterAvatarUrl",
+    k."twitterDescription",
+    k."twitterDescriptionLink",
+    k."twitterFollowersCount",
+    k."twitterFollowingCount",
+    k."twitterIsVerified",
+    k."twitterGoldBadge",
+    k."twitterLang",
+    k."twitterCreatedAt",
+
+    -- main metrics
+    k."kolScore",
+    k."kolScorePercentFromTotal",
+    k."smartFollowersCount",
+    k."threadsCount",
+    k."engagementRate",
+    k."smartEngagement",
+
+    -- average
+    k."avgViews",
+    k."avgLikes",
+
+    -- total
+    k."totalPosts",
+    k."totalViews",
+    k."totalInteractions",
+
+    -- total organic
+    k."totalOrganicPosts",
+    k."totalOrganicViews",
+    k."totalOrganicInteractions",
+
+    -- total account
+    k."totalAccountPosts",
+    k."totalAccountViews",
+    k."totalAccountInteractions",
+    k."totalAccountComments",
+    k."totalAccountLikes",
+    k."totalAccountRetweets",
+    k."totalAccountReplies",
+
+    -- change metrics
+    k."totalPostsChange",
+    k."totalInteractionsChange",
+    k."totalViewsChange",
+    k."followersChange",
+    k."smartEngagementChange",
+    SUM(kp."mindoMetric")   AS "mindoMetric",
+    SUM(kp."proofOfWork")   AS "proofOfWork",
+    SUM(kp."qualityScore")  AS "qualityScore",
+    SUM(kp."totalPosts")    AS "totalPosts",
+    SUM(kp."totalComments") AS "totalComments"
+    FROM "KOL" k
+    JOIN "KOLToProject" kp ON kp."kolId" = k.id
+    WHERE k."hidden" = false
+      AND kp."projectId" = $1
+    GROUP BY k.id
+    ORDER BY ${orderByClause}
+    LIMIT $2 OFFSET $3
+  `,
+    projectId,
+    limit,
+    skip
+  );
+
+  const totalResult = await prisma.$queryRawUnsafe<{ count: number }[]>(
+    `
+    SELECT COUNT(*)::int AS count
+    FROM (
+      SELECT k.id
+      FROM "KOL" k
+      JOIN "KOLToProject" kp ON kp."kolId" = k.id
+      WHERE k."kolScore" > 0 AND k."hidden" = false AND kp."projectId" = $1
+      GROUP BY k.id
+    ) sub
+  `,
+    projectId
+  );
+
+  const total = totalResult[0]?.count || 0;
+
+  sendJson(res, {
+    data,
+    total,
+    page,
+    limit,
+  });
 };
 
 export const createProtokolsProject = async (req: Request, res: Response) => {
   try {
-    const project = await prisma.protokolsProject.create({ data: req.body });
+    const project = await prisma.project.create({ data: req.body });
     res.status(201).json(project);
   } catch (e: any) {
     res.status(400).json({ error: e.message });
@@ -384,14 +449,14 @@ export const createProtokolsProject = async (req: Request, res: Response) => {
 export const updateProtokolsProject = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    const project = await prisma.protokolsProject.update({
+    const project = await prisma.project.update({
       where: { id },
       data: req.body,
       include: {
         rewardPools: true,
       },
     });
-    res.json(project);
+    sendJson(res, project);
   } catch (e: any) {
     res.status(400).json({ error: e.message });
   }
@@ -400,15 +465,15 @@ export const updateProtokolsProject = async (req: Request, res: Response) => {
 export const deleteProtokolsProject = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  await prisma.narrativeToProtokolsProject.deleteMany({
-    where: { protokolsProjectId: id },
+  await prisma.projectToNarrative.deleteMany({
+    where: { projectId: id },
   });
 
   await prisma.rewardPool.deleteMany({
     where: { projectId: id },
   });
 
-  await prisma.protokolsProject.delete({
+  await prisma.project.delete({
     where: { id },
   });
 

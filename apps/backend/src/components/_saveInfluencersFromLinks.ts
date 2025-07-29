@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import fs from "fs/promises";
+import { users } from "./_users";
 import { getAndSaveInfluencer } from "./getAndSaveInfluencer";
-import { users } from "./users";
 
 const prisma = new PrismaClient();
 

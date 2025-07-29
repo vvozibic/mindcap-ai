@@ -8,12 +8,13 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 import path from "path";
 import { authRoutes } from "./routes/auth";
 import { influencerRoutes } from "./routes/influencers";
-import { mentionRoutes } from "./routes/mentions";
 import narrativesRoutes from "./routes/narratives";
 import { projectRoutes, protokolsProjectRoutes } from "./routes/projects";
 import rewardPoolRoutes from "./routes/rewardPool";
 import { usersRoutes } from "./routes/users";
 import { queuePageVisit } from "./utils/visits";
+
+import "./cron/index"; // Import cron jobs to ensure they run
 
 dotenv.config();
 
@@ -27,10 +28,34 @@ app.use("/api/auth", authRoutes);
 app.use("/api/influencers", influencerRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/p-projects", protokolsProjectRoutes);
-app.use("/api/mentions", mentionRoutes);
+// app.use("/api/mentions", mentionRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/narratives", narrativesRoutes);
 app.use("/api/reward-pools", rewardPoolRoutes);
+
+const ALLOWED_ORIGINS = [
+  "https://mindoshare.ai/",
+  "https://mindoshare.up.railway.app/",
+];
+
+app.get("/config", (req, res) => {
+  const origin = req.headers.origin;
+
+  if (isDev) {
+    return res.status(200).json({
+      walletConnectProjectId: process.env.WALLETCONNECT_PROJECT_ID,
+    });
+  }
+
+  if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
+    console.warn(`❌ Unauthorized config request from ${origin}`);
+    return res.status(403).json({ error: "Forbidden" });
+  }
+
+  res.json({
+    walletConnectProjectId: process.env.WALLETCONNECT_PROJECT_ID,
+  });
+});
 
 if (isDev) {
   app.use(
@@ -86,6 +111,9 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+console.log("process.env.PORT =", process.env.PORT);
+console.log("Resolved PORT =", PORT);
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Listening on ${PORT}`);

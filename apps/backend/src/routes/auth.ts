@@ -1,9 +1,10 @@
 import express from "express";
 
+import { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
 import fetch from "node-fetch";
 import querystring from "querystring";
-import { enrichInfluencer } from "../components/kols/enrichInfluencer";
+import { updateKOLByUsername } from "../components/kols/updateKOLByUsername";
 import { enrichUser } from "../components/users/enrichUser";
 import {
   adminLogin,
@@ -13,6 +14,8 @@ import {
 } from "../controllers/auth";
 import { authenticateToken } from "../middleware/auth";
 import { authTwitter } from "../middleware/authTwitter";
+
+const prisma = new PrismaClient();
 
 const authRoutes = express.Router();
 
@@ -36,7 +39,7 @@ const clientId = process.env.TWITTER_CLIENT_ID!;
 const clientSecret = process.env.TWITTER_CLIENT_SECRET!;
 const redirectUri = process.env.TWITTER_REDIRECT_URI!;
 
-const state = crypto.randomBytes(16).toString("hex");
+// ✅ Генерируем code_verifier/challenge для PKCE
 const codeVerifier = crypto.randomBytes(32).toString("hex");
 const codeChallenge = crypto
   .createHash("sha256")
@@ -45,6 +48,15 @@ const codeChallenge = crypto
 
 // Step 1: Redirect to Twitter
 authRoutes.get("/twitter", (req, res) => {
+  // ✅ Генерируем уникальный state для каждого запроса
+  const ref = req.query.ref as string | undefined; // если пришёл ?ref=abcd
+  const statePayload = {
+    nonce: crypto.randomBytes(16).toString("hex"),
+    ref: ref || null,
+  };
+  const state = Buffer.from(JSON.stringify(statePayload)).toString("base64url");
+
+  // ✅ Собираем OAuth URL
   const query = querystring.stringify({
     response_type: "code",
     client_id: clientId,
@@ -107,9 +119,30 @@ authRoutes.get("/callback/twitter", async (req, res) => {
 
   console.log("Twitter auth callback userData", userData);
 
-  enrichUser(userData?.data?.username).catch(console.error);
-  enrichInfluencer(userData?.data?.username).catch(console.error);
+  const stateParam = req.query.state as string;
+  let referralCodeFromState: string | null = null;
 
+  try {
+    const decoded = JSON.parse(Buffer.from(stateParam, "base64url").toString());
+    referralCodeFromState = decoded.ref;
+  } catch (err) {
+    console.warn("Failed to parse OAuth state", err);
+  }
+
+  await enrichUser(
+    userData?.data?.username,
+    false,
+    referralCodeFromState
+  ).catch(console.error);
+  updateKOLByUsername(userData?.data?.username).catch(console.error);
+
+  // Удаляем куки с реферальным кодом
+  res.setHeader(
+    "Set-Cookie",
+    "referral_code=; Max-Age=0; Path=/; HttpOnly; SameSite=Strict"
+  );
+
+  // Устанавливаем куки для токена и пользователя
   res.cookie("twitter_token", data?.access_token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

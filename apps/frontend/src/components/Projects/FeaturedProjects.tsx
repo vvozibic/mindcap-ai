@@ -1,13 +1,13 @@
 import { useEffect, useRef } from "react";
-import { ProtokolsProject } from "../../types";
+import { Project } from "../../types";
 import { Skeleton } from "../Skeleton";
 
 export const FeaturedProjects = ({
   projects,
   handleOpenProject,
 }: {
-  projects: ProtokolsProject[];
-  handleOpenProject: (p: ProtokolsProject, tab?: "overview" | "pools") => void;
+  projects: Project[];
+  handleOpenProject: (p: Project, tab?: "overview" | "pools") => void;
 }) => {
   const topRef = useRef(null);
   const rightRef = useRef(null);
@@ -25,21 +25,17 @@ export const FeaturedProjects = ({
       const leftY = Math.cos(now * speed + Math.PI) * 100;
 
       if (topRef.current)
-        (
-          topRef.current as HTMLDivElement
-        ).style.transform = `translateX(${topX}%)`;
+        (topRef.current as HTMLDivElement).style.transform =
+          `translateX(${topX}%)`;
       if (rightRef.current)
-        (
-          rightRef.current as HTMLDivElement
-        ).style.transform = `translateY(${rightY}%)`;
+        (rightRef.current as HTMLDivElement).style.transform =
+          `translateY(${rightY}%)`;
       if (bottomRef.current)
-        (
-          bottomRef.current as HTMLDivElement
-        ).style.transform = `translateX(${bottomX}%)`;
+        (bottomRef.current as HTMLDivElement).style.transform =
+          `translateX(${bottomX}%)`;
       if (leftRef.current)
-        (
-          leftRef.current as HTMLDivElement
-        ).style.transform = `translateY(${leftY}%)`;
+        (leftRef.current as HTMLDivElement).style.transform =
+          `translateY(${leftY}%)`;
 
       requestAnimationFrame(animateBorder);
     };
@@ -112,13 +108,13 @@ export const FeaturedProjects = ({
                     <div className="w-10 h-10 rounded-full bg-accent-500/10 flex items-center justify-center mr-3">
                       <img
                         className="h-10 w-10 rounded-full"
-                        src={project.avatarUrl || ""}
-                        alt={project.name}
+                        src={project.twitterAvatarUrl || ""}
+                        alt={project.twitterUsername}
                       />
                     </div>
                     <div>
                       <h3 className="font-medium text-white text-left">
-                        {project.name}
+                        {project.twitterDisplayName}
                       </h3>
                       <p className="text-sm text-text-muted text-left">
                         {project.stage}
@@ -126,7 +122,7 @@ export const FeaturedProjects = ({
                     </div>
                   </div>
                   <p className="text-sm text-text-muted text-left mt-2">
-                    {project.description}
+                    {project.twitterDescription}
                   </p>
                   {totalRewardPercent > 0 && (
                     <div className="flex items-center justify-between border-t border-primary-700 pt-3">

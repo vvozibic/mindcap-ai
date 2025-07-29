@@ -1,25 +1,22 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { X } from "lucide-react";
 import React, { Fragment } from "react";
-import { Influencer } from "../../types";
-import InfluencerDetails from "./InfluencerDetails";
-import { getInfluencerDetailData } from "./utils";
+import { KOL } from "../../types";
+import KOLDetails from "./KOLDetails";
 
-interface InfluencerDetailOverlayProps {
+interface KOLDetailOverlayProps {
   isOpen: boolean;
   onClose: () => void;
-  influencer: Influencer | null;
-  allInfluencers: Influencer[];
+  kol: KOL | null;
+  allKOLs: KOL[];
 }
 
-const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
+const KOLDetailOverlay: React.FC<KOLDetailOverlayProps> = ({
   isOpen,
   onClose,
-  influencer,
+  kol,
 }) => {
-  const detailData = getInfluencerDetailData(influencer);
-
-  if (!influencer || !detailData) return null;
+  if (!kol) return null;
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -59,7 +56,7 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
                   </button>
                 </div>
 
-                <InfluencerDetails influencer={influencer} />
+                <KOLDetails kol={kol} />
               </Dialog.Panel>
             </Transition.Child>
           </div>
@@ -69,4 +66,4 @@ const InfluencerDetailOverlay: React.FC<InfluencerDetailOverlayProps> = ({
   );
 };
 
-export default InfluencerDetailOverlay;
+export default KOLDetailOverlay;

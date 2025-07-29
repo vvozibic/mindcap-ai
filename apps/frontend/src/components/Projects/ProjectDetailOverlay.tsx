@@ -1,14 +1,14 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { X } from "lucide-react";
 import React, { Fragment, useEffect, useState } from "react";
-import { Influencer, ProtokolsProject, RewardPool } from "../../types";
+import { KOL, Project, RewardPool } from "../../types";
 import { daysBetween } from "../../utils/daysBetween";
 import ProjectDetails from "./ProjectDetails";
 
 interface ProjectDetailOverlayProps {
   isOpen: boolean;
   onClose: () => void;
-  project: ProtokolsProject | null;
+  project: Project | null;
   activeTab: "overview" | "pools";
   setActiveTab: (t: "overview" | "pools") => void;
   isAuthenticated: boolean;
@@ -29,7 +29,7 @@ type SortField =
   | "kolScore";
 
 export function useProjectInfluencers(projectId: string | null | undefined) {
-  const [influencers, setInfluencers] = useState<Influencer[]>([]);
+  const [influencers, setInfluencers] = useState<KOL[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<null | string>(null);
 
@@ -72,13 +72,26 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
 
   if (!project) return null;
 
-  const projectPools = project.rewardPools || [];
-  const topKOLs = influencers.map((i) => ({
-    ...i,
-    postingFrequency: Number(
-      i?.tweetsCountNumeric / daysBetween(i.twitterRegisterDate, new Date())
-    )?.toFixed(0),
-  }));
+  const projectPools = project?.rewardPools || [];
+
+  const topKOLs = influencers.map((i) => {
+    const realPostingFrequency = Number(
+      (i?.totalPosts || 0) / daysBetween(i.twitterCreatedAt, new Date())
+    );
+
+    console.log(i.twitterDisplayName, realPostingFrequency);
+
+    const postingFrequency =
+      realPostingFrequency > 0 && realPostingFrequency < 1
+        ? 1
+        : Math.round(realPostingFrequency)?.toFixed(0);
+
+    return {
+      ...i,
+      mindshare: i?.kolScorePercentFromTotal?.toFixed(2),
+      postingFrequency: postingFrequency,
+    };
+  });
 
   const handlePoolSelect = (pool: RewardPool) => {
     setSelectedPool(pool);

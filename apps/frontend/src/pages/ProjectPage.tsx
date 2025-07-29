@@ -3,7 +3,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import ProjectDetails from "../components/Projects/ProjectDetails";
 import { Skeleton } from "../components/Skeleton";
 import { TableSkeleton } from "../components/TableSkeleton";
-import { Influencer, ProtokolsProject, RewardPool } from "../types";
+import { KOL, Project, RewardPool } from "../types";
 import { daysBetween } from "../utils/daysBetween";
 
 const fetchProject = async ({ slug }: { slug: string }) => {
@@ -13,7 +13,7 @@ const fetchProject = async ({ slug }: { slug: string }) => {
 };
 
 export function useProjectInfluencers(projectId: string | null | undefined) {
-  const [influencers, setInfluencers] = useState<Influencer[]>([]);
+  const [influencers, setInfluencers] = useState<KOL[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<null | string>(null);
 
@@ -28,7 +28,7 @@ export function useProjectInfluencers(projectId: string | null | undefined) {
         if (!res.ok) throw new Error("Failed to load influencers");
         return res.json();
       })
-      .then(setInfluencers)
+      .then(({ data }) => setInfluencers(data))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [projectId]);
@@ -41,7 +41,7 @@ const ProjectPage = () => {
   const [params] = useSearchParams();
   const initialTab = (params.get("tab") || "overview") as "pools" | "overview";
 
-  const [project, setProject] = useState<ProtokolsProject | null>(null);
+  const [project, setProject] = useState<Project | null>(null);
   const [activeOverlayTab, setActiveOverlayTab] = useState<
     "overview" | "pools"
   >(initialTab);
@@ -74,6 +74,8 @@ const ProjectPage = () => {
 
   const { influencers } = useProjectInfluencers(project?.id);
 
+  console.log(influencers);
+
   if (!project)
     return (
       <div className="max-w-7xl py-6 px-4 sm:px-6 mx-auto mt-[50px] relative z-10 overflow-hidden rounded-xl border border-primary-700/40 bg-primary-800/30 backdrop-blur-sm shadow-[inset_0_0_0_1px_rgba(0,255,174,0.05),0_8px_20px_rgba(0,255,174,0.05)]">
@@ -82,12 +84,27 @@ const ProjectPage = () => {
     );
 
   const projectPools = project.rewardPools || [];
-  const topKOLs = influencers.map((i) => ({
-    ...i,
-    postingFrequency: Number(
-      i?.tweetsCountNumeric / daysBetween(i.twitterRegisterDate, new Date())
-    )?.toFixed(0),
-  }));
+
+  const topKOLs = influencers
+    .map((i) => {
+      const realPostingFrequency = Number(
+        (i?.totalPosts || 0) / daysBetween(i.twitterCreatedAt, new Date())
+      );
+
+      const postingFrequency =
+        realPostingFrequency > 0 && realPostingFrequency < 1
+          ? "1"
+          : Math.round(realPostingFrequency)?.toFixed(0);
+
+      return {
+        ...i,
+        // mindshare: i?.kolScorePercentFromTotal?.toFixed(2),
+        postingFrequency: postingFrequency,
+      };
+    })
+    .sort((a, b) => {
+      return b.mindoMetric - a.mindoMetric;
+    });
 
   const handlePoolSelect = (pool: RewardPool) => {
     setSelectedPool(pool);

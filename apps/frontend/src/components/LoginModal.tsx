@@ -1,6 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { X } from "lucide-react";
 import React, { Fragment, useState } from "react";
+import { getReferralCode } from "../hooks/useReferral";
 import XLogo from "./XLogo";
 
 interface LoginModalProps {
@@ -37,12 +38,12 @@ const LoginModal: React.FC<LoginModalProps> = ({
 
   const handleTwitterLogin = async () => {
     setLoading(true);
+
     const res = await fetch("/api/auth/login/twitter", {
       method: "POST",
-      body: JSON.stringify({ twitterHandle }),
+      body: JSON.stringify({ ref }),
       headers: { "Content-Type": "application/json" },
     });
-    localStorage.setItem("user", twitterHandle);
     const data = await res.json();
     setLoading(false);
     onLogin(data.user);
@@ -54,6 +55,8 @@ const LoginModal: React.FC<LoginModalProps> = ({
     setEmail("");
     setTwitterHandle("");
   };
+
+  const ref = getReferralCode();
 
   const renderContent = () => {
     if (step === "method") {
@@ -67,7 +70,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
             Continue with Email
           </button> */}
 
-          <a href="/api/auth/twitter">
+          <a href={ref ? `/api/auth/twitter?ref=${ref}` : `/api/auth/twitter`}>
             <button className="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary-900 bg-accent-500 hover:bg-accent-600">
               Login with <XLogo className="h-4 w-4 ml-1" />
             </button>
@@ -172,8 +175,8 @@ const LoginModal: React.FC<LoginModalProps> = ({
                   {step === "method"
                     ? "Sign in to MindoAI"
                     : step === "email"
-                    ? "Enter your Email"
-                    : "Enter your Twitter Handle"}
+                      ? "Enter your Email"
+                      : "Enter your Twitter Handle"}
                 </Dialog.Title>
 
                 <div className="mt-2 text-sm text-gray-400 text-center">

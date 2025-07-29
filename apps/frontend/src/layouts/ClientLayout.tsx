@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import LoginModal from "../components/LoginModal";
 import Navbar from "../components/Navbar";
+import { useReferralTracker } from "../hooks/useReferral";
 import ForBusinessPage from "../pages/ForBusinessPage";
 import HomePage from "../pages/HomePage";
 import ProjectPage from "../pages/ProjectPage";
@@ -29,6 +30,8 @@ function ClientLayout() {
       })
       .catch(() => setUser({ isAuthenticated: false }));
   }, []);
+
+  useReferralTracker();
 
   const handleLogin = (user: User) => {
     setUser({ ...user, isAuthenticated: true });

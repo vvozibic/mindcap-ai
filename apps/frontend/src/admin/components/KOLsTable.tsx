@@ -1,11 +1,11 @@
 import { Edit, Plus, RefreshCw, Trash2, User } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { Influencer } from "../../types";
+import { KOL } from "../../types";
 import KOLForm from "./KOLForm";
 import { TableSkeleton } from "./TableSkeleton";
 
 const KOLsTable: React.FC = () => {
-  const [kols, setKols] = useState<Influencer[]>([]);
+  const [kols, setKols] = useState<KOL[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [currentKOLId, setCurrentKOLId] = useState<string | null>(null);
   const [enrichInProgress, setEnrichInProgress] = useState("");
@@ -88,18 +88,18 @@ const KOLsTable: React.FC = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Influencer
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Platform
-              </th>
+              </th> */}
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Handle
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Followers
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Expertise
-              </th>
+              </th> */}
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
@@ -107,16 +107,16 @@ const KOLsTable: React.FC = () => {
           </thead>
 
           <tbody className="bg-white divide-y divide-gray-200">
-            {kols.map((kol) => (
+            {kols.slice(0, 20).map((kol) => (
               <tr key={kol.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <div className="flex-shrink-0 h-10 w-10">
-                      {kol?.avatarUrl || "" ? (
+                      {kol?.twitterAvatarUrl || "" ? (
                         <img
                           className="h-10 w-10 rounded-full object-cover"
-                          src={kol.avatarUrl || ""}
-                          alt={kol.name}
+                          src={kol.twitterAvatarUrl || ""}
+                          alt={kol.twitterUsername}
                         />
                       ) : (
                         <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
@@ -126,32 +126,37 @@ const KOLsTable: React.FC = () => {
                     </div>
                     <div className="ml-4">
                       <div className="text-sm font-medium text-gray-900">
-                        {kol.name}
+                        {kol.twitterDisplayName}
                       </div>
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                {/* <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-500">{kol.platform}</div>
+                </td> */}
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-indigo-600">
+                    {kol.twitterDisplayName}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-indigo-600">{kol.name}</div>
+                  <div className="text-sm text-gray-500">
+                    {kol.twitterFollowersCount}
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">{kol.followers}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                {/* <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-500">{kol.expertise}</div>
-                </td>
+                </td> */}
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button
                     title="Enrich infl from APIs"
-                    onClick={() => handleEnrich(kol.username)}
+                    onClick={() => handleEnrich(kol.twitterUsername)}
                     className="text-indigo-600 hover:text-indigo-900 mr-3"
                   >
                     <RefreshCw
                       className={`h-5 w-5 ${
-                        enrichInProgress === kol.username && "animate-spin"
+                        enrichInProgress === kol.twitterUsername &&
+                        "animate-spin"
                       } ${enrichInProgress && "cursor-not-allowed"}`}
                     />
                   </button>
