@@ -33,6 +33,30 @@ app.use("/api/users", usersRoutes);
 app.use("/api/narratives", narrativesRoutes);
 app.use("/api/reward-pools", rewardPoolRoutes);
 
+const ALLOWED_ORIGINS = [
+  "https://mindoshare.ai/",
+  "https://mindoshare.up.railway.app/",
+];
+
+app.get("/config", (req, res) => {
+  const origin = req.headers.origin;
+
+  if (isDev) {
+    return res.status(200).json({
+      walletConnectProjectId: process.env.WALLETCONNECT_PROJECT_ID,
+    });
+  }
+
+  if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
+    console.warn(`❌ Unauthorized config request from ${origin}`);
+    return res.status(403).json({ error: "Forbidden" });
+  }
+
+  res.json({
+    walletConnectProjectId: process.env.WALLETCONNECT_PROJECT_ID,
+  });
+});
+
 if (isDev) {
   app.use(
     "/api",

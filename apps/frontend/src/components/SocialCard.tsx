@@ -18,6 +18,8 @@ import { getKOLDetailData } from "./KOL/utils";
 import { Skeleton } from "./Skeleton";
 import XLogo from "./XLogo";
 
+// import { useWalletKit } from "../hooks/useMultiChainWallet";
+
 interface SocialCardProps {
   user: User;
   onLogin: () => void;
@@ -43,6 +45,8 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
   const [copied, setCopied] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const referralLink = `${window.location.origin}/?ref=${user.referralCode}`;
+
+  // const { accounts, isConnected, connect, disconnect } = useWalletKit();
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(referralLink);
@@ -242,14 +246,15 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
               </h3>
             </div>
 
+            {/* <WalletManager /> */}
+
             <p className="text-gray-400 mb-6 flex-grow">
               Connect your wallet to unlock exclusive rewards and track your
               achievements.
             </p>
-
             <button
-              onClick={handleConnectWallet}
-              className="w-full disabled bg-accent-500 hover:bg-accent-600 text-black py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-colors mt-auto"
+              // onClick={connect}
+              className="w-full bg-accent-500 hover:bg-accent-600 text-black py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-colors mt-auto"
             >
               <Wallet className="h-5 w-5 mr-2" />
               Connect Wallet Soon
