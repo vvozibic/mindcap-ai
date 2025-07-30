@@ -100,6 +100,7 @@ export interface User {
   updatedAt?: string; // ISO string
   isAuthenticated?: boolean;
   referralCode?: string;
+  referrals?: User[];
   onboardingStep?: number;
   completedTasks?: number;
   earnedPoints?: number;

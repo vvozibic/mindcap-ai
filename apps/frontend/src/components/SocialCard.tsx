@@ -117,7 +117,9 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
                   REFERRALS
                 </span>
               </div>
-              <p className="text-3xl font-bold text-white">0</p>
+              <p className="text-3xl font-bold text-white">
+                {user?.referrals?.length}
+              </p>
             </div>
 
             {/* Earned Points */}
