@@ -16,6 +16,7 @@ import { KOL, User } from "../types";
 import InfluencerDetails from "./KOL/KOLDetails";
 import { getKOLDetailData } from "./KOL/utils";
 import { Skeleton } from "./Skeleton";
+import { WalletButton } from "./WalletManager";
 import XLogo from "./XLogo";
 
 // import { useWalletKit } from "../hooks/useMultiChainWallet";
@@ -248,19 +249,12 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
               </h3>
             </div>
 
-            {/* <WalletManager /> */}
-
             <p className="text-gray-400 mb-6 flex-grow">
               Connect your wallet to unlock exclusive rewards and track your
               achievements.
             </p>
-            <button
-              // onClick={connect}
-              className="w-full bg-accent-500 hover:bg-accent-600 text-black py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-colors mt-auto"
-            >
-              <Wallet className="h-5 w-5 mr-2" />
-              Connect Wallet Soon
-            </button>
+
+            <WalletButton user={user} />
           </div>
         </div>
       </div>

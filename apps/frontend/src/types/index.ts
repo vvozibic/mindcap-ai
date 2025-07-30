@@ -103,7 +103,20 @@ export interface User {
   referrals?: User[];
   onboardingStep?: number;
   completedTasks?: number;
+  primaryWallet?: Wallet;
   earnedPoints?: number;
+}
+
+export interface Wallet {
+  address: string;
+  chain: string;
+  createdAt: string;
+  explorer: string;
+  id: number;
+  label: string;
+  symbol: string;
+  userId: number;
+  verified: Boolean;
 }
 
 export type Narrative = {

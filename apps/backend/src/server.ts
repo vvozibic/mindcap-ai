@@ -15,6 +15,7 @@ import { usersRoutes } from "./routes/users";
 import { queuePageVisit } from "./utils/visits";
 
 import "./cron/index"; // Import cron jobs to ensure they run
+import walletRoutes from "./routes/wallets";
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ app.use("/api/p-projects", protokolsProjectRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/narratives", narrativesRoutes);
 app.use("/api/reward-pools", rewardPoolRoutes);
+app.use("/api/wallets", walletRoutes);
 
 const ALLOWED_ORIGINS = [
   "https://mindoshare.ai/",

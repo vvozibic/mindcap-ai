@@ -1,30 +1,93 @@
 import { EthereumProvider } from "@walletconnect/ethereum-provider";
 import UniversalProvider from "@walletconnect/universal-provider";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { User } from "../types";
 
-type ChainType = "ethereum" | "bnb" | "arbitrum" | "solana";
+/* prettier-ignore */
+export const EVM_CHAINS_FULL = [
+  { id: 1, name: "Ethereum", symbol: "ETH", rpcUrl: "https://rpc.ankr.com/eth", explorer: "https://etherscan.io" },
+  { id: 56, name: "BNB Chain", symbol: "BNB", rpcUrl: "https://rpc.ankr.com/bsc", explorer: "https://bscscan.com" },
+  { id: 137, name: "Polygon", symbol: "MATIC", rpcUrl: "https://rpc.ankr.com/polygon", explorer: "https://polygonscan.com" },
+  { id: 42161, name: "Arbitrum", symbol: "ARB", rpcUrl: "https://arb1.arbitrum.io/rpc", explorer: "https://arbiscan.io" },
+  { id: 10, name: "Optimism", symbol: "OP", rpcUrl: "https://mainnet.optimism.io", explorer: "https://optimistic.etherscan.io" },
+  { id: 43114, name: "Avalanche", symbol: "AVAX", rpcUrl: "https://api.avax.network/ext/bc/C/rpc", explorer: "https://snowtrace.io" },
+  { id: 250, name: "Fantom", symbol: "FTM", rpcUrl: "https://rpc.ankr.com/fantom", explorer: "https://ftmscan.com" },
+  { id: 100, name: "Gnosis", symbol: "xDAI", rpcUrl: "https://rpc.gnosischain.com", explorer: "https://gnosisscan.io" },
+  { id: 25, name: "Cronos", symbol: "CRO", rpcUrl: "https://evm.cronos.org", explorer: "https://cronoscan.com" },
+  { id: 324, name: "zkSync Era", symbol: "ETH", rpcUrl: "https://mainnet.era.zksync.io", explorer: "https://explorer.zksync.io" },
+  { id: 8453, name: "Base", symbol: "ETH", rpcUrl: "https://mainnet.base.org", explorer: "https://basescan.org" },
+  { id: 5000, name: "Mantle", symbol: "MNT", rpcUrl: "https://rpc.mantle.xyz", explorer: "https://mantlescan.xyz" },
+  { id: 534352, name: "Scroll", symbol: "ETH", rpcUrl: "https://rpc.scroll.io", explorer: "https://scrollscan.com" },
+  { id: 1284, name: "Moonbeam", symbol: "GLMR", rpcUrl: "https://rpc.api.moonbeam.network", explorer: "https://moonscan.io" },
+  { id: 1285, name: "Moonriver", symbol: "MOVR", rpcUrl: "https://rpc.api.moonriver.moonbeam.network", explorer: "https://moonriver.moonscan.io" },
+  { id: 2222, name: "Kava EVM", symbol: "KAVA", rpcUrl: "https://evm.kava.io", explorer: "https://kavascan.com" },
+  { id: 42220, name: "Celo", symbol: "CELO", rpcUrl: "https://forno.celo.org", explorer: "https://celoscan.io" },
+  { id: 9001, name: "Evmos", symbol: "EVMOS", rpcUrl: "https://evmos-evm.publicnode.com", explorer: "https://evmosscan.io" },
+  { id: 204, name: "opBNB", symbol: "BNB", rpcUrl: "https://opbnb-mainnet-rpc.bnbchain.org", explorer: "https://opbnbscan.com" },
+  { id: 40, name: "Telos", symbol: "TLOS", rpcUrl: "https://mainnet.telos.net/evm", explorer: "https://teloscan.io" },
+  { id: 66, name: "OKT Chain", symbol: "OKT", rpcUrl: "https://exchainrpc.okex.org", explorer: "https://www.oklink.com/en/okc" }
+];
 
-const EVM_CHAINS = {
-  ethereum: 1,
-  bnb: 56,
-  arbitrum: 42161,
-};
+const chainIds = EVM_CHAINS_FULL.map((c) => c.id);
 
-export function useMultiChainWallet() {
+export function useMultiChainWallet(user?: User) {
   const [addresses, setAddresses] = useState<string[]>([]);
-  const [network, setNetwork] = useState<ChainType | null>(null);
+  const [network, setNetwork] = useState<string | null>(null);
 
-  let evmProvider: EthereumProvider | null = null;
-  let solanaProvider: any = null;
+  useEffect(() => {
+    if (user?.primaryWallet?.address) {
+      setAddresses([user.primaryWallet.address]);
+    }
+  }, [user]);
 
-  // 🔹 Универсальный connect
-  const connect = useCallback(async (chain: ChainType) => {
+  // @ts-ignore
+  const evmProviderRef = useRef<EthereumProvider | null>(null);
+  const solanaProviderRef = useRef<any>(null);
+
+  const connect = useCallback(async () => {
     const { walletConnectProjectId } = await fetch("/config").then((r) =>
       r.json()
     );
 
-    if (chain === "solana") {
-      solanaProvider = await UniversalProvider.init({
+    try {
+      // @ts-ignore
+      const evm = await EthereumProvider.init({
+        projectId: walletConnectProjectId,
+        chains: chainIds,
+        showQrModal: true,
+      });
+
+      await evm.enable();
+      evmProviderRef.current = evm;
+
+      const addr = evm.accounts?.[0];
+      setAddresses(evm.accounts || []);
+      setNetwork(`eip155:${evm.chainId}`);
+
+      if (addr) {
+        const chainInfo = EVM_CHAINS_FULL.find((c) => c.id === evm.chainId);
+
+        await fetch("/api/wallets/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: user?.username,
+            address: addr,
+            chain: `eip155:${evm.chainId}`,
+            label: chainInfo?.name,
+            symbol: chainInfo?.symbol,
+            explorer: chainInfo?.explorer,
+          }),
+        });
+      }
+      return;
+    } catch (err) {
+      console.warn("⚠️ EVM connect failed", err);
+    }
+
+    // Solana fallback
+    try {
+      const solana = await UniversalProvider.init({
         projectId: walletConnectProjectId,
         metadata: {
           name: "Mindoshare",
@@ -34,7 +97,7 @@ export function useMultiChainWallet() {
         },
       });
 
-      await solanaProvider.connect({
+      await solana.connect({
         namespaces: {
           solana: {
             methods: ["solana_signTransaction", "solana_signMessage"],
@@ -44,28 +107,49 @@ export function useMultiChainWallet() {
         },
       });
 
-      setAddresses(solanaProvider.accounts || []);
-      setNetwork("solana");
-    } else {
-      evmProvider = await EthereumProvider.init({
-        projectId: walletConnectProjectId,
-        chains: [1, 56, 42161],
-        showQrModal: true,
-      });
+      solanaProviderRef.current = solana;
+      const addr = solana.accounts?.[0];
 
-      await evmProvider.enable();
-      setAddresses(evmProvider.accounts || []);
-      setNetwork(chain);
+      setAddresses(solana.accounts || []);
+      setNetwork("solana:mainnet");
+
+      if (addr) {
+        await fetch("/api/wallets/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: user?.username,
+            address: addr,
+            chain: "solana:mainnet",
+          }),
+        });
+      }
+    } catch (err) {
+      console.error("❌ Solana connect failed", err);
     }
-  }, []);
+  }, [user?.username]);
 
-  // 🔹 Disconnect
   const disconnect = useCallback(async () => {
-    if (evmProvider) await evmProvider.disconnect();
-    if (solanaProvider) await solanaProvider.disconnect();
+    const addr = addresses[0];
+    if (evmProviderRef.current) await evmProviderRef.current.disconnect();
+    if (solanaProviderRef.current) await solanaProviderRef.current.disconnect();
+
+    // ✅ Чистим localStorage WalletConnect
+    Object.keys(localStorage)
+      .filter((key) => key.startsWith("@appkit/"))
+      .forEach((key) => localStorage.removeItem(key));
+
     setAddresses([]);
     setNetwork(null);
-  }, []);
+
+    if (addr) {
+      await fetch("/api/wallets/remove", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: user?.username, address: addr }),
+      });
+    }
+  }, [addresses, user?.username]);
 
   return { addresses, network, connect, disconnect };
 }
