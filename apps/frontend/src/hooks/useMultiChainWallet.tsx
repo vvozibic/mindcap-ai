@@ -33,6 +33,7 @@ const chainIds = EVM_CHAINS_FULL.map((c) => c.id);
 export function useMultiChainWallet(user?: User) {
   const [addresses, setAddresses] = useState<string[]>([]);
   const [network, setNetwork] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (user?.primaryWallet?.address) {
@@ -58,6 +59,7 @@ export function useMultiChainWallet(user?: User) {
       });
 
       await evm.enable();
+
       evmProviderRef.current = evm;
 
       const addr = evm.accounts?.[0];
@@ -66,6 +68,7 @@ export function useMultiChainWallet(user?: User) {
 
       if (addr) {
         const chainInfo = EVM_CHAINS_FULL.find((c) => c.id === evm.chainId);
+        setLoading(true);
 
         await fetch("/api/wallets/add", {
           method: "POST",
@@ -80,6 +83,7 @@ export function useMultiChainWallet(user?: User) {
           }),
         });
       }
+
       return;
     } catch (err) {
       console.warn("⚠️ EVM connect failed", err);
@@ -114,6 +118,7 @@ export function useMultiChainWallet(user?: User) {
       setNetwork("solana:mainnet");
 
       if (addr) {
+        setLoading(true);
         await fetch("/api/wallets/add", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -123,9 +128,11 @@ export function useMultiChainWallet(user?: User) {
             chain: "solana:mainnet",
           }),
         });
+        setLoading(false);
       }
     } catch (err) {
       console.error("❌ Solana connect failed", err);
+      setLoading(false);
     }
   }, [user?.username]);
 
@@ -143,13 +150,15 @@ export function useMultiChainWallet(user?: User) {
     setNetwork(null);
 
     if (addr) {
+      setLoading(true);
       await fetch("/api/wallets/remove", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: user?.username, address: addr }),
       });
+      setLoading(false);
     }
   }, [addresses, user?.username]);
 
-  return { addresses, network, connect, disconnect };
+  return { addresses, network, connect, loading, disconnect };
 }

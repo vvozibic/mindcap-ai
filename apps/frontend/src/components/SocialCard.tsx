@@ -1,6 +1,5 @@
 import {
   Award,
-  CheckCircle,
   CheckIcon,
   ExternalLink,
   Gift,
@@ -109,7 +108,7 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
       <div className="mx-auto space-y-8 mb-8">
         <div className="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-gray-800">
           {/* Referral Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Referrals Count */}
             <div className="bg-black/30 rounded-lg p-4 border border-gray-800">
               <div className="flex items-center mb-2">
@@ -156,11 +155,11 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
                   Wallet score
                 </span>
               </div>
-              <p className="text-3xl font-bold text-white">0</p>
+              <p className="text-3xl font-bold text-white">Soon</p>
             </div>
 
             {/* Completed Tasks */}
-            <div className="bg-black/30 rounded-lg p-4 border border-gray-800">
+            {/* <div className="bg-black/30 rounded-lg p-4 border border-gray-800">
               <div className="flex items-center mb-2">
                 <CheckCircle className="h-5 w-5 text-accent-500 mr-2" />
                 <span className="text-sm font-medium text-gray-400">
@@ -170,7 +169,7 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
               <p className="text-3xl font-bold text-white">
                 {user.completedTasks}
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
 
