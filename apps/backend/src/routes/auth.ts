@@ -157,7 +157,7 @@ authRoutes.get("/callback/twitter", async (req, res) => {
     });
   }
 
-  res.redirect("/");
+  res.redirect("/social-card");
 });
 
 authRoutes.post("/logout", (req, res) => {
