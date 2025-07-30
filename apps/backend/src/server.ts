@@ -35,15 +35,10 @@ app.use("/api/narratives", narrativesRoutes);
 app.use("/api/reward-pools", rewardPoolRoutes);
 app.use("/api/wallets", walletRoutes);
 
-const ALLOWED_ORIGINS = [
-  "https://mindoshare.ai/",
-  "https://mindoshare.up.railway.app/",
-];
+const ALLOWED_ORIGINS = ["mindoshare.ai", "mindoshare.up.railway.app"];
 
 app.get("/config", (req, res) => {
-  const origin = req.headers.origin;
-
-  console.log(origin, req.headers);
+  const host = req.headers.host;
 
   if (isDev) {
     return res.status(200).json({
@@ -51,8 +46,8 @@ app.get("/config", (req, res) => {
     });
   }
 
-  if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
-    console.warn(`❌ Unauthorized config request from ${origin}`);
+  if (!host || !ALLOWED_ORIGINS.includes(host)) {
+    console.warn(`❌ Unauthorized config request from ${host}`);
     return res.status(403).json({ error: "Forbidden" });
   }
 
