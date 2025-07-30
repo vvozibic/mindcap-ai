@@ -43,6 +43,8 @@ const ALLOWED_ORIGINS = [
 app.get("/config", (req, res) => {
   const origin = req.headers.origin;
 
+  console.log(origin, req.headers);
+
   if (isDev) {
     return res.status(200).json({
       walletConnectProjectId: process.env.WALLETCONNECT_PROJECT_ID,

@@ -192,10 +192,12 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
               drops.
             </p>
 
-            <button className="w-full bg-accent-500 hover:bg-accent-600 text-black py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-colors mt-auto">
-              <XLogo className="h-5 w-5 mr-2" />
-              Follow us on X
-            </button>
+            <a href="https://x.com/MindoAI" target="_blank">
+              <button className="w-full bg-accent-500 hover:bg-accent-600 text-black py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-colors mt-auto">
+                <XLogo className="h-5 w-5 mr-2" />
+                Follow us on X
+              </button>
+            </a>
           </div>
 
           {/* Second Mission */}
