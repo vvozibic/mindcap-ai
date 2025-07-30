@@ -84,11 +84,13 @@ export function useMultiChainWallet(user?: User) {
             explorer: chainInfo?.explorer,
           }),
         });
+        setLoading(false);
       }
 
       return;
     } catch (err) {
       console.warn("⚠️ EVM connect failed", err);
+      setLoading(false);
     }
 
     // Solana fallback
