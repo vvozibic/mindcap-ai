@@ -163,7 +163,7 @@ export const getPaginatedInfluencers = async (req: Request, res: Response) => {
     SUM(kp."totalComments") AS "totalComments"
     FROM "KOL" k
     JOIN "KOLToProject" kp ON kp."kolId" = k.id
-    WHERE k."kolScore" > 0 AND k."hidden" = false AND k."isAlsoProject" = false
+    WHERE k."kolScore" > 0 AND k."hidden" = false AND k."isAlsoProject" = false AND kp."mindoMetric" > 0
     GROUP BY k.id
     ORDER BY ${sortExpr} ${sortDirection}
     LIMIT $1 OFFSET $2
