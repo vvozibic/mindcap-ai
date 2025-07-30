@@ -46,9 +46,11 @@ export function useMultiChainWallet(user?: User) {
   const solanaProviderRef = useRef<any>(null);
 
   const connect = useCallback(async () => {
+    setLoading(true);
     const { walletConnectProjectId } = await fetch("/config").then((r) =>
       r.json()
     );
+    setLoading(false);
 
     try {
       // @ts-ignore
