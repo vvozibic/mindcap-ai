@@ -1,5 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
+import { sendAnalyticsEvent } from "../analytics";
+import { AnalyticsEvent } from "../analytics/types";
 
 const prisma = new PrismaClient();
 
@@ -42,6 +44,11 @@ export const addWallet = async (req: Request, res: Response) => {
         data: { primaryWalletId: wallet.id },
       });
     }
+
+    sendAnalyticsEvent(AnalyticsEvent.USER_ADD_WALLET, {
+      username: user.username,
+      wallet: wallet.address,
+    });
 
     res.json(wallet);
   } catch (err) {

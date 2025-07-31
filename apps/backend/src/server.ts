@@ -11,6 +11,7 @@ import { influencerRoutes } from "./routes/influencers";
 import narrativesRoutes from "./routes/narratives";
 import { projectRoutes, protokolsProjectRoutes } from "./routes/projects";
 import rewardPoolRoutes from "./routes/rewardPool";
+import trackRoute from "./routes/track";
 import { usersRoutes } from "./routes/users";
 import { queuePageVisit } from "./utils/visits";
 
@@ -34,6 +35,7 @@ app.use("/api/users", usersRoutes);
 app.use("/api/narratives", narrativesRoutes);
 app.use("/api/reward-pools", rewardPoolRoutes);
 app.use("/api/wallets", walletRoutes);
+app.use("/api/track", trackRoute);
 
 const ALLOWED_ORIGINS = ["mindoshare.ai", "mindoshare.up.railway.app"];
 

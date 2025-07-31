@@ -104,6 +104,7 @@ export interface User {
   onboardingStep?: number;
   completedTasks?: number;
   primaryWallet?: Wallet;
+  platform?: "twitter";
   earnedPoints?: number;
 }
 

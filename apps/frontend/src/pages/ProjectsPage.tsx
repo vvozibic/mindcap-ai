@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ProtokolsProjectsTable from "../components/Projects/ProjectsLeaderboard";
+import { useAnalytics } from "../hooks/useAnalytics";
 
 interface ProjectsPageProps {}
 
 const ProjectsPage: React.FC<ProjectsPageProps> = ({}) => {
+  const analytics = useAnalytics();
+
+  useEffect(() => {
+    analytics.track("projects_page_view");
+  }, []);
+
   return (
     <div className="max-w-7xl  px-4 sm:px-6 mx-auto py-[100px] relative z-10">
       <ProtokolsProjectsTable />

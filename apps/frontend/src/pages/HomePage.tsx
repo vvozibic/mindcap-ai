@@ -1,11 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import HeroBlock from "../components/HeroBlock";
 import KOLLeaderboard from "../components/KOL/KOLLeaderboard";
 import NarrativesTreemap from "../components/Narratives";
+import { useAnalytics } from "../hooks/useAnalytics";
 
 interface HomePageProps {}
 
 const HomePage: React.FC<HomePageProps> = () => {
+  const analytics = useAnalytics();
+
+  useEffect(() => {
+    analytics.track("home_page_view");
+  }, []);
+
   return (
     <>
       <HeroBlock />

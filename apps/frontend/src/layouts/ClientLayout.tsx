@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import LoginModal from "../components/LoginModal";
 import Navbar from "../components/Navbar";
+import { useAnalytics } from "../hooks/useAnalytics";
 import { useReferralTracker } from "../hooks/useReferral";
 import ForBusinessPage from "../pages/ForBusinessPage";
 import HomePage from "../pages/HomePage";
@@ -20,6 +21,7 @@ function ClientLayout() {
     isAuthenticated: isLocalAuthenticated,
   });
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const analytics = useAnalytics(user.id);
 
   useEffect(() => {
     fetch(`/api/auth/me`)
@@ -27,6 +29,11 @@ function ClientLayout() {
         if (!res.ok) throw new Error("Not authenticated");
         const data = await res.json();
         setUser({ ...data.user, isAuthenticated: true });
+        analytics.identify({
+          userId: data.user.id,
+          username: data.user.username,
+        }); // обновит Mixpanel People
+        analytics.track("user_logged_in", { method: user.platform });
       })
       .catch(() => setUser({ isAuthenticated: false }));
   }, []);

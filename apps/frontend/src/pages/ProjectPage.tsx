@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import ProjectDetails from "../components/Projects/ProjectDetails";
 import { Skeleton } from "../components/Skeleton";
 import { TableSkeleton } from "../components/TableSkeleton";
+import { useAnalytics } from "../hooks/useAnalytics";
 import { KOL, Project, RewardPool } from "../types";
 import { daysBetween } from "../utils/daysBetween";
 
@@ -63,6 +64,12 @@ const ProjectPage = () => {
       .then(setProject)
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
+  }, [slug]);
+
+  const analytics = useAnalytics();
+
+  useEffect(() => {
+    analytics.track("project_page_view", { project: slug });
   }, [slug]);
 
   const [selectedPool, setSelectedPool] = useState<RewardPool | null>(null);
