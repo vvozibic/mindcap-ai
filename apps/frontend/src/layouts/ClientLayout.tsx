@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
+import { AnalyticsTracker } from "../components/AnalyticsTracker";
 import LoginModal from "../components/LoginModal";
 import Navbar from "../components/Navbar";
 import { useAnalytics } from "../hooks/useAnalytics";
@@ -52,6 +53,7 @@ function ClientLayout() {
 
   return (
     <div className="min-h-screen bg-primary-900 text-gray-100 relative">
+      <AnalyticsTracker />
       <div className="fixed top-[-100px] z-[0] h-[150vh] w-screen bg-[radial-gradient(ellipse_100%_70%_at_50%_-10%,#00ff9936,transparent)]" />
       <Navbar
         user={user}
