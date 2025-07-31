@@ -21,7 +21,7 @@ function ClientLayout() {
     isAuthenticated: isLocalAuthenticated,
   });
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const analytics = useAnalytics(user.id);
+  const analytics = useAnalytics();
 
   useEffect(() => {
     fetch(`/api/auth/me`)
@@ -29,6 +29,7 @@ function ClientLayout() {
         if (!res.ok) throw new Error("Not authenticated");
         const data = await res.json();
         setUser({ ...data.user, isAuthenticated: true });
+        analytics.setUser(`${data.user.id}`);
         analytics.identify({
           userId: data.user.id,
           username: data.user.username,
