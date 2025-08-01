@@ -76,9 +76,11 @@ const SocialCard: React.FC<SocialCardProps> = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
       if (user?.username) {
+        setLoading(true);
         const kol = await fetchInfluencerByUsername(user?.username);
+        console.log(123);
+
         if (kol) setKol(kol);
         setLoading(false);
       }
@@ -87,9 +89,9 @@ const SocialCard: React.FC<SocialCardProps> = ({
   }, [user]);
   const detailData = getKOLDetailData(kol);
 
-  if (loading) return <Skeleton />;
+  console.log(loading);
 
-  if (!user.isAuthenticated) {
+  if (!user.isAuthenticated && !loading) {
     return (
       <div className="bg-primary-800/70 relative z-10 rounded-lg shadow-lg p-8 max-w-2xl mx-auto backdrop-blur-sm  text-center border border-primary-700/20">
         <div className="mb-6">
@@ -111,7 +113,7 @@ const SocialCard: React.FC<SocialCardProps> = ({
     );
   }
 
-  if (!kol || !detailData || !user) return <Skeleton />;
+  if (!kol || !detailData || !user || loading) return <Skeleton />;
 
   return kol && detailData ? (
     <>
