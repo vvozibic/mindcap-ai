@@ -46,7 +46,7 @@ const SocialCard: React.FC<SocialCardProps> = ({
   standalone,
 }) => {
   const [kol, setKol] = useState<KOL | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [copied, setCopied] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
@@ -76,6 +76,7 @@ const SocialCard: React.FC<SocialCardProps> = ({
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       if (user?.username) {
         const kol = await fetchInfluencerByUsername(user?.username);
         if (kol) setKol(kol);
