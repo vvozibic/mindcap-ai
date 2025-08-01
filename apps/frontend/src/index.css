@@ -1,3 +1,145 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* Onboarding */
+.onboarding-btn {
+  @apply flex flex-col items-center justify-center w-32 h-24 bg-black/30 border border-primary-700/30 rounded-lg hover:bg-black/50 transition-all duration-200 text-gray-400 hover:text-white;
+}
+
+.onboarding-primary {
+  @apply bg-accent-500 hover:bg-accent-600 text-black px-6 py-3 rounded-md font-medium text-lg transition-all flex items-center justify-center gap-2;
+}
+
+.onboarding-secondary {
+  @apply bg-black/30 hover:bg-black/50 border border-primary-700/30 text-white px-6 py-3 rounded-md font-medium text-lg transition-all flex items-center justify-center gap-2;
+}
+
+.onboarding-additional {
+  @apply bg-accent-500 hover:bg-accent-600 text-black  border border-primary-700/30 px-6 py-3 rounded-md font-medium text-lg transition-all flex items-center justify-center gap-2;
+}
+
+.onboarding-card {
+  @apply bg-black/30 border border-primary-700/30 rounded-lg p-6;
+}
+
+.onboarding-back {
+  @apply flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4;
+}
+
+/* Onboarding Анимации */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slide { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.animate-fadeIn { animation: fadeIn 0.4s ease-in-out; }
+.animate-slide { animation: slide 0.4s ease-in-out; }
+
+
+/* Holographic */
+:root {
+  --hc-card-radius: 24px;
+}
+.hc-wrapper {
+  perspective: 600px;
+  transform: translate3d(0,0,0.1px);
+  position: relative;
+}
+.hc-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: -15px;
+  background: radial-gradient(circle at 50% 50%, #15803dff 1%, #0f241900 76%), conic-gradient(from 124deg at 50% 50%, #166534ff 0%, #15803dff 40%, #15803dff 60%, #166534ff 100%);
+  border-radius: inherit;
+  transition: all 0.6s ease;
+  filter: contrast(1.5) saturate(1.5) blur(40px);
+  transform: scale(0.85);
+  opacity: 0.5;
+}
+.hc-wrapper.active::before {
+  filter: contrast(1) saturate(1) blur(40px);
+  transform: scale(0.95);
+  opacity: 1;
+}
+.hc-card {
+  width: 320px;
+  height: 480px;
+  border-radius: var(--hc-card-radius);
+  position: relative;
+  background: linear-gradient(135deg, #15803d 0%, #166534 50%, #0f2419 100%), radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%), radial-gradient(farthest-side circle at var(--pointer-x) var(--pointer-y), hsla(142, 76%, 20%, var(--card-opacity, 0)) 4%, hsla(142, 0%, 60%, 0) 100%), radial-gradient(35% 52% at 55% 20%, #15803dc4 0%, #0f241900 100%), radial-gradient(100% 100% at 50% 50%, #166534ff 1%, #0f241900 76%), conic-gradient(from 124deg at 50% 50%, #166534ff 0%, #15803dff 40%, #15803dff 60%, #166534ff 100%);
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transition: transform 1s ease;
+  transform: rotateY(var(--rotate-y, 0deg)) rotateX(var(--rotate-x, 0deg));
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 8px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.hc-card.badge {
+  width: 100px;
+  height: 100px;
+  border-radius: 16px;
+}
+
+.hc-card.badge .hc-inside {
+  border-radius: 16px;
+}
+.hc-card.badge .hc-inside .hc-content-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+.hc-card.active {
+  transition: transform 0.1s ease;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 12px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+.hc-card * {
+  transform-style: preserve-3d;
+}
+.hc-inside {
+  position: absolute;
+  inset: 1px;
+  border-radius: var(--hc-card-radius);
+  background: linear-gradient(145deg, rgba(15, 36, 25, 0.95) 0%, rgba(22, 101, 52, 0.9) 100%);
+  transform: translateZ(0.1px);
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+.hc-inside::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #15803d 0%, #166534 50%, #0f2419 100%), radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  opacity: 0.2;
+  mix-blend-mode: overlay;
+}
+.hc-shine {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: repeating-linear-gradient(0deg, hsl(142, 76%, 20%) calc(5% * 1), hsl(142, 69%, 30%) calc(5% * 2), hsl(142, 76%, 40%) calc(5% * 3), hsl(142, 100%, 35%) calc(5% * 4), hsl(142, 76%, 30%) calc(5% * 5), hsl(142, 69%, 25%) calc(5% * 6), hsl(142, 76%, 20%) calc(5% * 7)), repeating-linear-gradient(-45deg, #0a1f0f 0%, hsl(142, 10%, 30%) 3.8%, hsl(142, 29%, 35%) 4.5%, hsl(142, 10%, 30%) 5.2%, #0a1f0f 10%, #0a1f0f 12%);
+  background-position: 0 var(--background-y, 50%), var(--background-x, 50%) var(--background-y, 50%);
+  background-size: 500% 500%, 300% 300%;
+  background-blend-mode: color-dodge;
+  filter: brightness(0.8) contrast(1.5) saturate(0.8);
+  opacity: 0.4;
+  mix-blend-mode: color-dodge;
+}
+.hc-glare {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: radial-gradient(farthest-corner circle at var(--pointer-x) var(--pointer-y), hsla(0,0%,100%,0.6) 10%, hsla(0,0%,100%,0) 80%);
+  mix-blend-mode: overlay;
+  opacity: calc(var(--pointer-from-center, 0) * 0.5 + 0.2);
+}
+.hc-content-wrapper {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  padding: 2rem;
+  color: white;
+  transform: translateZ(1px);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}

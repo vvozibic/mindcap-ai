@@ -41,6 +41,7 @@ async function fetchInfluencerByUsername(
 
 const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
   const [kol, setKol] = useState<KOL | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const [copied, setCopied] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
@@ -73,13 +74,14 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
       if (user?.username) {
         const kol = await fetchInfluencerByUsername(user?.username);
         if (kol) setKol(kol);
+        setLoading(false);
       }
     };
     fetchData();
   }, [user]);
   const detailData = getKOLDetailData(kol);
 
-  if (!user.isAuthenticated) {
+  if (!user.isAuthenticated && !loading) {
     return (
       <div className="bg-primary-800/70 relative z-10 rounded-lg shadow-lg p-8 max-w-2xl mx-auto backdrop-blur-sm  text-center border border-primary-700/20">
         <div className="mb-6">

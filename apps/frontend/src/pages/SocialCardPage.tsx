@@ -1,13 +1,53 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import LoginModal from "../components/LoginModal";
 import SocialCard from "../components/SocialCard";
+import { useAnalytics } from "../hooks/useAnalytics";
+import { useReferralTracker } from "../hooks/useReferral";
 import { User } from "../types";
 
 interface SocialCardPageProps {
-  user: User;
+  user?: User;
   onLogin: () => void;
 }
 
-const SocialCardPage: React.FC<SocialCardPageProps> = ({ user, onLogin }) => {
+const SocialCardPage: React.FC<SocialCardPageProps> = ({
+  user: userFromProps,
+  onLogin,
+}) => {
+  const isLocalAuthenticated =
+    localStorage.getItem("isAuthenticated") === "true";
+  const [user, setUser] = useState<User>(
+    userFromProps || {
+      id: "",
+      username: "",
+      email: "",
+      isAuthenticated: isLocalAuthenticated,
+    }
+  );
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const analytics = useAnalytics();
+
+  useEffect(() => {
+    fetch(`/api/auth/me`)
+      .then(async (res) => {
+        if (!res.ok) throw new Error("Not authenticated");
+        const data = await res.json();
+        setUser({ ...data.user, isAuthenticated: true });
+        analytics.setUser(`${data.user.id}`);
+        analytics.identify({
+          userId: data.user.id,
+          username: data.user.username,
+        });
+      })
+      .catch(() => setUser({ isAuthenticated: false }));
+  }, []);
+
+  useReferralTracker();
+
+  const handleLogin = (user: User) => {
+    setUser({ ...user, isAuthenticated: true });
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8  relative z-10">
       <div className="text-center mb-8">
@@ -19,7 +59,7 @@ const SocialCardPage: React.FC<SocialCardPageProps> = ({ user, onLogin }) => {
         </p>
       </div>
 
-      <SocialCard user={user} onLogin={onLogin} />
+      <SocialCard user={user} onLogin={() => setIsLoginModalOpen(true)} />
 
       {user.isAuthenticated && (
         <div className="mt-12 bg-primary-800 rounded-lg shadow-lg p-6 border border-primary-700">
@@ -63,6 +103,11 @@ const SocialCardPage: React.FC<SocialCardPageProps> = ({ user, onLogin }) => {
           </div>
         </div>
       )}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onLogin={handleLogin}
+      />
     </div>
   );
 };

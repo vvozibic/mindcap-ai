@@ -28,7 +28,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center">
+            <Link to="/beta" className="flex items-center">
               <div className="w-[100px]">
                 <Logo />
               </div>
@@ -38,9 +38,9 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
           <div className="hidden lg:block">
             <div className="ml-10 flex items-baseline space-x-4">
               <Link
-                to="/"
+                to="/beta"
                 className={`px-3 py-2 rounded-md text-sm font-medium ${
-                  isActive("/")
+                  isActive("/beta")
                     ? "bg-primary-700/70 text-white"
                     : "text-gray-300 hover:bg-primary-600/50 hover:text-white"
                 }`}
@@ -48,9 +48,9 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
                 Mindo AI Leaderboard
               </Link>
               <Link
-                to="/projects"
+                to="/beta/projects"
                 className={`px-3 py-2 rounded-md text-sm font-medium ${
-                  isActive("/projects")
+                  isActive("/beta/projects")
                     ? "bg-primary-700/70 text-white"
                     : "text-gray-300 hover:bg-primary-600/50 hover:text-white"
                 }`}
@@ -58,9 +58,9 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
                 Projects
               </Link>
               <Link
-                to="/social-card"
+                to="/beta/social-card"
                 className={`px-3 py-2 rounded-md text-sm font-medium ${
-                  isActive("/social-card")
+                  isActive("/beta/social-card")
                     ? "bg-primary-700/70 text-white"
                     : "text-gray-300 hover:bg-primary-600/50 hover:text-white"
                 }`}
@@ -92,7 +92,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
             {user.isAuthenticated ? (
               <div className="flex items-center space-x-4">
                 <Link
-                  to="/social-card"
+                  to="/beta/social-card"
                   className={`px-3 py-2 rounded-md text-sm font-medium`}
                 >
                   <span className="text-sm">{user.email || user.username}</span>
@@ -137,9 +137,9 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
         <div className="lg:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <Link
-              to="/"
+              to="/beta"
               className={`block px-3 py-2 rounded-md text-base font-medium ${
-                isActive("/")
+                isActive("/beta")
                   ? "text-accent-500"
                   : "text-gray-300 hover:bg-primary-600/40 hover:text-white"
               }`}
@@ -148,9 +148,9 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
               Mindo AI Leaderboard
             </Link>
             <Link
-              to="/projects"
+              to="/beta/projects"
               className={`block px-3 py-2 rounded-md text-base font-medium ${
-                isActive("/projects")
+                isActive("/beta/projects")
                   ? "text-accent-500"
                   : "text-gray-300 hover:bg-primary-600/40 hover:text-white"
               }`}
@@ -159,9 +159,9 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
               Projects
             </Link>
             <Link
-              to="/social-card"
+              to="/beta/social-card"
               className={`block px-3 py-2 rounded-md text-base font-medium ${
-                isActive("/social-card")
+                isActive("/beta/social-card")
                   ? "text-accent-500"
                   : "text-gray-300 hover:bg-primary-600/40 hover:text-white"
               }`}
@@ -191,9 +191,9 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
             {user.isAuthenticated ? (
               <div className="flex items-center px-5 justify-between">
                 <Link
-                  to="/social-card"
+                  to="/beta/social-card"
                   className={`block rounded-md text-base font-medium ${
-                    isActive("/social-card")
+                    isActive("/beta/social-card")
                       ? "bg-primary-700 text-white"
                       : "text-gray-300 hover:bg-primary-600 hover:text-white"
                   }`}

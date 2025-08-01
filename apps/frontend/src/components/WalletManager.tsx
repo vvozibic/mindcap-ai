@@ -1,27 +1,47 @@
+import { LoaderIcon, Wallet } from "lucide-react";
 import { useMultiChainWallet } from "../hooks/useMultiChainWallet";
+import { User } from "../types";
+import { shortAddress } from "../utils/shortAddress";
 
-export function WalletManager() {
-  const { addresses, network, connect, disconnect } = useMultiChainWallet();
+export function WalletButton({
+  user,
+  afterConnectCallback,
+}: {
+  user: User;
+  afterConnectCallback?: () => void;
+}) {
+  const { addresses, connect, loading, disconnect } = useMultiChainWallet(
+    user,
+    afterConnectCallback
+  );
 
   return (
     <div>
-      {addresses.length ? (
+      {Boolean(addresses.length) ? (
         <>
-          <p>✅ Connected to {network}</p>
-          <ul>
-            {addresses.map((a) => (
-              <li key={a}>{a}</li>
-            ))}
-          </ul>
-          <button onClick={disconnect}>Disconnect</button>
+          <button
+            disabled={loading}
+            onClick={disconnect}
+            className="w-full bg-accent-500 hover:bg-accent-600 text-black py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-colors mt-auto"
+          >
+            {!loading && <Wallet className="h-5 w-5 mr-2" />}
+
+            {loading ? (
+              <LoaderIcon className="animate-spin" />
+            ) : (
+              `Disconnect ${shortAddress(addresses[0])}`
+            )}
+          </button>
         </>
       ) : (
-        <>
-          <button onClick={() => connect("ethereum")}>Connect Ethereum</button>
-          <button onClick={() => connect("bnb")}>Connect BNB</button>
-          <button onClick={() => connect("arbitrum")}>Connect Arbitrum</button>
-          <button onClick={() => connect("solana")}>Connect Solana</button>
-        </>
+        <button
+          disabled={loading}
+          onClick={connect}
+          className="w-full bg-accent-500 hover:bg-accent-600 text-black py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-colors mt-auto"
+        >
+          {!loading && <Wallet className="h-5 w-5 mr-2" />}
+          {loading ? <LoaderIcon className="animate-spin" /> : "Connect Wallet"}
+        </button>
       )}
     </div>
   );

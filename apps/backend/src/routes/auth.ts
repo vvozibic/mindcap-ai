@@ -50,9 +50,13 @@ const codeChallenge = crypto
 authRoutes.get("/twitter", (req, res) => {
   // ✅ Генерируем уникальный state для каждого запроса
   const ref = req.query.ref as string | undefined; // если пришёл ?ref=abcd
+  const redirectAfterCallback = req.query.redirectAfterCallback as
+    | string
+    | undefined; // если пришёл ?ref=abcd
   const statePayload = {
     nonce: crypto.randomBytes(16).toString("hex"),
     ref: ref || null,
+    redirectAfterCallback: redirectAfterCallback || null,
   };
   const state = Buffer.from(JSON.stringify(statePayload)).toString("base64url");
 
@@ -121,10 +125,12 @@ authRoutes.get("/callback/twitter", async (req, res) => {
 
   const stateParam = req.query.state as string;
   let referralCodeFromState: string | null = null;
+  let redirectAfterCallbackFromState: string | null = null;
 
   try {
     const decoded = JSON.parse(Buffer.from(stateParam, "base64url").toString());
     referralCodeFromState = decoded.ref;
+    redirectAfterCallbackFromState = decoded.redirectAfterCallback;
   } catch (err) {
     console.warn("Failed to parse OAuth state", err);
   }
@@ -157,7 +163,7 @@ authRoutes.get("/callback/twitter", async (req, res) => {
     });
   }
 
-  res.redirect("/");
+  res.redirect(redirectAfterCallbackFromState || "/social-card");
 });
 
 authRoutes.post("/logout", (req, res) => {
