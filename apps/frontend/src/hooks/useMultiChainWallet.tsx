@@ -53,6 +53,7 @@ export function useMultiChainWallet(
     const { walletConnectProjectId } = await fetch("/config").then((r) =>
       r.json()
     );
+    setLoading(false);
 
     try {
       // @ts-ignore

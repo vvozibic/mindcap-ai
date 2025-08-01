@@ -1,6 +1,5 @@
 import {
   Award,
-  CheckCircle,
   CheckIcon,
   ExternalLink,
   Gift,
@@ -16,6 +15,7 @@ import { KOL, User } from "../types";
 import InfluencerDetails from "./KOL/KOLDetails";
 import { getKOLDetailData } from "./KOL/utils";
 import { Skeleton } from "./Skeleton";
+import { WalletButton } from "./WalletManager";
 import XLogo from "./XLogo";
 
 // import { useWalletKit } from "../hooks/useMultiChainWallet";
@@ -110,7 +110,7 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
       <div className="mx-auto space-y-8 mb-8">
         <div className="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-gray-800">
           {/* Referral Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Referrals Count */}
             <div className="bg-black/30 rounded-lg p-4 border border-gray-800">
               <div className="flex items-center mb-2">
@@ -119,7 +119,9 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
                   REFERRALS
                 </span>
               </div>
-              <p className="text-3xl font-bold text-white">0</p>
+              <p className="text-3xl font-bold text-white">
+                {user?.referrals?.length}
+              </p>
             </div>
 
             {/* Earned Points */}
@@ -155,11 +157,11 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
                   Wallet score
                 </span>
               </div>
-              <p className="text-3xl font-bold text-white">0</p>
+              <p className="text-3xl font-bold text-white">Soon</p>
             </div>
 
             {/* Completed Tasks */}
-            <div className="bg-black/30 rounded-lg p-4 border border-gray-800">
+            {/* <div className="bg-black/30 rounded-lg p-4 border border-gray-800">
               <div className="flex items-center mb-2">
                 <CheckCircle className="h-5 w-5 text-accent-500 mr-2" />
                 <span className="text-sm font-medium text-gray-400">
@@ -169,7 +171,7 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
               <p className="text-3xl font-bold text-white">
                 {user.completedTasks}
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -191,10 +193,12 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
               drops.
             </p>
 
-            <button className="w-full bg-accent-500 hover:bg-accent-600 text-black py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-colors mt-auto">
-              <XLogo className="h-5 w-5 mr-2" />
-              Follow us on X
-            </button>
+            <a href="https://x.com/MindoAI" target="_blank">
+              <button className="w-full bg-accent-500 hover:bg-accent-600 text-black py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-colors mt-auto">
+                <XLogo className="h-5 w-5 mr-2" />
+                Follow us on X
+              </button>
+            </a>
           </div>
 
           {/* Second Mission */}
@@ -248,19 +252,12 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
               </h3>
             </div>
 
-            {/* <WalletManager /> */}
-
             <p className="text-gray-400 mb-6 flex-grow">
               Connect your wallet to unlock exclusive rewards and track your
               achievements.
             </p>
-            <button
-              // onClick={connect}
-              className="w-full bg-accent-500 hover:bg-accent-600 text-black py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-colors mt-auto"
-            >
-              <Wallet className="h-5 w-5 mr-2" />
-              Connect Wallet Soon
-            </button>
+
+            <WalletButton user={user} />
           </div>
         </div>
       </div>

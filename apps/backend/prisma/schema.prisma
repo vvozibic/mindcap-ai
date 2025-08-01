@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL_TEMP")
+  url      = env("DATABASE_URL")
 }
 
 model AdminUser {
@@ -53,7 +53,9 @@ model Wallet {
   chain     String
   userId    Int
   verified  Boolean  @default(false)
-  label     String? // например, "main", "zkSync", "mint", если нужно
+  label     String? // Название сети (Ethereum, BNB Chain)
+  symbol    String? // Символ токена (ETH, BNB)
+  explorer  String? // Ссылка на блок-обозреватель (https://etherscan.io)
   createdAt DateTime @default(now())
 
   user       User  @relation(fields: [userId], references: [id])

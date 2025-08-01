@@ -16,7 +16,7 @@ export const AdminUserScalarFieldEnumSchema = z.enum(['id','username','password'
 
 export const UserScalarFieldEnumSchema = z.enum(['id','createdAt','updatedAt','username','avatarUrl','platform','email','twitterHandle','referralCode','referredById','onboardingStep','completedTasks','earnedPoints','kolId','primaryWalletId']);
 
-export const WalletScalarFieldEnumSchema = z.enum(['id','address','chain','userId','verified','label','createdAt']);
+export const WalletScalarFieldEnumSchema = z.enum(['id','address','chain','userId','verified','label','symbol','explorer','createdAt']);
 
 export const NarrativeScalarFieldEnumSchema = z.enum(['id','narrativeId','name','slug','description','projectCount','totalViews','totalPosts','totalMarketCapUsd','marketCapChange24h','marketCapChange7d','marketCapChange30d','marketCapChange90d','mindsharePercent','mindshareChange24h','mindshareChange7d','mindshareChange30d','mindshareChange90d','createdAt','updatedAt','fetchedAt']);
 
@@ -102,6 +102,8 @@ export const WalletSchema = z.object({
   userId: z.number().int(),
   verified: z.boolean(),
   label: z.string().nullable(),
+  symbol: z.string().nullable(),
+  explorer: z.string().nullable(),
   createdAt: z.coerce.date(),
 })
 
@@ -478,6 +480,8 @@ export const WalletSelectSchema: z.ZodType<Prisma.WalletSelect> = z.object({
   userId: z.boolean().optional(),
   verified: z.boolean().optional(),
   label: z.boolean().optional(),
+  symbol: z.boolean().optional(),
+  explorer: z.boolean().optional(),
   createdAt: z.boolean().optional(),
   user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
   primaryFor: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
@@ -1793,6 +1797,8 @@ export const WalletWhereInputSchema: z.ZodType<Prisma.WalletWhereInput> = z.obje
   userId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   verified: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   label: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  symbol: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  explorer: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
   primaryFor: z.union([ z.lazy(() => UserNullableRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional().nullable(),
@@ -1805,6 +1811,8 @@ export const WalletOrderByWithRelationInputSchema: z.ZodType<Prisma.WalletOrderB
   userId: z.lazy(() => SortOrderSchema).optional(),
   verified: z.lazy(() => SortOrderSchema).optional(),
   label: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  symbol: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  explorer: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   user: z.lazy(() => UserOrderByWithRelationInputSchema).optional(),
   primaryFor: z.lazy(() => UserOrderByWithRelationInputSchema).optional()
@@ -1832,6 +1840,8 @@ export const WalletWhereUniqueInputSchema: z.ZodType<Prisma.WalletWhereUniqueInp
   userId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
   verified: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   label: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  symbol: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  explorer: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
   primaryFor: z.union([ z.lazy(() => UserNullableRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional().nullable(),
@@ -1844,6 +1854,8 @@ export const WalletOrderByWithAggregationInputSchema: z.ZodType<Prisma.WalletOrd
   userId: z.lazy(() => SortOrderSchema).optional(),
   verified: z.lazy(() => SortOrderSchema).optional(),
   label: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  symbol: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  explorer: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => WalletCountOrderByAggregateInputSchema).optional(),
   _avg: z.lazy(() => WalletAvgOrderByAggregateInputSchema).optional(),
@@ -1862,6 +1874,8 @@ export const WalletScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Wallet
   userId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
   verified: z.union([ z.lazy(() => BoolWithAggregatesFilterSchema),z.boolean() ]).optional(),
   label: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
+  symbol: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
+  explorer: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
 }).strict();
 
@@ -3517,6 +3531,8 @@ export const WalletCreateInputSchema: z.ZodType<Prisma.WalletCreateInput> = z.ob
   chain: z.string(),
   verified: z.boolean().optional(),
   label: z.string().optional().nullable(),
+  symbol: z.string().optional().nullable(),
+  explorer: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   user: z.lazy(() => UserCreateNestedOneWithoutWalletsInputSchema),
   primaryFor: z.lazy(() => UserCreateNestedOneWithoutPrimaryWalletInputSchema).optional()
@@ -3529,6 +3545,8 @@ export const WalletUncheckedCreateInputSchema: z.ZodType<Prisma.WalletUncheckedC
   userId: z.number().int(),
   verified: z.boolean().optional(),
   label: z.string().optional().nullable(),
+  symbol: z.string().optional().nullable(),
+  explorer: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   primaryFor: z.lazy(() => UserUncheckedCreateNestedOneWithoutPrimaryWalletInputSchema).optional()
 }).strict();
@@ -3538,6 +3556,8 @@ export const WalletUpdateInputSchema: z.ZodType<Prisma.WalletUpdateInput> = z.ob
   chain: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   verified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   label: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  symbol: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  explorer: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   user: z.lazy(() => UserUpdateOneRequiredWithoutWalletsNestedInputSchema).optional(),
   primaryFor: z.lazy(() => UserUpdateOneWithoutPrimaryWalletNestedInputSchema).optional()
@@ -3550,6 +3570,8 @@ export const WalletUncheckedUpdateInputSchema: z.ZodType<Prisma.WalletUncheckedU
   userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   verified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   label: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  symbol: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  explorer: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   primaryFor: z.lazy(() => UserUncheckedUpdateOneWithoutPrimaryWalletNestedInputSchema).optional()
 }).strict();
@@ -3561,6 +3583,8 @@ export const WalletCreateManyInputSchema: z.ZodType<Prisma.WalletCreateManyInput
   userId: z.number().int(),
   verified: z.boolean().optional(),
   label: z.string().optional().nullable(),
+  symbol: z.string().optional().nullable(),
+  explorer: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional()
 }).strict();
 
@@ -3569,6 +3593,8 @@ export const WalletUpdateManyMutationInputSchema: z.ZodType<Prisma.WalletUpdateM
   chain: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   verified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   label: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  symbol: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  explorer: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -3579,6 +3605,8 @@ export const WalletUncheckedUpdateManyInputSchema: z.ZodType<Prisma.WalletUnchec
   userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   verified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   label: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  symbol: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  explorer: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -5497,6 +5525,8 @@ export const WalletCountOrderByAggregateInputSchema: z.ZodType<Prisma.WalletCoun
   userId: z.lazy(() => SortOrderSchema).optional(),
   verified: z.lazy(() => SortOrderSchema).optional(),
   label: z.lazy(() => SortOrderSchema).optional(),
+  symbol: z.lazy(() => SortOrderSchema).optional(),
+  explorer: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -5512,6 +5542,8 @@ export const WalletMaxOrderByAggregateInputSchema: z.ZodType<Prisma.WalletMaxOrd
   userId: z.lazy(() => SortOrderSchema).optional(),
   verified: z.lazy(() => SortOrderSchema).optional(),
   label: z.lazy(() => SortOrderSchema).optional(),
+  symbol: z.lazy(() => SortOrderSchema).optional(),
+  explorer: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -5522,6 +5554,8 @@ export const WalletMinOrderByAggregateInputSchema: z.ZodType<Prisma.WalletMinOrd
   userId: z.lazy(() => SortOrderSchema).optional(),
   verified: z.lazy(() => SortOrderSchema).optional(),
   label: z.lazy(() => SortOrderSchema).optional(),
+  symbol: z.lazy(() => SortOrderSchema).optional(),
+  explorer: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -8032,6 +8066,8 @@ export const WalletCreateWithoutUserInputSchema: z.ZodType<Prisma.WalletCreateWi
   chain: z.string(),
   verified: z.boolean().optional(),
   label: z.string().optional().nullable(),
+  symbol: z.string().optional().nullable(),
+  explorer: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   primaryFor: z.lazy(() => UserCreateNestedOneWithoutPrimaryWalletInputSchema).optional()
 }).strict();
@@ -8042,6 +8078,8 @@ export const WalletUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.Walle
   chain: z.string(),
   verified: z.boolean().optional(),
   label: z.string().optional().nullable(),
+  symbol: z.string().optional().nullable(),
+  explorer: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   primaryFor: z.lazy(() => UserUncheckedCreateNestedOneWithoutPrimaryWalletInputSchema).optional()
 }).strict();
@@ -8061,6 +8099,8 @@ export const WalletCreateWithoutPrimaryForInputSchema: z.ZodType<Prisma.WalletCr
   chain: z.string(),
   verified: z.boolean().optional(),
   label: z.string().optional().nullable(),
+  symbol: z.string().optional().nullable(),
+  explorer: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   user: z.lazy(() => UserCreateNestedOneWithoutWalletsInputSchema)
 }).strict();
@@ -8072,6 +8112,8 @@ export const WalletUncheckedCreateWithoutPrimaryForInputSchema: z.ZodType<Prisma
   userId: z.number().int(),
   verified: z.boolean().optional(),
   label: z.string().optional().nullable(),
+  symbol: z.string().optional().nullable(),
+  explorer: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional()
 }).strict();
 
@@ -8300,6 +8342,8 @@ export const WalletScalarWhereInputSchema: z.ZodType<Prisma.WalletScalarWhereInp
   userId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   verified: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   label: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  symbol: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  explorer: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
 }).strict();
 
@@ -8319,6 +8363,8 @@ export const WalletUpdateWithoutPrimaryForInputSchema: z.ZodType<Prisma.WalletUp
   chain: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   verified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   label: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  symbol: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  explorer: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   user: z.lazy(() => UserUpdateOneRequiredWithoutWalletsNestedInputSchema).optional()
 }).strict();
@@ -8330,6 +8376,8 @@ export const WalletUncheckedUpdateWithoutPrimaryForInputSchema: z.ZodType<Prisma
   userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   verified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   label: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  symbol: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  explorer: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -10663,6 +10711,8 @@ export const WalletCreateManyUserInputSchema: z.ZodType<Prisma.WalletCreateManyU
   chain: z.string(),
   verified: z.boolean().optional(),
   label: z.string().optional().nullable(),
+  symbol: z.string().optional().nullable(),
+  explorer: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional()
 }).strict();
 
@@ -10725,6 +10775,8 @@ export const WalletUpdateWithoutUserInputSchema: z.ZodType<Prisma.WalletUpdateWi
   chain: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   verified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   label: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  symbol: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  explorer: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   primaryFor: z.lazy(() => UserUpdateOneWithoutPrimaryWalletNestedInputSchema).optional()
 }).strict();
@@ -10735,6 +10787,8 @@ export const WalletUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.Walle
   chain: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   verified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   label: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  symbol: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  explorer: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   primaryFor: z.lazy(() => UserUncheckedUpdateOneWithoutPrimaryWalletNestedInputSchema).optional()
 }).strict();
@@ -10745,6 +10799,8 @@ export const WalletUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Prisma.W
   chain: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   verified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   label: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  symbol: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  explorer: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 

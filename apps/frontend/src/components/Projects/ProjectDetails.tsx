@@ -395,7 +395,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                             <td className="pt-3 pr-0 pb-3 pl-6 whitespace-nowrap text-sm font-medium text-white">
                               #{index + 1}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="px-6 py-4 whitespace-nowrap overflow-hidden">
                               <div className="flex items-center">
                                 <img
                                   className="h-10 w-10 rounded-full"

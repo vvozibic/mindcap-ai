@@ -100,9 +100,24 @@ export interface User {
   updatedAt?: string; // ISO string
   isAuthenticated?: boolean;
   referralCode?: string;
+  referrals?: User[];
   onboardingStep?: number;
   completedTasks?: number;
+  primaryWallet?: Wallet;
+  platform?: "twitter";
   earnedPoints?: number;
+}
+
+export interface Wallet {
+  address: string;
+  chain: string;
+  createdAt: string;
+  explorer: string;
+  id: number;
+  label: string;
+  symbol: string;
+  userId: number;
+  verified: Boolean;
 }
 
 export type Narrative = {

@@ -1,5 +1,6 @@
 import "./utils/visits";
 
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
@@ -11,16 +12,20 @@ import { influencerRoutes } from "./routes/influencers";
 import narrativesRoutes from "./routes/narratives";
 import { projectRoutes, protokolsProjectRoutes } from "./routes/projects";
 import rewardPoolRoutes from "./routes/rewardPool";
+import trackRoute from "./routes/track";
 import { usersRoutes } from "./routes/users";
 import { queuePageVisit } from "./utils/visits";
 
 import "./cron/index"; // Import cron jobs to ensure they run
+import walletRoutes from "./routes/wallets";
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+app.use(cookieParser());
 
 const isDev = process.env.NODE_ENV !== "production";
 
@@ -32,14 +37,13 @@ app.use("/api/p-projects", protokolsProjectRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/narratives", narrativesRoutes);
 app.use("/api/reward-pools", rewardPoolRoutes);
+app.use("/api/wallets", walletRoutes);
+app.use("/api/track", trackRoute);
 
-const ALLOWED_ORIGINS = [
-  "https://mindoshare.ai/",
-  "https://mindoshare.up.railway.app/",
-];
+const ALLOWED_ORIGINS = ["mindoshare.ai", "mindoshare.up.railway.app"];
 
 app.get("/config", (req, res) => {
-  const origin = req.headers.origin;
+  const host = req.headers.host;
 
   if (isDev) {
     return res.status(200).json({
@@ -47,8 +51,8 @@ app.get("/config", (req, res) => {
     });
   }
 
-  if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
-    console.warn(`❌ Unauthorized config request from ${origin}`);
+  if (!host || !ALLOWED_ORIGINS.includes(host)) {
+    console.warn(`❌ Unauthorized config request from ${host}`);
     return res.status(403).json({ error: "Forbidden" });
   }
 
