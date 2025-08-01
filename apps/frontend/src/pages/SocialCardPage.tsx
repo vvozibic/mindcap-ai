@@ -8,11 +8,13 @@ import { User } from "../types";
 interface SocialCardPageProps {
   user?: User;
   onLogin: () => void;
+  standalone?: boolean;
 }
 
 const SocialCardPage: React.FC<SocialCardPageProps> = ({
   user: userFromProps,
   onLogin,
+  standalone,
 }) => {
   const isLocalAuthenticated =
     localStorage.getItem("isAuthenticated") === "true";
@@ -59,7 +61,11 @@ const SocialCardPage: React.FC<SocialCardPageProps> = ({
         </p>
       </div>
 
-      <SocialCard user={user} onLogin={() => setIsLoginModalOpen(true)} />
+      <SocialCard
+        user={user}
+        onLogin={() => setIsLoginModalOpen(true)}
+        standalone={standalone}
+      />
 
       {user.isAuthenticated && (
         <div className="mt-12 bg-primary-800 rounded-lg shadow-lg p-6 border border-primary-700">

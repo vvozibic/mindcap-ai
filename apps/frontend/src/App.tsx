@@ -16,7 +16,7 @@ function App() {
             <div className="relative">
               <div className="fixed top-[-100px] z-[0] h-[150vh] w-screen bg-[radial-gradient(ellipse_100%_70%_at_50%_-10%,#00ff9936,transparent)]" />
 
-              <SocialCardPage onLogin={() => {}} />
+              <SocialCardPage standalone={true} onLogin={() => {}} />
             </div>
           }
         />

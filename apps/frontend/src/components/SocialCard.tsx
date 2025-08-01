@@ -23,6 +23,7 @@ import XLogo from "./XLogo";
 interface SocialCardProps {
   user: User;
   onLogin: () => void;
+  standalone?: boolean;
 }
 
 async function fetchInfluencerByUsername(
@@ -39,7 +40,11 @@ async function fetchInfluencerByUsername(
   }
 }
 
-const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
+const SocialCard: React.FC<SocialCardProps> = ({
+  user,
+  onLogin,
+  standalone,
+}) => {
   const [kol, setKol] = useState<KOL | null>(null);
   const [loading, setLoading] = useState(true);
 

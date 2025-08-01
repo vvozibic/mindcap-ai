@@ -72,7 +72,7 @@ const Onboarding: React.FC = () => {
 
   useReferralTracker();
 
-  console.log(user);
+  if (user && step === "home") window.location.replace("/social-card");
 
   const steps: Record<Step, JSX.Element> = {
     home: (
