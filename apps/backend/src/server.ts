@@ -1,5 +1,6 @@
 import "./utils/visits";
 
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
@@ -23,6 +24,8 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+app.use(cookieParser());
 
 const isDev = process.env.NODE_ENV !== "production";
 

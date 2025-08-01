@@ -34,8 +34,7 @@ function ClientLayout() {
         analytics.identify({
           userId: data.user.id,
           username: data.user.username,
-        }); // обновит Mixpanel People
-        analytics.track("user_logged_in", { method: user.platform });
+        });
       })
       .catch(() => setUser({ isAuthenticated: false }));
   }, []);

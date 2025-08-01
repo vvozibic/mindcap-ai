@@ -1,20 +1,14 @@
-// backend/routes/track.ts
 import { Router } from "express";
 import { sendAnalyticsEvent } from "../analytics";
-import { AnalyticsEvent } from "../analytics/types";
 
 const router = Router();
 
 router.post("/", (req, res) => {
-  const { event, props, userId } = req.body as {
-    event: AnalyticsEvent;
-    props: any;
-    userId?: string;
-  };
+  const { event, props, userId } = req.body;
+  const sid = req.cookies.sid; // ✅ берём sessionId из куки
+  const distinctId = userId || sid || "anon";
 
-  if (!event) return res.status(400).json({ error: "Event name required" });
-
-  sendAnalyticsEvent(event, props, userId);
+  sendAnalyticsEvent(event, { ...props }, distinctId);
   res.json({ success: true });
 });
 
