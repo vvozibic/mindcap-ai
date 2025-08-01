@@ -7,7 +7,8 @@ import XLogo from "../../XLogo";
 export default function SuccessStep({ user }: { user: User }) {
   const [copied, setCopied] = useState(false);
 
-  const referralLink = `${window.location.origin}/?ref=${user.referralCode}`;
+  const referralLink = `${window.location.origin}?ref=${user.referralCode}`;
+  const tweetText = `gm%0A%0Aexploring new InfoFi meta for creators on @MindoAI%0A%0A(probably nothing)%0A%0A${referralLink}`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(referralLink);
@@ -43,7 +44,11 @@ export default function SuccessStep({ user }: { user: User }) {
         <Copy className="w-4 h-4" /> Copy Badge
       </button> */}
 
-      <a href="https://twitter.com/intent/tweet?text=" className="block">
+      <a
+        href={`https://twitter.com/intent/tweet?text=${tweetText}`}
+        target="_blank"
+        className="block"
+      >
         <button className="onboarding-primary w-full">
           <XLogo className="w-6 h-6" /> Share on X <Share className="w-5 h-5" />
         </button>
