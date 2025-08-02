@@ -16,7 +16,7 @@ interface SkeletonProps {
 
 export const Skeleton = ({ height = "74px" }) => {
   return (
-    <div className="w-full animate-pulse overflow-hidden">
+    <div className="w-full min-w-10 animate-pulse overflow-hidden">
       <div className="">
         <div
           className="w-full rounded-xl bg-primary-900/50"

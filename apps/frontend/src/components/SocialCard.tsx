@@ -10,7 +10,7 @@ import {
   Wallet,
   X,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { KOL, User } from "../types";
 import HolographicCard from "./HolographicCard";
 import InfluencerDetails from "./KOL/KOLDetails";
@@ -22,32 +22,21 @@ import XLogo from "./XLogo";
 // import { useWalletKit } from "../hooks/useMultiChainWallet";
 
 interface SocialCardProps {
-  user: User;
+  user: User | null;
+  kol: KOL | null;
   onLogin: () => void;
-  standalone?: boolean;
+  loading: boolean;
 }
 
-async function fetchInfluencerByUsername(
-  username: string
-): Promise<KOL | null> {
-  try {
-    const response = await fetch(`/api/influencers/user/${username}`);
-    if (!response.ok) throw new Error("Failed to fetch influencer");
-    const data: KOL = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching influencer:", error);
-    return null;
-  }
-}
-
-const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
-  const [kol, setKol] = useState<KOL | null>(null);
-  const [loading, setLoading] = useState(false);
-
+const SocialCard: React.FC<SocialCardProps> = ({
+  user,
+  kol,
+  loading,
+  onLogin,
+}) => {
   const [copied, setCopied] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
-  const referralLink = `${window.location.origin}/?ref=${user.referralCode}`;
+  const referralLink = `${window.location.origin}/?ref=${user?.referralCode}`;
 
   // const { accounts, isConnected, connect, disconnect } = useWalletKit();
 
@@ -71,21 +60,9 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
     setShowWalletModal(false);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (user?.username) {
-        setLoading(true);
-        const kol = await fetchInfluencerByUsername(user?.username);
-
-        if (kol) setKol(kol);
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [user]);
   const detailData = getKOLDetailData(kol);
 
-  if (!user.isAuthenticated && !loading) {
+  if (!user?.isAuthenticated && !loading) {
     return (
       <div className="bg-primary-800/70 relative z-10 rounded-lg shadow-lg p-8 max-w-2xl mx-auto backdrop-blur-sm  text-center border border-primary-700/20">
         <div className="mb-6">

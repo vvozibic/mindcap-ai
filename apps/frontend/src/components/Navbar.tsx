@@ -3,15 +3,22 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { User as UserType } from "../types";
 import { Logo } from "./Logo";
+import { Skeleton } from "./Skeleton";
 import XLogo from "./XLogo";
 
 interface NavbarProps {
-  user: UserType;
+  user: UserType | null;
   onLogin: () => void;
   onLogout: () => void;
+  userLoading?: boolean;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
+const Navbar: React.FC<NavbarProps> = ({
+  user,
+  onLogin,
+  onLogout,
+  userLoading,
+}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -89,13 +96,15 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
           </div>
 
           <div className="hidden lg:block">
-            {user.isAuthenticated ? (
+            {userLoading ? (
+              <Skeleton height="30px" />
+            ) : user?.username ? (
               <div className="flex items-center space-x-4">
                 <Link
                   to="/beta/social-card"
                   className={`px-3 py-2 rounded-md text-sm font-medium`}
                 >
-                  <span className="text-sm">{user.email || user.username}</span>
+                  <span className="text-sm">{user.username}</span>
                 </Link>
                 <button
                   onClick={onLogout}
@@ -188,7 +197,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
             </Link> */}
           </div>
           <div className="pt-4 pb-3 border-t border-primary-700">
-            {user.isAuthenticated ? (
+            {user?.username ? (
               <div className="flex items-center px-5 justify-between">
                 <Link
                   to="/beta/social-card"
@@ -199,7 +208,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout }) => {
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  {user.email || user.username}
+                  {user.username}
                 </Link>
                 <button
                   onClick={() => {

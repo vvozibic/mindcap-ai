@@ -1,54 +1,33 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import { AnalyticsTracker } from "../components/AnalyticsTracker";
 import LoginModal from "../components/LoginModal";
 import Navbar from "../components/Navbar";
-import { useAnalytics } from "../hooks/useAnalytics";
 import { useReferralTracker } from "../hooks/useReferral";
 import ForBusinessPage from "../pages/ForBusinessPage";
 import HomePage from "../pages/HomePage";
 import ProjectPage from "../pages/ProjectPage";
 import ProjectsPage from "../pages/ProjectsPage";
 import SocialCardPage from "../pages/SocialCardPage";
-import { User } from "../types";
+import { KOL, User } from "../types";
 
-function ClientLayout() {
-  const isLocalAuthenticated =
-    localStorage.getItem("isAuthenticated") === "true";
-  const [user, setUser] = useState<User>({
-    id: "",
-    username: "",
-    email: "",
-    isAuthenticated: isLocalAuthenticated,
-  });
+interface ClientLayoutProps {
+  user: User | null;
+  kol: KOL | null;
+  loading: boolean;
+  handleLogin: (user: User) => void;
+  handleLogout: () => void;
+}
+
+const ClientLayout: React.FC<ClientLayoutProps> = ({
+  user,
+  kol,
+  loading,
+  handleLogin,
+  handleLogout,
+}) => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const analytics = useAnalytics();
-
-  useEffect(() => {
-    fetch(`/api/auth/me`)
-      .then(async (res) => {
-        if (!res.ok) throw new Error("Not authenticated");
-        const data = await res.json();
-        setUser({ ...data.user, isAuthenticated: true });
-        analytics.setUser(`${data.user.id}`);
-        analytics.identify({
-          userId: data.user.id,
-          username: data.user.username,
-        });
-      })
-      .catch(() => setUser({ isAuthenticated: false }));
-  }, []);
-
   useReferralTracker();
-
-  const handleLogin = (user: User) => {
-    setUser({ ...user, isAuthenticated: true });
-  };
-
-  const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    setUser({ isAuthenticated: false });
-  };
 
   return (
     <div className="min-h-screen bg-primary-900 text-gray-100 relative">
@@ -56,6 +35,7 @@ function ClientLayout() {
       <div className="fixed top-[-100px] z-[0] h-[150vh] w-screen bg-[radial-gradient(ellipse_100%_70%_at_50%_-10%,#00ff9936,transparent)]" />
       <Navbar
         user={user}
+        userLoading={loading}
         onLogin={() => setIsLoginModalOpen(true)}
         onLogout={handleLogout}
       />
@@ -65,7 +45,17 @@ function ClientLayout() {
           <Route path="/" element={<HomePage />} />
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/projects/:slug" element={<ProjectPage />} />
-          <Route path="/social-card" element={<SocialCardPage user={user} />} />
+          <Route
+            path="/social-card"
+            element={
+              <SocialCardPage
+                user={user}
+                kol={kol}
+                loading={loading}
+                handleLogin={handleLogin}
+              />
+            }
+          />
           <Route path="/for-business" element={<ForBusinessPage />} />
         </Routes>
       </main>
@@ -77,6 +67,6 @@ function ClientLayout() {
       />
     </div>
   );
-}
+};
 
 export default ClientLayout;
