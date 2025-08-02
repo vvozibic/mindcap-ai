@@ -3,4 +3,9 @@
     "handle": "vlad_blow",
     "error": "\nInvalid `prisma.user.findUnique()` invocation in\n/Users/vvozibic/projects/mindcap-ai/apps/backend/src/components/users/enrichUser.ts:28:40\n\n  25 \n  26 try {\n  27   if (skipIfExists) {\n→ 28     const exists = await prisma.user.findUnique(\nCan't reach database server at `yamabiko.proxy.rlwy.net:23304`\n\nPlease make sure your database server is running at `yamabiko.proxy.rlwy.net:23304`."
   }
+][
+  {
+    "handle": "vlad_blow",
+    "error": "\nInvalid `prisma.user.upsert()` invocation in\n/Users/vvozibic/projects/mindcap-ai/apps/backend/src/components/users/enrichUser.ts:31:36\n\n  28 \n  29 if (!data) return;\n  30 \n→ 31 const user = await prisma.user.upsert(\nCan't reach database server at `shinkansen.proxy.rlwy.net:49585`\n\nPlease make sure your database server is running at `shinkansen.proxy.rlwy.net:49585`."
+  }
 ]

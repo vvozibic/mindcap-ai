@@ -40,11 +40,7 @@ async function fetchInfluencerByUsername(
   }
 }
 
-const SocialCard: React.FC<SocialCardProps> = ({
-  user,
-  onLogin,
-  standalone,
-}) => {
+const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
   const [kol, setKol] = useState<KOL | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -79,7 +75,6 @@ const SocialCard: React.FC<SocialCardProps> = ({
       if (user?.username) {
         setLoading(true);
         const kol = await fetchInfluencerByUsername(user?.username);
-        console.log(123);
 
         if (kol) setKol(kol);
         setLoading(false);
@@ -88,8 +83,6 @@ const SocialCard: React.FC<SocialCardProps> = ({
     fetchData();
   }, [user]);
   const detailData = getKOLDetailData(kol);
-
-  console.log(loading);
 
   if (!user.isAuthenticated && !loading) {
     return (

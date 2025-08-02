@@ -7,14 +7,10 @@ import { User } from "../types";
 
 interface SocialCardPageProps {
   user?: User;
-  onLogin: () => void;
-  standalone?: boolean;
 }
 
 const SocialCardPage: React.FC<SocialCardPageProps> = ({
   user: userFromProps,
-  onLogin,
-  standalone,
 }) => {
   const isLocalAuthenticated =
     localStorage.getItem("isAuthenticated") === "true";
@@ -50,7 +46,7 @@ const SocialCardPage: React.FC<SocialCardPageProps> = ({
     setUser({ ...user, isAuthenticated: true });
   };
 
-  if (standalone && user)
+  if (user)
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8  relative z-10">
         <div className="text-center mb-8">
@@ -62,11 +58,7 @@ const SocialCardPage: React.FC<SocialCardPageProps> = ({
           </p>
         </div>
 
-        <SocialCard
-          user={user}
-          onLogin={() => setIsLoginModalOpen(true)}
-          standalone={standalone}
-        />
+        <SocialCard user={user} onLogin={() => setIsLoginModalOpen(true)} />
 
         {user.isAuthenticated && (
           <div className="mt-12 bg-primary-800 rounded-lg shadow-lg p-6 border border-primary-700">

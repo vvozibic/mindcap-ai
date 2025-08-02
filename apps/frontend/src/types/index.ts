@@ -20,6 +20,8 @@ export interface Project {
   twitterLang: string;
   twitterCreatedAt: string;
 
+  rewardPools: RewardPool[];
+
   coinSymbol: string;
   coinMarketCap: number;
   coinPrice: number;
