@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { KOL, User } from "../types";
+import HolographicCard from "./HolographicCard";
 import InfluencerDetails from "./KOL/KOLDetails";
 import { getKOLDetailData } from "./KOL/utils";
 import { Skeleton } from "./Skeleton";
@@ -110,6 +111,55 @@ const SocialCard: React.FC<SocialCardProps> = ({ user, onLogin }) => {
 
   return kol && detailData ? (
     <>
+      <div className="flex justify-center max-w-[380px] mx-auto pt-4 pb-12">
+        <HolographicCard>
+          <div className="flex h-[400px] justify-center flex-col items-center text-center text-white">
+            {/* Аватар */}
+            <img
+              src={kol.twitterAvatarUrl || ""}
+              alt="avatar"
+              className="w-20 h-20 rounded-full border-2 border-white/20 shadow-lg"
+            />
+
+            {/* Имя и ник */}
+            <div className="mt-2 mb-12">
+              <h2 className="text-2xl font-bold">{kol.twitterDisplayName}</h2>
+              <p className="text-gray-300">@{kol.twitterUsername}</p>
+            </div>
+
+            {/* Метрики */}
+            <div className="grid grid-cols-2 gap-6 mt-4 text-sm font-medium">
+              <div>
+                <p className="text-green-300 text-xl font-semibold">
+                  {kol.twitterFollowersCount}
+                </p>
+                <span className="text-gray-300">Followers</span>
+              </div>
+              <div>
+                <p className="text-blue-400 text-xl font-semibold">
+                  {kol?.engagementRate
+                    ? `${kol.engagementRate.toFixed(2)}%`
+                    : "-"}
+                </p>
+                <span className="text-gray-300">Engagement</span>
+              </div>
+              <div>
+                <p className="text-purple-400 text-xl font-semibold">
+                  {kol.totalAccountPosts}
+                </p>
+                <span className="text-gray-300">Posts</span>
+              </div>
+              <div>
+                <p className="text-cyan-400 text-xl font-semibold">
+                  {kol.totalAccountViews}
+                </p>
+                <span className="text-gray-300">Views</span>
+              </div>
+            </div>
+          </div>
+        </HolographicCard>
+      </div>
+
       <div className="mx-auto space-y-8 mb-8">
         <div className="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-gray-800">
           {/* Referral Stats Grid */}
