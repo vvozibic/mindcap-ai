@@ -1,8 +1,7 @@
 import { CheckIcon, Copy, Share, TrendingUp, Trophy } from "lucide-react";
 import { useState } from "react";
 import { KOL, User } from "../../../types";
-import HoloBadgeButton from "../../HoloButton";
-import HolographicCard from "../../HolographicCard";
+import UserSocialCard from "../../UserSocialCard";
 import XLogo from "../../XLogo";
 
 export default function SuccessStep({
@@ -33,61 +32,12 @@ export default function SuccessStep({
         You’ve earned your Mindo AI Badge
       </p>
 
-      <div className="onboarding-card">
+      <div className="">
         <h3 className="text-2xl font-bold">Early n-Badge</h3>
         <p className="text-lg text-gray-300">Successfully Claimed</p>
 
-        <div className="flex justify-center max-w-[380px] mx-auto pt-6">
-          <HolographicCard>
-            <div className="flex h-[400px] justify-center flex-col items-center text-center text-white">
-              {/* Аватар */}
-              <img
-                src={kol?.twitterAvatarUrl || ""}
-                alt="avatar"
-                className="w-20 h-20 rounded-full border-2 border-white/20 shadow-lg"
-              />
-
-              {/* Имя и ник */}
-              <div className="mt-2 mb-4">
-                <h2 className="text-2xl font-bold">
-                  {kol?.twitterDisplayName}
-                </h2>
-                <p className="text-gray-300">@{kol?.twitterUsername}</p>
-              </div>
-
-              <HoloBadgeButton onClick={() => console.log("Clicked")} />
-
-              {/* Метрики */}
-              <div className="grid grid-cols-2 gap-6 mt-4 text-sm font-medium">
-                <div>
-                  <p className="text-green-300 text-xl font-semibold">
-                    {kol?.twitterFollowersCount}
-                  </p>
-                  <span className="text-gray-300">Followers</span>
-                </div>
-                <div>
-                  <p className="text-blue-400 text-xl font-semibold">
-                    {kol?.engagementRate
-                      ? `${kol.engagementRate.toFixed(2)}%`
-                      : "-"}
-                  </p>
-                  <span className="text-gray-300">Engagement</span>
-                </div>
-                <div>
-                  <p className="text-purple-400 text-xl font-semibold">
-                    {kol?.totalAccountPosts}
-                  </p>
-                  <span className="text-gray-300">Impressions</span>
-                </div>
-                <div>
-                  <p className="text-cyan-400 text-xl font-semibold">
-                    {kol?.totalAccountViews}
-                  </p>
-                  <span className="text-gray-300">Views</span>
-                </div>
-              </div>
-            </div>
-          </HolographicCard>
+        <div className="flex justify-center max-w-[380px] mx-auto pt-6 pb-8">
+          <UserSocialCard user={user} kol={kol} />
         </div>
       </div>
 
