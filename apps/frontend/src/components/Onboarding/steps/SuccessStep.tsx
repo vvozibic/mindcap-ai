@@ -36,7 +36,7 @@ export default function SuccessStep({
         <h3 className="text-2xl font-bold">Early n-Badge</h3>
         <p className="text-lg text-gray-300">Successfully Claimed</p>
 
-        <div className="flex justify-center max-w-[380px] mx-auto pt-4 pb-4 md:pb-12">
+        <div className="flex justify-center max-w-[380px] mx-auto pt-6">
           <HolographicCard>
             <div className="flex h-[400px] justify-center flex-col items-center text-center text-white">
               {/* Аватар */}
