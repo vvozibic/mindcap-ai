@@ -48,7 +48,7 @@ export default function SuccessStep({
               />
 
               {/* Имя и ник */}
-              <div className="mt-2 mb-12">
+              <div className="mt-2 mb-4">
                 <h2 className="text-2xl font-bold">
                   {kol?.twitterDisplayName}
                 </h2>

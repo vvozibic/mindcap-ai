@@ -100,7 +100,7 @@ const SocialCard: React.FC<SocialCardProps> = ({
             />
 
             {/* Имя и ник */}
-            <div className="mt-2 mb-12">
+            <div className="mt-2 mb-4">
               <h2 className="text-2xl font-bold">{kol.twitterDisplayName}</h2>
               <p className="text-gray-300">@{kol.twitterUsername}</p>
             </div>
