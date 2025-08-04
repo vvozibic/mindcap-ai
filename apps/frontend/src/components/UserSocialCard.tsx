@@ -15,7 +15,7 @@ export default function UserSocialCard({
     >
       {/* Top link */}
       <p className="text-xs text-gray-400 mb-12">
-        Social Card on <span className="text-green-400">MindosShare.AI</span>
+        Social Card on <span className="text-green-400">mindoshare.ai</span>
       </p>
 
       {/* Avatar */}
@@ -27,7 +27,7 @@ export default function UserSocialCard({
 
       {/* Name */}
       <h2 className="text-xl font-bold">{kol?.twitterDisplayName}</h2>
-      <p className="text-gray-400 text-sm mb-8">{kol?.twitterUsername}</p>
+      <p className="text-gray-400 text-sm mb-8">@{kol?.twitterUsername}</p>
 
       {/* Badge */}
       <button className="bg-accent-500 mx-auto mt-2 hover:bg-accent-600 text-primary-900 px-4 py-2 rounded-md text-sm font-medium flex gap-2 items-center">
