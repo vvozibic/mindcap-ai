@@ -143,3 +143,71 @@
   transform: translateZ(1px);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
+
+
+
+/* Включаем muted режим */
+.hc-card.badge.muted {
+  opacity: 0.9;
+}
+
+.hc-card {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+}
+.hc-shine {
+  opacity: 0.4; /* было 0.4 */
+  filter: brightness(0.6) contrast(1) saturate(0.6);
+}
+.hc-glare {
+  opacity: calc(var(--pointer-from-center, 0) * 0.3 + 0.1);
+}
+
+
+.hc-card.intense .hc-shine {
+  opacity: 0.4;
+  filter: brightness(0.8) contrast(1.5) saturate(0.8);
+}
+.hc-card.intense .hc-glare {
+  opacity: calc(var(--pointer-from-center, 0) * 0.5 + 0.2);
+}
+.hc-card.intense .hc-inside {
+  background: linear-gradient(145deg, rgba(15, 36, 25, 0.95) 0%, rgba(22, 101, 52, 0.9) 100%);
+  backdrop-filter: blur(10px);
+}
+.hc-card.intense {
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+
+
+.hc-wrapper.btn .hc-card {
+  width: 226px;
+  height: 48px;
+  padding: 10px 18px;
+}
+
+/* ✅ Отключаем агрессивные 3D-эффекты для кнопок */
+.hc-wrapper.btn .hc-card {
+  transform: none !important;
+  transition: box-shadow 0.3s ease;
+}
+
+/* ✅ Hover — только лёгкий свет по краю */
+.hc-wrapper.btn .hc-card:hover {
+  box-shadow: 0 0 20px rgba(22, 101, 52, 0.3), 0 0 8px rgba(22, 101, 52, 0.2);
+}
+
+/* ✅ Shine и Glare — фиксированная интенсивность */
+.hc-wrapper.btn .hc-card .hc-shine,
+.hc-wrapper.btn .hc-card .hc-glare {
+  opacity: 0.25;
+  filter: brightness(0.6) contrast(1.2) saturate(0.7);
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+/* ✅ Hover — без вспышек, только мягкое увеличение прозрачности */
+.hc-wrapper.btn .hc-card:hover .hc-shine,
+.hc-wrapper.btn .hc-card:hover .hc-glare {
+  opacity: 0.3;
+  filter: brightness(0.7) contrast(1.3);
+}

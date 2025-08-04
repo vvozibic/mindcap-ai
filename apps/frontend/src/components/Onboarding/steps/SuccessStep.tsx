@@ -1,6 +1,7 @@
 import { CheckIcon, Copy, Share, TrendingUp, Trophy } from "lucide-react";
 import { useState } from "react";
 import { KOL, User } from "../../../types";
+import HoloBadgeButton from "../../HoloButton";
 import HolographicCard from "../../HolographicCard";
 import XLogo from "../../XLogo";
 
@@ -53,6 +54,8 @@ export default function SuccessStep({
                 </h2>
                 <p className="text-gray-300">@{kol?.twitterUsername}</p>
               </div>
+
+              <HoloBadgeButton onClick={() => console.log("Clicked")} />
 
               {/* Метрики */}
               <div className="grid grid-cols-2 gap-6 mt-4 text-sm font-medium">

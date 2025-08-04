@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import React, { useState } from "react";
 import { KOL, User } from "../types";
+import HoloBadgeButton from "./HoloButton";
 import HolographicCard from "./HolographicCard";
 import InfluencerDetails from "./KOL/KOLDetails";
 import { getKOLDetailData } from "./KOL/utils";
@@ -103,6 +104,8 @@ const SocialCard: React.FC<SocialCardProps> = ({
               <h2 className="text-2xl font-bold">{kol.twitterDisplayName}</h2>
               <p className="text-gray-300">@{kol.twitterUsername}</p>
             </div>
+
+            <HoloBadgeButton onClick={() => console.log("Clicked")} />
 
             {/* Метрики */}
             <div className="grid grid-cols-2 gap-6 mt-4 text-sm font-medium">
