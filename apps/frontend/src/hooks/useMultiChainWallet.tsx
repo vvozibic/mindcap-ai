@@ -38,92 +38,127 @@ export function useMultiChainWallet(
   const [network, setNetwork] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (user?.primaryWallet?.address) {
-      setAddresses([user.primaryWallet.address]);
-    }
-  }, [user]);
-
-  // @ts-ignore
-  const evmProviderRef = useRef<EthereumProvider | null>(null);
+  const evmProviderRef = useRef<any>(null);
   const solanaProviderRef = useRef<any>(null);
 
-  const connect = useCallback(async () => {
-    setLoading(true);
-    const { walletConnectProjectId } = await fetch("/config").then((r) =>
-      r.json()
-    );
-    setLoading(false);
+  /** ✅ Устанавливаем слушатели для MetaMask */
+  const setupMetamaskListeners = (provider: any) => {
+    if (!provider?.on) return;
+
+    provider.on("accountsChanged", (accounts: string[]) => {
+      console.log("🔄 MetaMask accountsChanged", accounts);
+      setAddresses(accounts);
+    });
+
+    provider.on("chainChanged", (chainId: string) => {
+      console.log("🔄 MetaMask chainChanged", chainId);
+      setNetwork(`eip155:${parseInt(chainId, 16)}`);
+    });
+
+    provider.on("disconnect", () => {
+      console.log("❌ MetaMask disconnected");
+      setAddresses([]);
+      setNetwork(null);
+    });
+  };
+
+  /** ✅ Проверка и подключение MetaMask */
+  const connectMetamask = async () => {
+    const metamask = (window as any).ethereum;
+    if (!metamask) return false;
 
     try {
-      // @ts-ignore
-      const evm = await EthereumProvider.init({
-        projectId: walletConnectProjectId,
-        chains: chainIds,
-        showQrModal: true,
+      const accounts: string[] = await metamask.request({
+        method: "eth_requestAccounts",
       });
+      const chainId = await metamask.request({ method: "eth_chainId" });
 
-      evm.on("connect", () => {
-        if (afterConnectCallback) afterConnectCallback();
-      });
+      setAddresses(accounts);
+      setNetwork(`eip155:${parseInt(chainId, 16)}`);
+      evmProviderRef.current = metamask;
 
-      evm.on("session_delete", () => {
-        console.log("session_delete");
-      });
+      setupMetamaskListeners(metamask);
 
-      evm.on("display_uri", () => {
-        setLoading(false);
-      });
-
-      evm.on("session_event", () => {
-        console.log("session_event");
-      });
-
-      evm.on("session_update", () => {
-        console.log("session_update");
-      });
-
-      await evm.enable();
-
-      evmProviderRef.current = evm;
-
-      const addr = evm.accounts?.[0];
-      setAddresses(evm.accounts || []);
-      setNetwork(`eip155:${evm.chainId}`);
-
-      if (addr) {
-        const chainInfo = EVM_CHAINS_FULL.find((c) => c.id === evm.chainId);
-        setLoading(true);
-
+      // ✅ Отправка на сервер
+      if (accounts[0]) {
+        const chainInfo = EVM_CHAINS_FULL.find(
+          (c) => c.id === parseInt(chainId, 16)
+        );
         await fetch("/api/wallets/add", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             username: user?.username,
-            address: addr,
-            chain: `eip155:${evm.chainId}`,
+            address: accounts[0],
+            chain: `eip155:${parseInt(chainId, 16)}`,
             label: chainInfo?.name,
             symbol: chainInfo?.symbol,
             explorer: chainInfo?.explorer,
           }),
         });
-        setLoading(false);
-
-        if (afterConnectCallback) {
-          afterConnectCallback();
-        }
       }
 
-      return;
+      afterConnectCallback?.();
+      return true;
     } catch (err) {
-      console.warn("⚠️ EVM connect failed", err);
-      setLoading(false);
+      console.warn("⚠️ MetaMask connect failed", err);
+      return false;
     }
+  };
 
-    // Solana fallback
+  /** ✅ WalletConnect fallback */
+  const connectWalletConnect = async (projectId: string) => {
+    try {
+      /** @ts-ignore */
+      const wcProvider = await EthereumProvider.init({
+        projectId,
+        chains: chainIds,
+        showQrModal: true,
+      });
+
+      wcProvider.on("connect", () => {
+        console.log("✅ WalletConnect connected");
+        afterConnectCallback?.();
+      });
+      wcProvider.on("session_delete", () => setAddresses([]));
+      wcProvider.on("session_event", () => console.log("WalletConnect event"));
+      wcProvider.on("session_update", () =>
+        console.log("WalletConnect update")
+      );
+
+      await wcProvider.enable();
+
+      evmProviderRef.current = wcProvider;
+      setAddresses(wcProvider.accounts || []);
+      setNetwork(`eip155:${wcProvider.chainId}`);
+
+      if (wcProvider.accounts?.[0]) {
+        const chainInfo = EVM_CHAINS_FULL.find(
+          (c) => c.id === wcProvider.chainId
+        );
+        await fetch("/api/wallets/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: user?.username,
+            address: wcProvider.accounts[0],
+            chain: `eip155:${wcProvider.chainId}`,
+            label: chainInfo?.name,
+            symbol: chainInfo?.symbol,
+            explorer: chainInfo?.explorer,
+          }),
+        });
+      }
+    } catch (err) {
+      console.error("❌ WalletConnect failed", err);
+    }
+  };
+
+  /** ✅ Solana fallback */
+  const connectSolana = async (projectId: string) => {
     try {
       const solana = await UniversalProvider.init({
-        projectId: walletConnectProjectId,
+        projectId,
         metadata: {
           name: "Mindoshare",
           description: "Wallet Integration",
@@ -143,53 +178,78 @@ export function useMultiChainWallet(
       });
 
       solanaProviderRef.current = solana;
-      const addr = solana.accounts?.[0];
-
-      setAddresses(solana.accounts || []);
+      setAddresses(solana?.accounts || []);
       setNetwork("solana:mainnet");
 
-      if (addr) {
-        setLoading(true);
+      if (solana?.accounts?.[0]) {
         await fetch("/api/wallets/add", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             username: user?.username,
-            address: addr,
+            address: solana?.accounts[0],
             chain: "solana:mainnet",
           }),
         });
-        setLoading(false);
       }
     } catch (err) {
       console.error("❌ Solana connect failed", err);
-      setLoading(false);
+    }
+  };
+
+  /** ✅ Основная функция подключения */
+  const connect = useCallback(async () => {
+    setLoading(true);
+    const { walletConnectProjectId } = await fetch("/config").then((r) =>
+      r.json()
+    );
+    setLoading(false);
+
+    const metamaskConnected = await connectMetamask();
+    if (!metamaskConnected) {
+      await connectWalletConnect(walletConnectProjectId).catch(() =>
+        connectSolana(walletConnectProjectId)
+      );
     }
   }, [user?.username]);
 
+  /** ✅ Disconnect */
   const disconnect = useCallback(async () => {
     const addr = addresses[0];
-    if (evmProviderRef.current) await evmProviderRef.current.disconnect();
-    if (solanaProviderRef.current) await solanaProviderRef.current.disconnect();
+    if (evmProviderRef.current?.disconnect)
+      await evmProviderRef.current.disconnect();
+    if (solanaProviderRef.current?.disconnect)
+      await solanaProviderRef.current.disconnect();
 
-    // ✅ Чистим localStorage WalletConnect
-    Object.keys(localStorage)
-      .filter((key) => key.startsWith("@appkit/"))
-      .forEach((key) => localStorage.removeItem(key));
+    Object.keys(localStorage).forEach((k) => {
+      if (k.startsWith("@appkit/") || k.includes("walletconnect"))
+        localStorage.removeItem(k);
+    });
 
     setAddresses([]);
     setNetwork(null);
 
     if (addr) {
-      setLoading(true);
       await fetch("/api/wallets/remove", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: user?.username, address: addr }),
       });
-      setLoading(false);
     }
   }, [addresses, user?.username]);
+
+  /** ✅ Восстановление сессии при загрузке */
+  useEffect(() => {
+    const metamask = (window as any).ethereum;
+    if (metamask?.selectedAddress) {
+      console.log("🔄 Restoring MetaMask session");
+      setAddresses([metamask.selectedAddress]);
+      metamask.request({ method: "eth_chainId" }).then((chainId: string) => {
+        setNetwork(`eip155:${parseInt(chainId, 16)}`);
+      });
+      setupMetamaskListeners(metamask);
+    }
+  }, []);
 
   return { addresses, network, connect, loading, disconnect };
 }
