@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useAnalytics } from "../../hooks/useAnalytics";
+import { useAuthWithKOL } from "../../hooks/useAuthWithKOL";
 import { useReferralTracker } from "../../hooks/useReferral";
-import { User } from "../../types";
 import ConnectStep from "./steps/ConnectStep";
 import HomeStep from "./steps/HomeStep";
 import SuccessStep from "./steps/SuccessStep";
@@ -47,32 +47,15 @@ const Onboarding: React.FC = () => {
   const getPrevStep = (s: Step): Step =>
     s === "connect" ? "home" : s === "wallet" ? "connect" : "wallet";
 
-  const [user, setUser] = useState<User>({
-    id: "",
-    username: "",
-    email: "",
-  });
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const analytics = useAnalytics();
 
-  useEffect(() => {
-    fetch(`/api/auth/me`)
-      .then(async (res) => {
-        if (!res.ok) throw new Error("Not authenticated");
-        const data = await res.json();
-        setUser({ ...data.user, isAuthenticated: true });
-        analytics.setUser(`${data.user.id}`);
-        analytics.identify({
-          userId: data.user.id,
-          username: data.user.username,
-        });
-      })
-      .catch(() => setUser({ isAuthenticated: false }));
-  }, []);
+  const { user, kol, loading, handleLogin, handleLogout } = useAuthWithKOL();
 
   useReferralTracker();
 
-  if (user.username && step === "home") window.location.replace("/social-card");
+  if (user?.username && step === "home")
+    window.location.replace("/social-card");
 
   const steps: Record<Step, JSX.Element> = {
     home: (
@@ -82,7 +65,7 @@ const Onboarding: React.FC = () => {
     wallet: (
       <WalletStep user={user} onNext={() => next("success")} onBack={back} />
     ),
-    success: <SuccessStep user={user} />,
+    success: <SuccessStep user={user} kol={kol} />,
   };
   return (
     <div className="relative min-h-screen bg-black text-white flex items-center justify-center px-4">

@@ -124,7 +124,7 @@ const SocialCard: React.FC<SocialCardProps> = ({
                 <p className="text-purple-400 text-xl font-semibold">
                   {kol.totalAccountPosts}
                 </p>
-                <span className="text-gray-300">Posts</span>
+                <span className="text-gray-300">Impressions</span>
               </div>
               <div>
                 <p className="text-cyan-400 text-xl font-semibold">
