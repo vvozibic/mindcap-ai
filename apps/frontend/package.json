@@ -24,6 +24,7 @@
     "clsx": "^2.1.1",
     "cors": "^2.8.5",
     "d3-hierarchy": "^3.1.2",
+    "dom-to-image": "^2.6.0",
     "dotenv": "^17.0.0",
     "express-session": "^1.18.1",
     "lucide-react": "^0.344.0",
@@ -41,6 +42,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
+    "@types/dom-to-image": "^2.6.7",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
