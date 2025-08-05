@@ -58,6 +58,10 @@ model Wallet {
   explorer  String? // Ссылка на блок-обозреватель (https://etherscan.io)
   createdAt DateTime @default(now())
 
+  // 🔹 RubyScore API
+  rubyWalletScore          Float?
+  rubyWalletScoreFetchedAt DateTime?
+
   user       User  @relation(fields: [userId], references: [id])
   primaryFor User? @relation("PrimaryWallet")
 

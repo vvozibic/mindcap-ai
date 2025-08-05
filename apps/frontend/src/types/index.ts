@@ -106,6 +106,10 @@ export interface User {
   onboardingStep?: number;
   completedTasks?: number;
   primaryWallet?: Wallet;
+  wallets: Array<{
+    rubyWalletScore: number;
+    address: string;
+  }>;
   platform?: "twitter";
   earnedPoints?: number;
 }
@@ -119,6 +123,7 @@ export interface Wallet {
   label: string;
   symbol: string;
   userId: number;
+  rubyWalletScore: number;
   verified: Boolean;
 }
 

@@ -142,7 +142,13 @@ const SocialCard: React.FC<SocialCardProps> = ({
                   Wallet score
                 </span>
               </div>
-              <p className="text-3xl font-bold text-white">Soon</p>
+              <p className="text-3xl font-bold text-white">
+                {user?.wallets
+                  ?.find(
+                    (w) => w.address === (user?.primaryWallet?.address || "")
+                  )
+                  ?.rubyWalletScore?.toFixed(2)}
+              </p>
             </div>
 
             {/* Completed Tasks */}

@@ -96,7 +96,18 @@ export const getMe = async (req: Request, res: Response) => {
     if (username) {
       let userData = await prisma.user.findFirst({
         where: { username },
-        include: { referrals: true, primaryWallet: true },
+        include: {
+          referrals: true,
+          primaryWallet: true,
+          wallets: {
+            select: {
+              address: true,
+              chain: true,
+              rubyWalletScore: true,
+              rubyWalletScoreFetchedAt: true,
+            },
+          },
+        },
       });
       return res.json({ success: true, user: userData });
     } else {

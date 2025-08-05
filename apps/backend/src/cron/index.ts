@@ -2,6 +2,7 @@ import { enrichKOLsFromProjects } from "../components/kols/enrichKOLsFromProject
 import { enrichKOLStats } from "../components/kols/enrichKOLStats";
 import { enrichNarratives } from "../components/narratives/enrichNarratives";
 import { enrichProjectsByNarratives } from "../components/projects/enrichProjectsByNarratives";
+import { fetchRubyWalletScores } from "../components/wallets/fetchRubyWalletScores";
 import { startTimer } from "./utils";
 
 import cron from "node-cron";
@@ -27,6 +28,10 @@ cron.schedule("0 0 * * *", async () => {
     console.log("🔄 [CRON] Запуск enrichKOLStats...");
     await enrichKOLStats();
     console.log("✅ [CRON] Обогащение KOL статистики завершено");
+
+    console.log("🔄 [CRON] Запуск fetchRubyWalletScores...");
+    await fetchRubyWalletScores();
+    console.log("✅ [CRON] Получение ruby wallet score завершено");
 
     console.log("✅ [CRON] Обогащение завершено");
   } catch (e) {
