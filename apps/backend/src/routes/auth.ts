@@ -4,8 +4,8 @@ import { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
 import fetch from "node-fetch";
 import querystring from "querystring";
-import { updateKOLByUsername } from "../components/kols/updateKOLByUsername";
 import { enrichUser } from "../components/users/enrichUser";
+import { linkUserAndKOL } from "../components/users/linkUserAndKOL";
 import {
   adminLogin,
   getMe,
@@ -140,7 +140,8 @@ authRoutes.get("/callback/twitter", async (req, res) => {
     false,
     referralCodeFromState
   ).catch(console.error);
-  updateKOLByUsername(userData?.data?.username).catch(console.error);
+
+  linkUserAndKOL(userData?.data?.username).catch(console.error);
 
   // Удаляем куки с реферальным кодом
   res.setHeader(

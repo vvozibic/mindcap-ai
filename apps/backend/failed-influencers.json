@@ -8,4 +8,9 @@
     "handle": "vlad_blow",
     "error": "\nInvalid `prisma.user.upsert()` invocation in\n/Users/vvozibic/projects/mindcap-ai/apps/backend/src/components/users/enrichUser.ts:31:36\n\n  28 \n  29 if (!data) return;\n  30 \n→ 31 const user = await prisma.user.upsert(\nCan't reach database server at `shinkansen.proxy.rlwy.net:49585`\n\nPlease make sure your database server is running at `shinkansen.proxy.rlwy.net:49585`."
   }
+][
+  {
+    "handle": "vlad_blow",
+    "error": "Protokols API error: 429 - {\"error\":\"Rate limit exceeded\",\"monthly\":{\"current\":0,\"remaining\":1000000,\"limit\":1000000},\"minute\":{\"current\":0,\"remaining\":1000000,\"limit\":1000000}}"
+  }
 ]

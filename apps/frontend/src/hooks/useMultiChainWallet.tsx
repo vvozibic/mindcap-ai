@@ -1,6 +1,7 @@
 import { EthereumProvider } from "@walletconnect/ethereum-provider";
 import UniversalProvider from "@walletconnect/universal-provider";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import { useGlobalStore } from "../store/useGlobalStore";
 import { User } from "../types";
 
 /* prettier-ignore */
@@ -40,9 +41,15 @@ export function useMultiChainWallet(
   user?: User,
   afterConnectCallback?: () => void
 ) {
-  const [addresses, setAddresses] = useState<string[]>([]);
+  const [addresses, setAddresses] = useState<string[]>(
+    user?.primaryWallet?.address ? [user.primaryWallet.address] : []
+  );
+
   const [network, setNetwork] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const { fetchUserAndKol, walletUpdating, setWalletUpdating } =
+    useGlobalStore(); // ✅ стор для обновления user
 
   const evmProviderRef = useRef<any>(null);
   const solanaProviderRef = useRef<any>(null);
@@ -63,6 +70,38 @@ export function useMultiChainWallet(
     });
   };
 
+  /** ✅ Отправка данных на бэкенд + обновление стора */
+  const registerWallet = async (data: any) => {
+    setWalletUpdating(true);
+
+    try {
+      await fetch("/api/wallets/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      await fetchUserAndKol(true); // 🔄 подтягиваем финальные данные
+    } finally {
+      setWalletUpdating(false); // 🟢 завершаем локальное обновление
+    }
+  };
+
+  /** ✅ Удаление кошелька */
+  const unregisterWallet = async (address: string) => {
+    setWalletUpdating(true);
+
+    try {
+      await fetch("/api/wallets/remove", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: user?.username, address }),
+      });
+      await fetchUserAndKol(true); // 🔄 обновляем user глобально
+    } finally {
+      setWalletUpdating(false); // 🟢 завершаем локальное обновление
+    }
+  };
+
   /** ✅ Подключение MetaMask */
   const connectMetamask = async () => {
     try {
@@ -80,22 +119,17 @@ export function useMultiChainWallet(
 
       setupMetamaskListeners(metamask);
 
-      // ✅ отправляем на бэкенд
       if (accounts[0]) {
         const chainInfo = EVM_CHAINS_FULL.find(
           (c) => c.id === parseInt(chainId, 16)
         );
-        await fetch("/api/wallets/add", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: user?.username,
-            address: accounts[0],
-            chain: `eip155:${parseInt(chainId, 16)}`,
-            label: chainInfo?.name,
-            symbol: chainInfo?.symbol,
-            explorer: chainInfo?.explorer,
-          }),
+        await registerWallet({
+          username: user?.username,
+          address: accounts[0],
+          chain: `eip155:${parseInt(chainId, 16)}`,
+          label: chainInfo?.name,
+          symbol: chainInfo?.symbol,
+          explorer: chainInfo?.explorer,
         });
       }
 
@@ -121,7 +155,6 @@ export function useMultiChainWallet(
       wcProvider.on("session_delete", () => setAddresses([]));
 
       await wcProvider.enable();
-
       evmProviderRef.current = wcProvider;
       setAddresses(wcProvider.accounts || []);
       setNetwork(`eip155:${wcProvider.chainId}`);
@@ -130,17 +163,13 @@ export function useMultiChainWallet(
         const chainInfo = EVM_CHAINS_FULL.find(
           (c) => c.id === wcProvider.chainId
         );
-        await fetch("/api/wallets/add", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: user?.username,
-            address: wcProvider.accounts[0],
-            chain: `eip155:${wcProvider.chainId}`,
-            label: chainInfo?.name,
-            symbol: chainInfo?.symbol,
-            explorer: chainInfo?.explorer,
-          }),
+        await registerWallet({
+          username: user?.username,
+          address: wcProvider.accounts[0],
+          chain: `eip155:${wcProvider.chainId}`,
+          label: chainInfo?.name,
+          symbol: chainInfo?.symbol,
+          explorer: chainInfo?.explorer,
         });
       }
     } catch (err) {
@@ -176,14 +205,10 @@ export function useMultiChainWallet(
       setNetwork("solana:mainnet");
 
       if (solana.accounts?.[0]) {
-        await fetch("/api/wallets/add", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: user?.username,
-            address: solana.accounts[0],
-            chain: "solana:mainnet",
-          }),
+        await registerWallet({
+          username: user?.username,
+          address: solana.accounts[0],
+          chain: "solana:mainnet",
         });
       }
     } catch (err) {
@@ -199,61 +224,49 @@ export function useMultiChainWallet(
     );
     setLoading(false);
 
-    // 🟢 Firefox: даём MetaMask время загрузиться
-    if (isFirefox) {
-      console.log("🦊 Firefox detected → delayed MetaMask check");
-      await new Promise((res) => setTimeout(res, 500));
-    }
-
+    if (isFirefox) await new Promise((res) => setTimeout(res, 500));
     const metamaskConnected = await connectMetamask();
-    if (!metamaskConnected) {
-      console.log("🔄 Falling back to WalletConnect");
+    if (!metamaskConnected)
       await connectWalletConnect(walletConnectProjectId).catch(() =>
         connectSolana(walletConnectProjectId)
       );
-    }
   }, [user?.username]);
 
   /** ✅ Disconnect */
-  const disconnect = useCallback(async () => {
-    const addr = addresses[0];
-    if (evmProviderRef.current?.disconnect)
-      await evmProviderRef.current.disconnect();
-    if (solanaProviderRef.current?.disconnect)
-      await solanaProviderRef.current.disconnect();
+  const disconnect = useCallback(
+    async (address?: string) => {
+      const addr = addresses[0] || address;
+      if (evmProviderRef.current?.disconnect)
+        await evmProviderRef.current.disconnect();
+      if (solanaProviderRef.current?.disconnect)
+        await solanaProviderRef.current.disconnect();
 
-    // ✅ чистим storage WalletConnect
-    Object.keys(localStorage).forEach((k) => {
-      if (k.startsWith("@appkit/") || k.includes("walletconnect"))
-        localStorage.removeItem(k);
-    });
-
-    setAddresses([]);
-    setNetwork(null);
-
-    if (addr) {
-      await fetch("/api/wallets/remove", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: user?.username, address: addr }),
+      Object.keys(localStorage).forEach((k) => {
+        if (k.startsWith("@appkit/") || k.includes("walletconnect"))
+          localStorage.removeItem(k);
       });
-    }
-  }, [addresses, user?.username]);
+
+      setAddresses([]);
+      setNetwork(null);
+
+      if (addr) await unregisterWallet(addr); // 🟢 удаляем + обновляем стор
+    },
+    [addresses, user?.username]
+  );
 
   /** ✅ Восстановление MetaMask-сессии */
-  useEffect(() => {
-    const metamask = (window as any).ethereum;
-    if (metamask?.selectedAddress) {
-      console.log("🔄 Restoring MetaMask session");
-      setAddresses([metamask.selectedAddress]);
-      metamask
-        .request({ method: "eth_chainId" })
-        .then((chainId: string) =>
-          setNetwork(`eip155:${parseInt(chainId, 16)}`)
-        );
-      setupMetamaskListeners(metamask);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const metamask = (window as any).ethereum;
+  //   if (metamask?.selectedAddress) {
+  //     setAddresses([metamask.selectedAddress]);
+  //     metamask
+  //       .request({ method: "eth_chainId" })
+  //       .then((chainId: string) =>
+  //         setNetwork(`eip155:${parseInt(chainId, 16)}`)
+  //       );
+  //     setupMetamaskListeners(metamask);
+  //   }
+  // }, []);
 
-  return { addresses, network, connect, loading, disconnect };
+  return { addresses, network, connect, loading, walletUpdating, disconnect };
 }

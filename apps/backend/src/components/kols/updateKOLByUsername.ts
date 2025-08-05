@@ -15,7 +15,7 @@ export async function updateKOLByUsername(username: string) {
     if (!data) return;
 
     // ⬇️ Обновление глобальных полей KOL
-    await prisma.$transaction([
+    const kol = await prisma.$transaction([
       prisma.kOL.upsert({
         where: { twitterUsername: username },
         create: {
@@ -91,6 +91,7 @@ export async function updateKOLByUsername(username: string) {
     ]);
 
     console.log(`✅ Обновлён KOL: ${username}`);
+    return kol[0];
   } catch (err: any) {
     console.error(`❌ Ошибка при обновлении ${username}:`, err.message);
     await logToDb("ERROR", `Failed to enrich ${username}: ${err.message}`);

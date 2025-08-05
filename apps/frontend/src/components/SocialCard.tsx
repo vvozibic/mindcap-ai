@@ -62,7 +62,7 @@ const SocialCard: React.FC<SocialCardProps> = ({
 
   const detailData = getKOLDetailData(kol);
 
-  if (!user?.isAuthenticated && !loading) {
+  if (!user?.username && !loading) {
     return (
       <div className="bg-primary-800/70 relative z-10 rounded-lg shadow-lg p-8 max-w-2xl mx-auto backdrop-blur-sm  text-center border border-primary-700/20">
         <div className="mb-6">

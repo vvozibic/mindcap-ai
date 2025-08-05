@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { sendJson } from "../utils/sendJson";
 
 const prisma = new PrismaClient();
 
@@ -107,9 +108,13 @@ export const getMe = async (req: Request, res: Response) => {
               rubyWalletScoreFetchedAt: true,
             },
           },
+          kol: true,
         },
       });
-      return res.json({ success: true, user: userData });
+      return sendJson(res, {
+        success: true,
+        user: userData,
+      });
     } else {
       res.status(401).json({ error: "Unauthorized" });
     }
