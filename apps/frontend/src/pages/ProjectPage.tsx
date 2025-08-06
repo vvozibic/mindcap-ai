@@ -173,7 +173,7 @@ const ProjectPage = () => {
     <>
       <div className="max-w-7xl py-6 px-4 sm:px-6 mx-auto mt-[50px] relative z-10 overflow-hidden rounded-xl border border-primary-700/40 bg-primary-800/40 backdrop-blur-sm shadow-[inset_0_0_0_1px_rgba(0,255,174,0.05),0_8px_20px_rgba(0,255,174,0.05)]">
         <button
-          onClick={() => navigate("/projects")}
+          onClick={() => navigate("/beta/projects")}
           className="flex items-center text-gray-400 hover:text-gray-300 mb-4"
         >
           <svg

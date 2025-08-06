@@ -15,6 +15,19 @@ export default function UserSocialCard({
   const handleSave = () => {
     const node = cardRef.current;
     if (!node) return;
+
+    // ✅ Сохраняем оригинальные стили
+    const originalBg = node.style.background;
+    const originalClip = node.style.clipPath;
+    const originalOverflow = node.style.overflow;
+    const originalWhiteSpace = node.style.whiteSpace;
+
+    // 🟢 Фиксы для dom-to-image
+    node.style.background = "#030b06"; // фон карточки
+    node.style.overflow = "hidden"; // обрезка углов
+    node.style.clipPath = "inset(0 round 20px)"; // гарантируем border-radius
+    node.style.whiteSpace = "nowrap"; // предотвращаем перенос текста
+
     domtoimage
       .toPng(node, {
         width: node.offsetWidth * 2,
@@ -27,10 +40,25 @@ export default function UserSocialCard({
         },
       })
       .then((dataUrl) => {
+        // 🔄 Восстанавливаем стили
+        node.style.background = originalBg;
+        node.style.overflow = originalOverflow;
+        node.style.clipPath = originalClip;
+        node.style.whiteSpace = originalWhiteSpace;
+
+        // ✅ Скачивание файла
         const link = document.createElement("a");
         link.download = `${user?.username}-mindo-social-card.png`;
         link.href = dataUrl;
         link.click();
+      })
+      .catch((err) => {
+        console.error("❌ Error saving social card:", err);
+        // 🔄 Восстанавливаем стили даже в случае ошибки
+        node.style.background = originalBg;
+        node.style.overflow = originalOverflow;
+        node.style.clipPath = originalClip;
+        node.style.whiteSpace = originalWhiteSpace;
       });
   };
 
