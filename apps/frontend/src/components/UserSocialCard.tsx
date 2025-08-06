@@ -25,7 +25,7 @@ export default function UserSocialCard({
     // 🟢 Фиксы для dom-to-image
     node.style.background = "#030b06"; // фон карточки
     node.style.overflow = "hidden"; // обрезка углов
-    node.style.clipPath = "inset(0 round 20px)"; // гарантируем border-radius
+    node.style.clipPath = "inset(0 round 16px)"; // гарантируем border-radius
     node.style.whiteSpace = "nowrap"; // предотвращаем перенос текста
 
     domtoimage
