@@ -75,7 +75,7 @@ export const removeWallet = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Wallet not found" });
     }
 
-    await prisma.wallet.delete({ where: { address } });
+    // await prisma.wallet.delete({ where: { address } });
 
     // Сбрасываем primaryWallet, если это он
     if (user.primaryWalletId === wallet.id) {
