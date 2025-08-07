@@ -23,7 +23,17 @@ export default function UserSocialCard({
     const originalWhiteSpace = node.style.whiteSpace;
 
     // 🟢 Фиксы для dom-to-image
-    node.style.background = "#030b06"; // фон карточки
+    node.style.background = `linear-gradient(
+      153deg,
+      #030b06 7%,
+      #052010 24%,
+      #071b10 31%,
+      #06180f 44%,
+      #05130c 54%,
+      #072114 65%,
+      #083018 86%,
+      #051c0f 98%
+    )`; // фон карточки
     node.style.overflow = "hidden"; // обрезка углов
     node.style.clipPath = "inset(0 round 16px)"; // гарантируем border-radius
     node.style.whiteSpace = "nowrap"; // предотвращаем перенос текста

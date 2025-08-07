@@ -312,10 +312,12 @@ model KOL {
   projects    KOLToProject[]
   kolSnapshot KOLSnapshot[]
 
+  user             User?
+  rewardSubmission RewardSubmission[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   fetchedAt DateTime @default(now())
-  user      User?
 
   @@unique([twitterId])
   @@unique([twitterUsername])
@@ -422,12 +424,34 @@ model RewardPool {
   requirements        String[]
   project             Project          @relation(fields: [projectId], references: [id])
   projectId           String
+
+  rewardSubmission RewardSubmission[]
 }
 
 enum RewardPoolStatus {
   active
   upcoming
   closed
+}
+
+model RewardSubmission {
+  id         String           @id @default(cuid())
+  contentUrl String
+  notes      String?
+  status     SubmissionStatus @default(pending)
+  createdAt  DateTime         @default(now())
+
+  rewardPool   RewardPool @relation(fields: [rewardPoolId], references: [id])
+  rewardPoolId String
+
+  kol   KOL    @relation(fields: [kolId], references: [id])
+  kolId String
+}
+
+enum SubmissionStatus {
+  pending
+  approved
+  rejected
 }
 
 model Log {

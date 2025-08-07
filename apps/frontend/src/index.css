@@ -214,7 +214,7 @@
 
 
 .bg-mindo-gradient {
-  background: 
+  /* background: 
     linear-gradient(0deg, rgba(2, 4, 2, 0.6), rgba(2, 4, 2, 0.6)),
     linear-gradient(
       153.2deg,
@@ -227,8 +227,18 @@
       rgba(0, 154, 39, 0.2) 86.28%,
       rgba(10, 65, 32, 0.2) 97.67%
     );
-  background-blend-mode: overlay;
-
+  background-blend-mode: overlay; */
+background: linear-gradient(
+      153deg,
+      #030b06 7%,
+      #052010 24%,
+      #071b10 31%,
+      #06180f 44%,
+      #05130c 54%,
+      #072114 65%,
+      #083018 86%,
+      #051c0f 98%
+    );
   
 }
 

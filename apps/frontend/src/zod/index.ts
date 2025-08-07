@@ -36,6 +36,8 @@ export const KOLToProjectScalarFieldEnumSchema = z.enum(['id','kolId','projectId
 
 export const RewardPoolScalarFieldEnumSchema = z.enum(['id','title','description','reward','rewardRate','rewardUnit','deadline','platforms','status','totalAmountUsd','paidOutUsd','campaignTargetViews','participantsCount','completedCount','requirements','projectId']);
 
+export const RewardSubmissionScalarFieldEnumSchema = z.enum(['id','contentUrl','notes','status','createdAt','rewardPoolId','kolId']);
+
 export const LogScalarFieldEnumSchema = z.enum(['id','level','message','url','timestamp']);
 
 export const SortOrderSchema = z.enum(['asc','desc']);
@@ -47,6 +49,10 @@ export const NullsOrderSchema = z.enum(['first','last']);
 export const RewardPoolStatusSchema = z.enum(['active','upcoming','closed']);
 
 export type RewardPoolStatusType = `${z.infer<typeof RewardPoolStatusSchema>}`
+
+export const SubmissionStatusSchema = z.enum(['pending','approved','rejected']);
+
+export type SubmissionStatusType = `${z.infer<typeof SubmissionStatusSchema>}`
 
 /////////////////////////////////////////
 // MODELS
@@ -382,6 +388,22 @@ export const RewardPoolSchema = z.object({
 })
 
 export type RewardPool = z.infer<typeof RewardPoolSchema>
+
+/////////////////////////////////////////
+// REWARD SUBMISSION SCHEMA
+/////////////////////////////////////////
+
+export const RewardSubmissionSchema = z.object({
+  status: SubmissionStatusSchema,
+  id: z.string().cuid(),
+  contentUrl: z.string(),
+  notes: z.string().nullable(),
+  createdAt: z.coerce.date(),
+  rewardPoolId: z.string(),
+  kolId: z.string(),
+})
+
+export type RewardSubmission = z.infer<typeof RewardSubmissionSchema>
 
 /////////////////////////////////////////
 // LOG SCHEMA
@@ -721,6 +743,7 @@ export const KOLIncludeSchema: z.ZodType<Prisma.KOLInclude> = z.object({
   projects: z.union([z.boolean(),z.lazy(() => KOLToProjectFindManyArgsSchema)]).optional(),
   kolSnapshot: z.union([z.boolean(),z.lazy(() => KOLSnapshotFindManyArgsSchema)]).optional(),
   user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+  rewardSubmission: z.union([z.boolean(),z.lazy(() => RewardSubmissionFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => KOLCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -736,6 +759,7 @@ export const KOLCountOutputTypeArgsSchema: z.ZodType<Prisma.KOLCountOutputTypeDe
 export const KOLCountOutputTypeSelectSchema: z.ZodType<Prisma.KOLCountOutputTypeSelect> = z.object({
   projects: z.boolean().optional(),
   kolSnapshot: z.boolean().optional(),
+  rewardSubmission: z.boolean().optional(),
 }).strict();
 
 export const KOLSelectSchema: z.ZodType<Prisma.KOLSelect> = z.object({
@@ -786,6 +810,7 @@ export const KOLSelectSchema: z.ZodType<Prisma.KOLSelect> = z.object({
   projects: z.union([z.boolean(),z.lazy(() => KOLToProjectFindManyArgsSchema)]).optional(),
   kolSnapshot: z.union([z.boolean(),z.lazy(() => KOLSnapshotFindManyArgsSchema)]).optional(),
   user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+  rewardSubmission: z.union([z.boolean(),z.lazy(() => RewardSubmissionFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => KOLCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -869,11 +894,21 @@ export const KOLToProjectSelectSchema: z.ZodType<Prisma.KOLToProjectSelect> = z.
 
 export const RewardPoolIncludeSchema: z.ZodType<Prisma.RewardPoolInclude> = z.object({
   project: z.union([z.boolean(),z.lazy(() => ProjectArgsSchema)]).optional(),
+  rewardSubmission: z.union([z.boolean(),z.lazy(() => RewardSubmissionFindManyArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => RewardPoolCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
 export const RewardPoolArgsSchema: z.ZodType<Prisma.RewardPoolDefaultArgs> = z.object({
   select: z.lazy(() => RewardPoolSelectSchema).optional(),
   include: z.lazy(() => RewardPoolIncludeSchema).optional(),
+}).strict();
+
+export const RewardPoolCountOutputTypeArgsSchema: z.ZodType<Prisma.RewardPoolCountOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => RewardPoolCountOutputTypeSelectSchema).nullish(),
+}).strict();
+
+export const RewardPoolCountOutputTypeSelectSchema: z.ZodType<Prisma.RewardPoolCountOutputTypeSelect> = z.object({
+  rewardSubmission: z.boolean().optional(),
 }).strict();
 
 export const RewardPoolSelectSchema: z.ZodType<Prisma.RewardPoolSelect> = z.object({
@@ -894,6 +929,33 @@ export const RewardPoolSelectSchema: z.ZodType<Prisma.RewardPoolSelect> = z.obje
   requirements: z.boolean().optional(),
   projectId: z.boolean().optional(),
   project: z.union([z.boolean(),z.lazy(() => ProjectArgsSchema)]).optional(),
+  rewardSubmission: z.union([z.boolean(),z.lazy(() => RewardSubmissionFindManyArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => RewardPoolCountOutputTypeArgsSchema)]).optional(),
+}).strict()
+
+// REWARD SUBMISSION
+//------------------------------------------------------
+
+export const RewardSubmissionIncludeSchema: z.ZodType<Prisma.RewardSubmissionInclude> = z.object({
+  rewardPool: z.union([z.boolean(),z.lazy(() => RewardPoolArgsSchema)]).optional(),
+  kol: z.union([z.boolean(),z.lazy(() => KOLArgsSchema)]).optional(),
+}).strict()
+
+export const RewardSubmissionArgsSchema: z.ZodType<Prisma.RewardSubmissionDefaultArgs> = z.object({
+  select: z.lazy(() => RewardSubmissionSelectSchema).optional(),
+  include: z.lazy(() => RewardSubmissionIncludeSchema).optional(),
+}).strict();
+
+export const RewardSubmissionSelectSchema: z.ZodType<Prisma.RewardSubmissionSelect> = z.object({
+  id: z.boolean().optional(),
+  contentUrl: z.boolean().optional(),
+  notes: z.boolean().optional(),
+  status: z.boolean().optional(),
+  createdAt: z.boolean().optional(),
+  rewardPoolId: z.boolean().optional(),
+  kolId: z.boolean().optional(),
+  rewardPool: z.union([z.boolean(),z.lazy(() => RewardPoolArgsSchema)]).optional(),
+  kol: z.union([z.boolean(),z.lazy(() => KOLArgsSchema)]).optional(),
 }).strict()
 
 // LOG
@@ -2675,6 +2737,7 @@ export const KOLWhereInputSchema: z.ZodType<Prisma.KOLWhereInput> = z.object({
   projects: z.lazy(() => KOLToProjectListRelationFilterSchema).optional(),
   kolSnapshot: z.lazy(() => KOLSnapshotListRelationFilterSchema).optional(),
   user: z.union([ z.lazy(() => UserNullableRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional().nullable(),
+  rewardSubmission: z.lazy(() => RewardSubmissionListRelationFilterSchema).optional()
 }).strict();
 
 export const KOLOrderByWithRelationInputSchema: z.ZodType<Prisma.KOLOrderByWithRelationInput> = z.object({
@@ -2724,7 +2787,8 @@ export const KOLOrderByWithRelationInputSchema: z.ZodType<Prisma.KOLOrderByWithR
   fetchedAt: z.lazy(() => SortOrderSchema).optional(),
   projects: z.lazy(() => KOLToProjectOrderByRelationAggregateInputSchema).optional(),
   kolSnapshot: z.lazy(() => KOLSnapshotOrderByRelationAggregateInputSchema).optional(),
-  user: z.lazy(() => UserOrderByWithRelationInputSchema).optional()
+  user: z.lazy(() => UserOrderByWithRelationInputSchema).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
 export const KOLWhereUniqueInputSchema: z.ZodType<Prisma.KOLWhereUniqueInput> = z.union([
@@ -2806,6 +2870,7 @@ export const KOLWhereUniqueInputSchema: z.ZodType<Prisma.KOLWhereUniqueInput> = 
   projects: z.lazy(() => KOLToProjectListRelationFilterSchema).optional(),
   kolSnapshot: z.lazy(() => KOLSnapshotListRelationFilterSchema).optional(),
   user: z.union([ z.lazy(() => UserNullableRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional().nullable(),
+  rewardSubmission: z.lazy(() => RewardSubmissionListRelationFilterSchema).optional()
 }).strict());
 
 export const KOLOrderByWithAggregationInputSchema: z.ZodType<Prisma.KOLOrderByWithAggregationInput> = z.object({
@@ -3229,6 +3294,7 @@ export const RewardPoolWhereInputSchema: z.ZodType<Prisma.RewardPoolWhereInput> 
   requirements: z.lazy(() => StringNullableListFilterSchema).optional(),
   projectId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   project: z.union([ z.lazy(() => ProjectRelationFilterSchema),z.lazy(() => ProjectWhereInputSchema) ]).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionListRelationFilterSchema).optional()
 }).strict();
 
 export const RewardPoolOrderByWithRelationInputSchema: z.ZodType<Prisma.RewardPoolOrderByWithRelationInput> = z.object({
@@ -3248,7 +3314,8 @@ export const RewardPoolOrderByWithRelationInputSchema: z.ZodType<Prisma.RewardPo
   completedCount: z.lazy(() => SortOrderSchema).optional(),
   requirements: z.lazy(() => SortOrderSchema).optional(),
   projectId: z.lazy(() => SortOrderSchema).optional(),
-  project: z.lazy(() => ProjectOrderByWithRelationInputSchema).optional()
+  project: z.lazy(() => ProjectOrderByWithRelationInputSchema).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
 export const RewardPoolWhereUniqueInputSchema: z.ZodType<Prisma.RewardPoolWhereUniqueInput> = z.object({
@@ -3275,6 +3342,7 @@ export const RewardPoolWhereUniqueInputSchema: z.ZodType<Prisma.RewardPoolWhereU
   requirements: z.lazy(() => StringNullableListFilterSchema).optional(),
   projectId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   project: z.union([ z.lazy(() => ProjectRelationFilterSchema),z.lazy(() => ProjectWhereInputSchema) ]).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionListRelationFilterSchema).optional()
 }).strict());
 
 export const RewardPoolOrderByWithAggregationInputSchema: z.ZodType<Prisma.RewardPoolOrderByWithAggregationInput> = z.object({
@@ -3321,6 +3389,77 @@ export const RewardPoolScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Re
   completedCount: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
   requirements: z.lazy(() => StringNullableListFilterSchema).optional(),
   projectId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+}).strict();
+
+export const RewardSubmissionWhereInputSchema: z.ZodType<Prisma.RewardSubmissionWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => RewardSubmissionWhereInputSchema),z.lazy(() => RewardSubmissionWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => RewardSubmissionWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => RewardSubmissionWhereInputSchema),z.lazy(() => RewardSubmissionWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  contentUrl: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  notes: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  status: z.union([ z.lazy(() => EnumSubmissionStatusFilterSchema),z.lazy(() => SubmissionStatusSchema) ]).optional(),
+  createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  rewardPoolId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  kolId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  rewardPool: z.union([ z.lazy(() => RewardPoolRelationFilterSchema),z.lazy(() => RewardPoolWhereInputSchema) ]).optional(),
+  kol: z.union([ z.lazy(() => KOLRelationFilterSchema),z.lazy(() => KOLWhereInputSchema) ]).optional(),
+}).strict();
+
+export const RewardSubmissionOrderByWithRelationInputSchema: z.ZodType<Prisma.RewardSubmissionOrderByWithRelationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  contentUrl: z.lazy(() => SortOrderSchema).optional(),
+  notes: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  status: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional(),
+  rewardPoolId: z.lazy(() => SortOrderSchema).optional(),
+  kolId: z.lazy(() => SortOrderSchema).optional(),
+  rewardPool: z.lazy(() => RewardPoolOrderByWithRelationInputSchema).optional(),
+  kol: z.lazy(() => KOLOrderByWithRelationInputSchema).optional()
+}).strict();
+
+export const RewardSubmissionWhereUniqueInputSchema: z.ZodType<Prisma.RewardSubmissionWhereUniqueInput> = z.object({
+  id: z.string().cuid()
+})
+.and(z.object({
+  id: z.string().cuid().optional(),
+  AND: z.union([ z.lazy(() => RewardSubmissionWhereInputSchema),z.lazy(() => RewardSubmissionWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => RewardSubmissionWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => RewardSubmissionWhereInputSchema),z.lazy(() => RewardSubmissionWhereInputSchema).array() ]).optional(),
+  contentUrl: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  notes: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  status: z.union([ z.lazy(() => EnumSubmissionStatusFilterSchema),z.lazy(() => SubmissionStatusSchema) ]).optional(),
+  createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  rewardPoolId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  kolId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  rewardPool: z.union([ z.lazy(() => RewardPoolRelationFilterSchema),z.lazy(() => RewardPoolWhereInputSchema) ]).optional(),
+  kol: z.union([ z.lazy(() => KOLRelationFilterSchema),z.lazy(() => KOLWhereInputSchema) ]).optional(),
+}).strict());
+
+export const RewardSubmissionOrderByWithAggregationInputSchema: z.ZodType<Prisma.RewardSubmissionOrderByWithAggregationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  contentUrl: z.lazy(() => SortOrderSchema).optional(),
+  notes: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  status: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional(),
+  rewardPoolId: z.lazy(() => SortOrderSchema).optional(),
+  kolId: z.lazy(() => SortOrderSchema).optional(),
+  _count: z.lazy(() => RewardSubmissionCountOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => RewardSubmissionMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => RewardSubmissionMinOrderByAggregateInputSchema).optional()
+}).strict();
+
+export const RewardSubmissionScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.RewardSubmissionScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([ z.lazy(() => RewardSubmissionScalarWhereWithAggregatesInputSchema),z.lazy(() => RewardSubmissionScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => RewardSubmissionScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => RewardSubmissionScalarWhereWithAggregatesInputSchema),z.lazy(() => RewardSubmissionScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  contentUrl: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  notes: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
+  status: z.union([ z.lazy(() => EnumSubmissionStatusWithAggregatesFilterSchema),z.lazy(() => SubmissionStatusSchema) ]).optional(),
+  createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
+  rewardPoolId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  kolId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
 }).strict();
 
 export const LogWhereInputSchema: z.ZodType<Prisma.LogWhereInput> = z.object({
@@ -4472,7 +4611,8 @@ export const KOLCreateInputSchema: z.ZodType<Prisma.KOLCreateInput> = z.object({
   fetchedAt: z.coerce.date().optional(),
   projects: z.lazy(() => KOLToProjectCreateNestedManyWithoutKolInputSchema).optional(),
   kolSnapshot: z.lazy(() => KOLSnapshotCreateNestedManyWithoutKolInputSchema).optional(),
-  user: z.lazy(() => UserCreateNestedOneWithoutKolInputSchema).optional()
+  user: z.lazy(() => UserCreateNestedOneWithoutKolInputSchema).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionCreateNestedManyWithoutKolInputSchema).optional()
 }).strict();
 
 export const KOLUncheckedCreateInputSchema: z.ZodType<Prisma.KOLUncheckedCreateInput> = z.object({
@@ -4522,7 +4662,8 @@ export const KOLUncheckedCreateInputSchema: z.ZodType<Prisma.KOLUncheckedCreateI
   fetchedAt: z.coerce.date().optional(),
   projects: z.lazy(() => KOLToProjectUncheckedCreateNestedManyWithoutKolInputSchema).optional(),
   kolSnapshot: z.lazy(() => KOLSnapshotUncheckedCreateNestedManyWithoutKolInputSchema).optional(),
-  user: z.lazy(() => UserUncheckedCreateNestedOneWithoutKolInputSchema).optional()
+  user: z.lazy(() => UserUncheckedCreateNestedOneWithoutKolInputSchema).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionUncheckedCreateNestedManyWithoutKolInputSchema).optional()
 }).strict();
 
 export const KOLUpdateInputSchema: z.ZodType<Prisma.KOLUpdateInput> = z.object({
@@ -4572,7 +4713,8 @@ export const KOLUpdateInputSchema: z.ZodType<Prisma.KOLUpdateInput> = z.object({
   fetchedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   projects: z.lazy(() => KOLToProjectUpdateManyWithoutKolNestedInputSchema).optional(),
   kolSnapshot: z.lazy(() => KOLSnapshotUpdateManyWithoutKolNestedInputSchema).optional(),
-  user: z.lazy(() => UserUpdateOneWithoutKolNestedInputSchema).optional()
+  user: z.lazy(() => UserUpdateOneWithoutKolNestedInputSchema).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionUpdateManyWithoutKolNestedInputSchema).optional()
 }).strict();
 
 export const KOLUncheckedUpdateInputSchema: z.ZodType<Prisma.KOLUncheckedUpdateInput> = z.object({
@@ -4622,7 +4764,8 @@ export const KOLUncheckedUpdateInputSchema: z.ZodType<Prisma.KOLUncheckedUpdateI
   fetchedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   projects: z.lazy(() => KOLToProjectUncheckedUpdateManyWithoutKolNestedInputSchema).optional(),
   kolSnapshot: z.lazy(() => KOLSnapshotUncheckedUpdateManyWithoutKolNestedInputSchema).optional(),
-  user: z.lazy(() => UserUncheckedUpdateOneWithoutKolNestedInputSchema).optional()
+  user: z.lazy(() => UserUncheckedUpdateOneWithoutKolNestedInputSchema).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionUncheckedUpdateManyWithoutKolNestedInputSchema).optional()
 }).strict();
 
 export const KOLCreateManyInputSchema: z.ZodType<Prisma.KOLCreateManyInput> = z.object({
@@ -5108,7 +5251,8 @@ export const RewardPoolCreateInputSchema: z.ZodType<Prisma.RewardPoolCreateInput
   participantsCount: z.number().int(),
   completedCount: z.number().int(),
   requirements: z.union([ z.lazy(() => RewardPoolCreaterequirementsInputSchema),z.string().array() ]).optional(),
-  project: z.lazy(() => ProjectCreateNestedOneWithoutRewardPoolsInputSchema)
+  project: z.lazy(() => ProjectCreateNestedOneWithoutRewardPoolsInputSchema),
+  rewardSubmission: z.lazy(() => RewardSubmissionCreateNestedManyWithoutRewardPoolInputSchema).optional()
 }).strict();
 
 export const RewardPoolUncheckedCreateInputSchema: z.ZodType<Prisma.RewardPoolUncheckedCreateInput> = z.object({
@@ -5127,7 +5271,8 @@ export const RewardPoolUncheckedCreateInputSchema: z.ZodType<Prisma.RewardPoolUn
   participantsCount: z.number().int(),
   completedCount: z.number().int(),
   requirements: z.union([ z.lazy(() => RewardPoolCreaterequirementsInputSchema),z.string().array() ]).optional(),
-  projectId: z.string()
+  projectId: z.string(),
+  rewardSubmission: z.lazy(() => RewardSubmissionUncheckedCreateNestedManyWithoutRewardPoolInputSchema).optional()
 }).strict();
 
 export const RewardPoolUpdateInputSchema: z.ZodType<Prisma.RewardPoolUpdateInput> = z.object({
@@ -5146,7 +5291,8 @@ export const RewardPoolUpdateInputSchema: z.ZodType<Prisma.RewardPoolUpdateInput
   participantsCount: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   completedCount: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   requirements: z.union([ z.lazy(() => RewardPoolUpdaterequirementsInputSchema),z.string().array() ]).optional(),
-  project: z.lazy(() => ProjectUpdateOneRequiredWithoutRewardPoolsNestedInputSchema).optional()
+  project: z.lazy(() => ProjectUpdateOneRequiredWithoutRewardPoolsNestedInputSchema).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionUpdateManyWithoutRewardPoolNestedInputSchema).optional()
 }).strict();
 
 export const RewardPoolUncheckedUpdateInputSchema: z.ZodType<Prisma.RewardPoolUncheckedUpdateInput> = z.object({
@@ -5166,6 +5312,7 @@ export const RewardPoolUncheckedUpdateInputSchema: z.ZodType<Prisma.RewardPoolUn
   completedCount: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   requirements: z.union([ z.lazy(() => RewardPoolUpdaterequirementsInputSchema),z.string().array() ]).optional(),
   projectId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionUncheckedUpdateManyWithoutRewardPoolNestedInputSchema).optional()
 }).strict();
 
 export const RewardPoolCreateManyInputSchema: z.ZodType<Prisma.RewardPoolCreateManyInput> = z.object({
@@ -5222,6 +5369,74 @@ export const RewardPoolUncheckedUpdateManyInputSchema: z.ZodType<Prisma.RewardPo
   completedCount: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   requirements: z.union([ z.lazy(() => RewardPoolUpdaterequirementsInputSchema),z.string().array() ]).optional(),
   projectId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const RewardSubmissionCreateInputSchema: z.ZodType<Prisma.RewardSubmissionCreateInput> = z.object({
+  id: z.string().cuid().optional(),
+  contentUrl: z.string(),
+  notes: z.string().optional().nullable(),
+  status: z.lazy(() => SubmissionStatusSchema).optional(),
+  createdAt: z.coerce.date().optional(),
+  rewardPool: z.lazy(() => RewardPoolCreateNestedOneWithoutRewardSubmissionInputSchema),
+  kol: z.lazy(() => KOLCreateNestedOneWithoutRewardSubmissionInputSchema)
+}).strict();
+
+export const RewardSubmissionUncheckedCreateInputSchema: z.ZodType<Prisma.RewardSubmissionUncheckedCreateInput> = z.object({
+  id: z.string().cuid().optional(),
+  contentUrl: z.string(),
+  notes: z.string().optional().nullable(),
+  status: z.lazy(() => SubmissionStatusSchema).optional(),
+  createdAt: z.coerce.date().optional(),
+  rewardPoolId: z.string(),
+  kolId: z.string()
+}).strict();
+
+export const RewardSubmissionUpdateInputSchema: z.ZodType<Prisma.RewardSubmissionUpdateInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  contentUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  status: z.union([ z.lazy(() => SubmissionStatusSchema),z.lazy(() => EnumSubmissionStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  rewardPool: z.lazy(() => RewardPoolUpdateOneRequiredWithoutRewardSubmissionNestedInputSchema).optional(),
+  kol: z.lazy(() => KOLUpdateOneRequiredWithoutRewardSubmissionNestedInputSchema).optional()
+}).strict();
+
+export const RewardSubmissionUncheckedUpdateInputSchema: z.ZodType<Prisma.RewardSubmissionUncheckedUpdateInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  contentUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  status: z.union([ z.lazy(() => SubmissionStatusSchema),z.lazy(() => EnumSubmissionStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  rewardPoolId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  kolId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const RewardSubmissionCreateManyInputSchema: z.ZodType<Prisma.RewardSubmissionCreateManyInput> = z.object({
+  id: z.string().cuid().optional(),
+  contentUrl: z.string(),
+  notes: z.string().optional().nullable(),
+  status: z.lazy(() => SubmissionStatusSchema).optional(),
+  createdAt: z.coerce.date().optional(),
+  rewardPoolId: z.string(),
+  kolId: z.string()
+}).strict();
+
+export const RewardSubmissionUpdateManyMutationInputSchema: z.ZodType<Prisma.RewardSubmissionUpdateManyMutationInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  contentUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  status: z.union([ z.lazy(() => SubmissionStatusSchema),z.lazy(() => EnumSubmissionStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const RewardSubmissionUncheckedUpdateManyInputSchema: z.ZodType<Prisma.RewardSubmissionUncheckedUpdateManyInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  contentUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  status: z.union([ z.lazy(() => SubmissionStatusSchema),z.lazy(() => EnumSubmissionStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  rewardPoolId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  kolId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const LogCreateInputSchema: z.ZodType<Prisma.LogCreateInput> = z.object({
@@ -6284,7 +6499,17 @@ export const KOLSnapshotListRelationFilterSchema: z.ZodType<Prisma.KOLSnapshotLi
   none: z.lazy(() => KOLSnapshotWhereInputSchema).optional()
 }).strict();
 
+export const RewardSubmissionListRelationFilterSchema: z.ZodType<Prisma.RewardSubmissionListRelationFilter> = z.object({
+  every: z.lazy(() => RewardSubmissionWhereInputSchema).optional(),
+  some: z.lazy(() => RewardSubmissionWhereInputSchema).optional(),
+  none: z.lazy(() => RewardSubmissionWhereInputSchema).optional()
+}).strict();
+
 export const KOLSnapshotOrderByRelationAggregateInputSchema: z.ZodType<Prisma.KOLSnapshotOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const RewardSubmissionOrderByRelationAggregateInputSchema: z.ZodType<Prisma.RewardSubmissionOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -6860,6 +7085,58 @@ export const EnumRewardPoolStatusWithAggregatesFilterSchema: z.ZodType<Prisma.En
   _count: z.lazy(() => NestedIntFilterSchema).optional(),
   _min: z.lazy(() => NestedEnumRewardPoolStatusFilterSchema).optional(),
   _max: z.lazy(() => NestedEnumRewardPoolStatusFilterSchema).optional()
+}).strict();
+
+export const EnumSubmissionStatusFilterSchema: z.ZodType<Prisma.EnumSubmissionStatusFilter> = z.object({
+  equals: z.lazy(() => SubmissionStatusSchema).optional(),
+  in: z.lazy(() => SubmissionStatusSchema).array().optional(),
+  notIn: z.lazy(() => SubmissionStatusSchema).array().optional(),
+  not: z.union([ z.lazy(() => SubmissionStatusSchema),z.lazy(() => NestedEnumSubmissionStatusFilterSchema) ]).optional(),
+}).strict();
+
+export const RewardPoolRelationFilterSchema: z.ZodType<Prisma.RewardPoolRelationFilter> = z.object({
+  is: z.lazy(() => RewardPoolWhereInputSchema).optional(),
+  isNot: z.lazy(() => RewardPoolWhereInputSchema).optional()
+}).strict();
+
+export const RewardSubmissionCountOrderByAggregateInputSchema: z.ZodType<Prisma.RewardSubmissionCountOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  contentUrl: z.lazy(() => SortOrderSchema).optional(),
+  notes: z.lazy(() => SortOrderSchema).optional(),
+  status: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional(),
+  rewardPoolId: z.lazy(() => SortOrderSchema).optional(),
+  kolId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const RewardSubmissionMaxOrderByAggregateInputSchema: z.ZodType<Prisma.RewardSubmissionMaxOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  contentUrl: z.lazy(() => SortOrderSchema).optional(),
+  notes: z.lazy(() => SortOrderSchema).optional(),
+  status: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional(),
+  rewardPoolId: z.lazy(() => SortOrderSchema).optional(),
+  kolId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const RewardSubmissionMinOrderByAggregateInputSchema: z.ZodType<Prisma.RewardSubmissionMinOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  contentUrl: z.lazy(() => SortOrderSchema).optional(),
+  notes: z.lazy(() => SortOrderSchema).optional(),
+  status: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional(),
+  rewardPoolId: z.lazy(() => SortOrderSchema).optional(),
+  kolId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const EnumSubmissionStatusWithAggregatesFilterSchema: z.ZodType<Prisma.EnumSubmissionStatusWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => SubmissionStatusSchema).optional(),
+  in: z.lazy(() => SubmissionStatusSchema).array().optional(),
+  notIn: z.lazy(() => SubmissionStatusSchema).array().optional(),
+  not: z.union([ z.lazy(() => SubmissionStatusSchema),z.lazy(() => NestedEnumSubmissionStatusWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumSubmissionStatusFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumSubmissionStatusFilterSchema).optional()
 }).strict();
 
 export const LogCountOrderByAggregateInputSchema: z.ZodType<Prisma.LogCountOrderByAggregateInput> = z.object({
@@ -7564,6 +7841,13 @@ export const UserCreateNestedOneWithoutKolInputSchema: z.ZodType<Prisma.UserCrea
   connect: z.lazy(() => UserWhereUniqueInputSchema).optional()
 }).strict();
 
+export const RewardSubmissionCreateNestedManyWithoutKolInputSchema: z.ZodType<Prisma.RewardSubmissionCreateNestedManyWithoutKolInput> = z.object({
+  create: z.union([ z.lazy(() => RewardSubmissionCreateWithoutKolInputSchema),z.lazy(() => RewardSubmissionCreateWithoutKolInputSchema).array(),z.lazy(() => RewardSubmissionUncheckedCreateWithoutKolInputSchema),z.lazy(() => RewardSubmissionUncheckedCreateWithoutKolInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => RewardSubmissionCreateOrConnectWithoutKolInputSchema),z.lazy(() => RewardSubmissionCreateOrConnectWithoutKolInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => RewardSubmissionCreateManyKolInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => RewardSubmissionWhereUniqueInputSchema),z.lazy(() => RewardSubmissionWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
 export const KOLToProjectUncheckedCreateNestedManyWithoutKolInputSchema: z.ZodType<Prisma.KOLToProjectUncheckedCreateNestedManyWithoutKolInput> = z.object({
   create: z.union([ z.lazy(() => KOLToProjectCreateWithoutKolInputSchema),z.lazy(() => KOLToProjectCreateWithoutKolInputSchema).array(),z.lazy(() => KOLToProjectUncheckedCreateWithoutKolInputSchema),z.lazy(() => KOLToProjectUncheckedCreateWithoutKolInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => KOLToProjectCreateOrConnectWithoutKolInputSchema),z.lazy(() => KOLToProjectCreateOrConnectWithoutKolInputSchema).array() ]).optional(),
@@ -7582,6 +7866,13 @@ export const UserUncheckedCreateNestedOneWithoutKolInputSchema: z.ZodType<Prisma
   create: z.union([ z.lazy(() => UserCreateWithoutKolInputSchema),z.lazy(() => UserUncheckedCreateWithoutKolInputSchema) ]).optional(),
   connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutKolInputSchema).optional(),
   connect: z.lazy(() => UserWhereUniqueInputSchema).optional()
+}).strict();
+
+export const RewardSubmissionUncheckedCreateNestedManyWithoutKolInputSchema: z.ZodType<Prisma.RewardSubmissionUncheckedCreateNestedManyWithoutKolInput> = z.object({
+  create: z.union([ z.lazy(() => RewardSubmissionCreateWithoutKolInputSchema),z.lazy(() => RewardSubmissionCreateWithoutKolInputSchema).array(),z.lazy(() => RewardSubmissionUncheckedCreateWithoutKolInputSchema),z.lazy(() => RewardSubmissionUncheckedCreateWithoutKolInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => RewardSubmissionCreateOrConnectWithoutKolInputSchema),z.lazy(() => RewardSubmissionCreateOrConnectWithoutKolInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => RewardSubmissionCreateManyKolInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => RewardSubmissionWhereUniqueInputSchema),z.lazy(() => RewardSubmissionWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
 export const NullableBigIntFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableBigIntFieldUpdateOperationsInput> = z.object({
@@ -7630,6 +7921,20 @@ export const UserUpdateOneWithoutKolNestedInputSchema: z.ZodType<Prisma.UserUpda
   update: z.union([ z.lazy(() => UserUpdateToOneWithWhereWithoutKolInputSchema),z.lazy(() => UserUpdateWithoutKolInputSchema),z.lazy(() => UserUncheckedUpdateWithoutKolInputSchema) ]).optional(),
 }).strict();
 
+export const RewardSubmissionUpdateManyWithoutKolNestedInputSchema: z.ZodType<Prisma.RewardSubmissionUpdateManyWithoutKolNestedInput> = z.object({
+  create: z.union([ z.lazy(() => RewardSubmissionCreateWithoutKolInputSchema),z.lazy(() => RewardSubmissionCreateWithoutKolInputSchema).array(),z.lazy(() => RewardSubmissionUncheckedCreateWithoutKolInputSchema),z.lazy(() => RewardSubmissionUncheckedCreateWithoutKolInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => RewardSubmissionCreateOrConnectWithoutKolInputSchema),z.lazy(() => RewardSubmissionCreateOrConnectWithoutKolInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => RewardSubmissionUpsertWithWhereUniqueWithoutKolInputSchema),z.lazy(() => RewardSubmissionUpsertWithWhereUniqueWithoutKolInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => RewardSubmissionCreateManyKolInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => RewardSubmissionWhereUniqueInputSchema),z.lazy(() => RewardSubmissionWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => RewardSubmissionWhereUniqueInputSchema),z.lazy(() => RewardSubmissionWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => RewardSubmissionWhereUniqueInputSchema),z.lazy(() => RewardSubmissionWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => RewardSubmissionWhereUniqueInputSchema),z.lazy(() => RewardSubmissionWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => RewardSubmissionUpdateWithWhereUniqueWithoutKolInputSchema),z.lazy(() => RewardSubmissionUpdateWithWhereUniqueWithoutKolInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => RewardSubmissionUpdateManyWithWhereWithoutKolInputSchema),z.lazy(() => RewardSubmissionUpdateManyWithWhereWithoutKolInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => RewardSubmissionScalarWhereInputSchema),z.lazy(() => RewardSubmissionScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
 export const KOLToProjectUncheckedUpdateManyWithoutKolNestedInputSchema: z.ZodType<Prisma.KOLToProjectUncheckedUpdateManyWithoutKolNestedInput> = z.object({
   create: z.union([ z.lazy(() => KOLToProjectCreateWithoutKolInputSchema),z.lazy(() => KOLToProjectCreateWithoutKolInputSchema).array(),z.lazy(() => KOLToProjectUncheckedCreateWithoutKolInputSchema),z.lazy(() => KOLToProjectUncheckedCreateWithoutKolInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => KOLToProjectCreateOrConnectWithoutKolInputSchema),z.lazy(() => KOLToProjectCreateOrConnectWithoutKolInputSchema).array() ]).optional(),
@@ -7666,6 +7971,20 @@ export const UserUncheckedUpdateOneWithoutKolNestedInputSchema: z.ZodType<Prisma
   delete: z.union([ z.boolean(),z.lazy(() => UserWhereInputSchema) ]).optional(),
   connect: z.lazy(() => UserWhereUniqueInputSchema).optional(),
   update: z.union([ z.lazy(() => UserUpdateToOneWithWhereWithoutKolInputSchema),z.lazy(() => UserUpdateWithoutKolInputSchema),z.lazy(() => UserUncheckedUpdateWithoutKolInputSchema) ]).optional(),
+}).strict();
+
+export const RewardSubmissionUncheckedUpdateManyWithoutKolNestedInputSchema: z.ZodType<Prisma.RewardSubmissionUncheckedUpdateManyWithoutKolNestedInput> = z.object({
+  create: z.union([ z.lazy(() => RewardSubmissionCreateWithoutKolInputSchema),z.lazy(() => RewardSubmissionCreateWithoutKolInputSchema).array(),z.lazy(() => RewardSubmissionUncheckedCreateWithoutKolInputSchema),z.lazy(() => RewardSubmissionUncheckedCreateWithoutKolInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => RewardSubmissionCreateOrConnectWithoutKolInputSchema),z.lazy(() => RewardSubmissionCreateOrConnectWithoutKolInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => RewardSubmissionUpsertWithWhereUniqueWithoutKolInputSchema),z.lazy(() => RewardSubmissionUpsertWithWhereUniqueWithoutKolInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => RewardSubmissionCreateManyKolInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => RewardSubmissionWhereUniqueInputSchema),z.lazy(() => RewardSubmissionWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => RewardSubmissionWhereUniqueInputSchema),z.lazy(() => RewardSubmissionWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => RewardSubmissionWhereUniqueInputSchema),z.lazy(() => RewardSubmissionWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => RewardSubmissionWhereUniqueInputSchema),z.lazy(() => RewardSubmissionWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => RewardSubmissionUpdateWithWhereUniqueWithoutKolInputSchema),z.lazy(() => RewardSubmissionUpdateWithWhereUniqueWithoutKolInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => RewardSubmissionUpdateManyWithWhereWithoutKolInputSchema),z.lazy(() => RewardSubmissionUpdateManyWithWhereWithoutKolInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => RewardSubmissionScalarWhereInputSchema),z.lazy(() => RewardSubmissionScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const KOLCreateNestedOneWithoutKolSnapshotInputSchema: z.ZodType<Prisma.KOLCreateNestedOneWithoutKolSnapshotInput> = z.object({
@@ -7732,6 +8051,20 @@ export const ProjectCreateNestedOneWithoutRewardPoolsInputSchema: z.ZodType<Pris
   connect: z.lazy(() => ProjectWhereUniqueInputSchema).optional()
 }).strict();
 
+export const RewardSubmissionCreateNestedManyWithoutRewardPoolInputSchema: z.ZodType<Prisma.RewardSubmissionCreateNestedManyWithoutRewardPoolInput> = z.object({
+  create: z.union([ z.lazy(() => RewardSubmissionCreateWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionCreateWithoutRewardPoolInputSchema).array(),z.lazy(() => RewardSubmissionUncheckedCreateWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionUncheckedCreateWithoutRewardPoolInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => RewardSubmissionCreateOrConnectWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionCreateOrConnectWithoutRewardPoolInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => RewardSubmissionCreateManyRewardPoolInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => RewardSubmissionWhereUniqueInputSchema),z.lazy(() => RewardSubmissionWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const RewardSubmissionUncheckedCreateNestedManyWithoutRewardPoolInputSchema: z.ZodType<Prisma.RewardSubmissionUncheckedCreateNestedManyWithoutRewardPoolInput> = z.object({
+  create: z.union([ z.lazy(() => RewardSubmissionCreateWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionCreateWithoutRewardPoolInputSchema).array(),z.lazy(() => RewardSubmissionUncheckedCreateWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionUncheckedCreateWithoutRewardPoolInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => RewardSubmissionCreateOrConnectWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionCreateOrConnectWithoutRewardPoolInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => RewardSubmissionCreateManyRewardPoolInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => RewardSubmissionWhereUniqueInputSchema),z.lazy(() => RewardSubmissionWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
 export const RewardPoolUpdateplatformsInputSchema: z.ZodType<Prisma.RewardPoolUpdateplatformsInput> = z.object({
   set: z.string().array().optional(),
   push: z.union([ z.string(),z.string().array() ]).optional(),
@@ -7752,6 +8085,66 @@ export const ProjectUpdateOneRequiredWithoutRewardPoolsNestedInputSchema: z.ZodT
   upsert: z.lazy(() => ProjectUpsertWithoutRewardPoolsInputSchema).optional(),
   connect: z.lazy(() => ProjectWhereUniqueInputSchema).optional(),
   update: z.union([ z.lazy(() => ProjectUpdateToOneWithWhereWithoutRewardPoolsInputSchema),z.lazy(() => ProjectUpdateWithoutRewardPoolsInputSchema),z.lazy(() => ProjectUncheckedUpdateWithoutRewardPoolsInputSchema) ]).optional(),
+}).strict();
+
+export const RewardSubmissionUpdateManyWithoutRewardPoolNestedInputSchema: z.ZodType<Prisma.RewardSubmissionUpdateManyWithoutRewardPoolNestedInput> = z.object({
+  create: z.union([ z.lazy(() => RewardSubmissionCreateWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionCreateWithoutRewardPoolInputSchema).array(),z.lazy(() => RewardSubmissionUncheckedCreateWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionUncheckedCreateWithoutRewardPoolInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => RewardSubmissionCreateOrConnectWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionCreateOrConnectWithoutRewardPoolInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => RewardSubmissionUpsertWithWhereUniqueWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionUpsertWithWhereUniqueWithoutRewardPoolInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => RewardSubmissionCreateManyRewardPoolInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => RewardSubmissionWhereUniqueInputSchema),z.lazy(() => RewardSubmissionWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => RewardSubmissionWhereUniqueInputSchema),z.lazy(() => RewardSubmissionWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => RewardSubmissionWhereUniqueInputSchema),z.lazy(() => RewardSubmissionWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => RewardSubmissionWhereUniqueInputSchema),z.lazy(() => RewardSubmissionWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => RewardSubmissionUpdateWithWhereUniqueWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionUpdateWithWhereUniqueWithoutRewardPoolInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => RewardSubmissionUpdateManyWithWhereWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionUpdateManyWithWhereWithoutRewardPoolInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => RewardSubmissionScalarWhereInputSchema),z.lazy(() => RewardSubmissionScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const RewardSubmissionUncheckedUpdateManyWithoutRewardPoolNestedInputSchema: z.ZodType<Prisma.RewardSubmissionUncheckedUpdateManyWithoutRewardPoolNestedInput> = z.object({
+  create: z.union([ z.lazy(() => RewardSubmissionCreateWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionCreateWithoutRewardPoolInputSchema).array(),z.lazy(() => RewardSubmissionUncheckedCreateWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionUncheckedCreateWithoutRewardPoolInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => RewardSubmissionCreateOrConnectWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionCreateOrConnectWithoutRewardPoolInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => RewardSubmissionUpsertWithWhereUniqueWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionUpsertWithWhereUniqueWithoutRewardPoolInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => RewardSubmissionCreateManyRewardPoolInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => RewardSubmissionWhereUniqueInputSchema),z.lazy(() => RewardSubmissionWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => RewardSubmissionWhereUniqueInputSchema),z.lazy(() => RewardSubmissionWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => RewardSubmissionWhereUniqueInputSchema),z.lazy(() => RewardSubmissionWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => RewardSubmissionWhereUniqueInputSchema),z.lazy(() => RewardSubmissionWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => RewardSubmissionUpdateWithWhereUniqueWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionUpdateWithWhereUniqueWithoutRewardPoolInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => RewardSubmissionUpdateManyWithWhereWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionUpdateManyWithWhereWithoutRewardPoolInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => RewardSubmissionScalarWhereInputSchema),z.lazy(() => RewardSubmissionScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const RewardPoolCreateNestedOneWithoutRewardSubmissionInputSchema: z.ZodType<Prisma.RewardPoolCreateNestedOneWithoutRewardSubmissionInput> = z.object({
+  create: z.union([ z.lazy(() => RewardPoolCreateWithoutRewardSubmissionInputSchema),z.lazy(() => RewardPoolUncheckedCreateWithoutRewardSubmissionInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => RewardPoolCreateOrConnectWithoutRewardSubmissionInputSchema).optional(),
+  connect: z.lazy(() => RewardPoolWhereUniqueInputSchema).optional()
+}).strict();
+
+export const KOLCreateNestedOneWithoutRewardSubmissionInputSchema: z.ZodType<Prisma.KOLCreateNestedOneWithoutRewardSubmissionInput> = z.object({
+  create: z.union([ z.lazy(() => KOLCreateWithoutRewardSubmissionInputSchema),z.lazy(() => KOLUncheckedCreateWithoutRewardSubmissionInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => KOLCreateOrConnectWithoutRewardSubmissionInputSchema).optional(),
+  connect: z.lazy(() => KOLWhereUniqueInputSchema).optional()
+}).strict();
+
+export const EnumSubmissionStatusFieldUpdateOperationsInputSchema: z.ZodType<Prisma.EnumSubmissionStatusFieldUpdateOperationsInput> = z.object({
+  set: z.lazy(() => SubmissionStatusSchema).optional()
+}).strict();
+
+export const RewardPoolUpdateOneRequiredWithoutRewardSubmissionNestedInputSchema: z.ZodType<Prisma.RewardPoolUpdateOneRequiredWithoutRewardSubmissionNestedInput> = z.object({
+  create: z.union([ z.lazy(() => RewardPoolCreateWithoutRewardSubmissionInputSchema),z.lazy(() => RewardPoolUncheckedCreateWithoutRewardSubmissionInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => RewardPoolCreateOrConnectWithoutRewardSubmissionInputSchema).optional(),
+  upsert: z.lazy(() => RewardPoolUpsertWithoutRewardSubmissionInputSchema).optional(),
+  connect: z.lazy(() => RewardPoolWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => RewardPoolUpdateToOneWithWhereWithoutRewardSubmissionInputSchema),z.lazy(() => RewardPoolUpdateWithoutRewardSubmissionInputSchema),z.lazy(() => RewardPoolUncheckedUpdateWithoutRewardSubmissionInputSchema) ]).optional(),
+}).strict();
+
+export const KOLUpdateOneRequiredWithoutRewardSubmissionNestedInputSchema: z.ZodType<Prisma.KOLUpdateOneRequiredWithoutRewardSubmissionNestedInput> = z.object({
+  create: z.union([ z.lazy(() => KOLCreateWithoutRewardSubmissionInputSchema),z.lazy(() => KOLUncheckedCreateWithoutRewardSubmissionInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => KOLCreateOrConnectWithoutRewardSubmissionInputSchema).optional(),
+  upsert: z.lazy(() => KOLUpsertWithoutRewardSubmissionInputSchema).optional(),
+  connect: z.lazy(() => KOLWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => KOLUpdateToOneWithWhereWithoutRewardSubmissionInputSchema),z.lazy(() => KOLUpdateWithoutRewardSubmissionInputSchema),z.lazy(() => KOLUncheckedUpdateWithoutRewardSubmissionInputSchema) ]).optional(),
 }).strict();
 
 export const NestedIntFilterSchema: z.ZodType<Prisma.NestedIntFilter> = z.object({
@@ -8071,6 +8464,23 @@ export const NestedEnumRewardPoolStatusWithAggregatesFilterSchema: z.ZodType<Pri
   _max: z.lazy(() => NestedEnumRewardPoolStatusFilterSchema).optional()
 }).strict();
 
+export const NestedEnumSubmissionStatusFilterSchema: z.ZodType<Prisma.NestedEnumSubmissionStatusFilter> = z.object({
+  equals: z.lazy(() => SubmissionStatusSchema).optional(),
+  in: z.lazy(() => SubmissionStatusSchema).array().optional(),
+  notIn: z.lazy(() => SubmissionStatusSchema).array().optional(),
+  not: z.union([ z.lazy(() => SubmissionStatusSchema),z.lazy(() => NestedEnumSubmissionStatusFilterSchema) ]).optional(),
+}).strict();
+
+export const NestedEnumSubmissionStatusWithAggregatesFilterSchema: z.ZodType<Prisma.NestedEnumSubmissionStatusWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => SubmissionStatusSchema).optional(),
+  in: z.lazy(() => SubmissionStatusSchema).array().optional(),
+  notIn: z.lazy(() => SubmissionStatusSchema).array().optional(),
+  not: z.union([ z.lazy(() => SubmissionStatusSchema),z.lazy(() => NestedEnumSubmissionStatusWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumSubmissionStatusFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumSubmissionStatusFilterSchema).optional()
+}).strict();
+
 export const ProjectCreateWithoutAdminUserInputSchema: z.ZodType<Prisma.ProjectCreateWithoutAdminUserInput> = z.object({
   id: z.string().optional(),
   stage: z.string().optional().nullable(),
@@ -8354,7 +8764,8 @@ export const KOLCreateWithoutUserInputSchema: z.ZodType<Prisma.KOLCreateWithoutU
   updatedAt: z.coerce.date().optional(),
   fetchedAt: z.coerce.date().optional(),
   projects: z.lazy(() => KOLToProjectCreateNestedManyWithoutKolInputSchema).optional(),
-  kolSnapshot: z.lazy(() => KOLSnapshotCreateNestedManyWithoutKolInputSchema).optional()
+  kolSnapshot: z.lazy(() => KOLSnapshotCreateNestedManyWithoutKolInputSchema).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionCreateNestedManyWithoutKolInputSchema).optional()
 }).strict();
 
 export const KOLUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.KOLUncheckedCreateWithoutUserInput> = z.object({
@@ -8403,7 +8814,8 @@ export const KOLUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.KOLUnche
   updatedAt: z.coerce.date().optional(),
   fetchedAt: z.coerce.date().optional(),
   projects: z.lazy(() => KOLToProjectUncheckedCreateNestedManyWithoutKolInputSchema).optional(),
-  kolSnapshot: z.lazy(() => KOLSnapshotUncheckedCreateNestedManyWithoutKolInputSchema).optional()
+  kolSnapshot: z.lazy(() => KOLSnapshotUncheckedCreateNestedManyWithoutKolInputSchema).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionUncheckedCreateNestedManyWithoutKolInputSchema).optional()
 }).strict();
 
 export const KOLCreateOrConnectWithoutUserInputSchema: z.ZodType<Prisma.KOLCreateOrConnectWithoutUserInput> = z.object({
@@ -8622,7 +9034,8 @@ export const KOLUpdateWithoutUserInputSchema: z.ZodType<Prisma.KOLUpdateWithoutU
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   fetchedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   projects: z.lazy(() => KOLToProjectUpdateManyWithoutKolNestedInputSchema).optional(),
-  kolSnapshot: z.lazy(() => KOLSnapshotUpdateManyWithoutKolNestedInputSchema).optional()
+  kolSnapshot: z.lazy(() => KOLSnapshotUpdateManyWithoutKolNestedInputSchema).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionUpdateManyWithoutKolNestedInputSchema).optional()
 }).strict();
 
 export const KOLUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.KOLUncheckedUpdateWithoutUserInput> = z.object({
@@ -8671,7 +9084,8 @@ export const KOLUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.KOLUnche
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   fetchedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   projects: z.lazy(() => KOLToProjectUncheckedUpdateManyWithoutKolNestedInputSchema).optional(),
-  kolSnapshot: z.lazy(() => KOLSnapshotUncheckedUpdateManyWithoutKolNestedInputSchema).optional()
+  kolSnapshot: z.lazy(() => KOLSnapshotUncheckedUpdateManyWithoutKolNestedInputSchema).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionUncheckedUpdateManyWithoutKolNestedInputSchema).optional()
 }).strict();
 
 export const WalletUpsertWithWhereUniqueWithoutUserInputSchema: z.ZodType<Prisma.WalletUpsertWithWhereUniqueWithoutUserInput> = z.object({
@@ -9371,6 +9785,7 @@ export const RewardPoolCreateWithoutProjectInputSchema: z.ZodType<Prisma.RewardP
   participantsCount: z.number().int(),
   completedCount: z.number().int(),
   requirements: z.union([ z.lazy(() => RewardPoolCreaterequirementsInputSchema),z.string().array() ]).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionCreateNestedManyWithoutRewardPoolInputSchema).optional()
 }).strict();
 
 export const RewardPoolUncheckedCreateWithoutProjectInputSchema: z.ZodType<Prisma.RewardPoolUncheckedCreateWithoutProjectInput> = z.object({
@@ -9389,6 +9804,7 @@ export const RewardPoolUncheckedCreateWithoutProjectInputSchema: z.ZodType<Prism
   participantsCount: z.number().int(),
   completedCount: z.number().int(),
   requirements: z.union([ z.lazy(() => RewardPoolCreaterequirementsInputSchema),z.string().array() ]).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionUncheckedCreateNestedManyWithoutRewardPoolInputSchema).optional()
 }).strict();
 
 export const RewardPoolCreateOrConnectWithoutProjectInputSchema: z.ZodType<Prisma.RewardPoolCreateOrConnectWithoutProjectInput> = z.object({
@@ -10290,6 +10706,34 @@ export const UserCreateOrConnectWithoutKolInputSchema: z.ZodType<Prisma.UserCrea
   create: z.union([ z.lazy(() => UserCreateWithoutKolInputSchema),z.lazy(() => UserUncheckedCreateWithoutKolInputSchema) ]),
 }).strict();
 
+export const RewardSubmissionCreateWithoutKolInputSchema: z.ZodType<Prisma.RewardSubmissionCreateWithoutKolInput> = z.object({
+  id: z.string().cuid().optional(),
+  contentUrl: z.string(),
+  notes: z.string().optional().nullable(),
+  status: z.lazy(() => SubmissionStatusSchema).optional(),
+  createdAt: z.coerce.date().optional(),
+  rewardPool: z.lazy(() => RewardPoolCreateNestedOneWithoutRewardSubmissionInputSchema)
+}).strict();
+
+export const RewardSubmissionUncheckedCreateWithoutKolInputSchema: z.ZodType<Prisma.RewardSubmissionUncheckedCreateWithoutKolInput> = z.object({
+  id: z.string().cuid().optional(),
+  contentUrl: z.string(),
+  notes: z.string().optional().nullable(),
+  status: z.lazy(() => SubmissionStatusSchema).optional(),
+  createdAt: z.coerce.date().optional(),
+  rewardPoolId: z.string()
+}).strict();
+
+export const RewardSubmissionCreateOrConnectWithoutKolInputSchema: z.ZodType<Prisma.RewardSubmissionCreateOrConnectWithoutKolInput> = z.object({
+  where: z.lazy(() => RewardSubmissionWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => RewardSubmissionCreateWithoutKolInputSchema),z.lazy(() => RewardSubmissionUncheckedCreateWithoutKolInputSchema) ]),
+}).strict();
+
+export const RewardSubmissionCreateManyKolInputEnvelopeSchema: z.ZodType<Prisma.RewardSubmissionCreateManyKolInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => RewardSubmissionCreateManyKolInputSchema),z.lazy(() => RewardSubmissionCreateManyKolInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
 export const KOLToProjectUpsertWithWhereUniqueWithoutKolInputSchema: z.ZodType<Prisma.KOLToProjectUpsertWithWhereUniqueWithoutKolInput> = z.object({
   where: z.lazy(() => KOLToProjectWhereUniqueInputSchema),
   update: z.union([ z.lazy(() => KOLToProjectUpdateWithoutKolInputSchema),z.lazy(() => KOLToProjectUncheckedUpdateWithoutKolInputSchema) ]),
@@ -10404,6 +10848,35 @@ export const UserUncheckedUpdateWithoutKolInputSchema: z.ZodType<Prisma.UserUnch
   wallets: z.lazy(() => WalletUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
+export const RewardSubmissionUpsertWithWhereUniqueWithoutKolInputSchema: z.ZodType<Prisma.RewardSubmissionUpsertWithWhereUniqueWithoutKolInput> = z.object({
+  where: z.lazy(() => RewardSubmissionWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => RewardSubmissionUpdateWithoutKolInputSchema),z.lazy(() => RewardSubmissionUncheckedUpdateWithoutKolInputSchema) ]),
+  create: z.union([ z.lazy(() => RewardSubmissionCreateWithoutKolInputSchema),z.lazy(() => RewardSubmissionUncheckedCreateWithoutKolInputSchema) ]),
+}).strict();
+
+export const RewardSubmissionUpdateWithWhereUniqueWithoutKolInputSchema: z.ZodType<Prisma.RewardSubmissionUpdateWithWhereUniqueWithoutKolInput> = z.object({
+  where: z.lazy(() => RewardSubmissionWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => RewardSubmissionUpdateWithoutKolInputSchema),z.lazy(() => RewardSubmissionUncheckedUpdateWithoutKolInputSchema) ]),
+}).strict();
+
+export const RewardSubmissionUpdateManyWithWhereWithoutKolInputSchema: z.ZodType<Prisma.RewardSubmissionUpdateManyWithWhereWithoutKolInput> = z.object({
+  where: z.lazy(() => RewardSubmissionScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => RewardSubmissionUpdateManyMutationInputSchema),z.lazy(() => RewardSubmissionUncheckedUpdateManyWithoutKolInputSchema) ]),
+}).strict();
+
+export const RewardSubmissionScalarWhereInputSchema: z.ZodType<Prisma.RewardSubmissionScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => RewardSubmissionScalarWhereInputSchema),z.lazy(() => RewardSubmissionScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => RewardSubmissionScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => RewardSubmissionScalarWhereInputSchema),z.lazy(() => RewardSubmissionScalarWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  contentUrl: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  notes: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  status: z.union([ z.lazy(() => EnumSubmissionStatusFilterSchema),z.lazy(() => SubmissionStatusSchema) ]).optional(),
+  createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  rewardPoolId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  kolId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+}).strict();
+
 export const KOLCreateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.KOLCreateWithoutKolSnapshotInput> = z.object({
   id: z.string().optional(),
   hidden: z.boolean().optional(),
@@ -10450,7 +10923,8 @@ export const KOLCreateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.KOLCreateW
   updatedAt: z.coerce.date().optional(),
   fetchedAt: z.coerce.date().optional(),
   projects: z.lazy(() => KOLToProjectCreateNestedManyWithoutKolInputSchema).optional(),
-  user: z.lazy(() => UserCreateNestedOneWithoutKolInputSchema).optional()
+  user: z.lazy(() => UserCreateNestedOneWithoutKolInputSchema).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionCreateNestedManyWithoutKolInputSchema).optional()
 }).strict();
 
 export const KOLUncheckedCreateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.KOLUncheckedCreateWithoutKolSnapshotInput> = z.object({
@@ -10499,7 +10973,8 @@ export const KOLUncheckedCreateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.K
   updatedAt: z.coerce.date().optional(),
   fetchedAt: z.coerce.date().optional(),
   projects: z.lazy(() => KOLToProjectUncheckedCreateNestedManyWithoutKolInputSchema).optional(),
-  user: z.lazy(() => UserUncheckedCreateNestedOneWithoutKolInputSchema).optional()
+  user: z.lazy(() => UserUncheckedCreateNestedOneWithoutKolInputSchema).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionUncheckedCreateNestedManyWithoutKolInputSchema).optional()
 }).strict();
 
 export const KOLCreateOrConnectWithoutKolSnapshotInputSchema: z.ZodType<Prisma.KOLCreateOrConnectWithoutKolSnapshotInput> = z.object({
@@ -10564,7 +11039,8 @@ export const KOLUpdateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.KOLUpdateW
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   fetchedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   projects: z.lazy(() => KOLToProjectUpdateManyWithoutKolNestedInputSchema).optional(),
-  user: z.lazy(() => UserUpdateOneWithoutKolNestedInputSchema).optional()
+  user: z.lazy(() => UserUpdateOneWithoutKolNestedInputSchema).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionUpdateManyWithoutKolNestedInputSchema).optional()
 }).strict();
 
 export const KOLUncheckedUpdateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.KOLUncheckedUpdateWithoutKolSnapshotInput> = z.object({
@@ -10613,7 +11089,8 @@ export const KOLUncheckedUpdateWithoutKolSnapshotInputSchema: z.ZodType<Prisma.K
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   fetchedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   projects: z.lazy(() => KOLToProjectUncheckedUpdateManyWithoutKolNestedInputSchema).optional(),
-  user: z.lazy(() => UserUncheckedUpdateOneWithoutKolNestedInputSchema).optional()
+  user: z.lazy(() => UserUncheckedUpdateOneWithoutKolNestedInputSchema).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionUncheckedUpdateManyWithoutKolNestedInputSchema).optional()
 }).strict();
 
 export const KOLCreateWithoutProjectsInputSchema: z.ZodType<Prisma.KOLCreateWithoutProjectsInput> = z.object({
@@ -10662,7 +11139,8 @@ export const KOLCreateWithoutProjectsInputSchema: z.ZodType<Prisma.KOLCreateWith
   updatedAt: z.coerce.date().optional(),
   fetchedAt: z.coerce.date().optional(),
   kolSnapshot: z.lazy(() => KOLSnapshotCreateNestedManyWithoutKolInputSchema).optional(),
-  user: z.lazy(() => UserCreateNestedOneWithoutKolInputSchema).optional()
+  user: z.lazy(() => UserCreateNestedOneWithoutKolInputSchema).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionCreateNestedManyWithoutKolInputSchema).optional()
 }).strict();
 
 export const KOLUncheckedCreateWithoutProjectsInputSchema: z.ZodType<Prisma.KOLUncheckedCreateWithoutProjectsInput> = z.object({
@@ -10711,7 +11189,8 @@ export const KOLUncheckedCreateWithoutProjectsInputSchema: z.ZodType<Prisma.KOLU
   updatedAt: z.coerce.date().optional(),
   fetchedAt: z.coerce.date().optional(),
   kolSnapshot: z.lazy(() => KOLSnapshotUncheckedCreateNestedManyWithoutKolInputSchema).optional(),
-  user: z.lazy(() => UserUncheckedCreateNestedOneWithoutKolInputSchema).optional()
+  user: z.lazy(() => UserUncheckedCreateNestedOneWithoutKolInputSchema).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionUncheckedCreateNestedManyWithoutKolInputSchema).optional()
 }).strict();
 
 export const KOLCreateOrConnectWithoutProjectsInputSchema: z.ZodType<Prisma.KOLCreateOrConnectWithoutProjectsInput> = z.object({
@@ -10847,7 +11326,8 @@ export const KOLUpdateWithoutProjectsInputSchema: z.ZodType<Prisma.KOLUpdateWith
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   fetchedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   kolSnapshot: z.lazy(() => KOLSnapshotUpdateManyWithoutKolNestedInputSchema).optional(),
-  user: z.lazy(() => UserUpdateOneWithoutKolNestedInputSchema).optional()
+  user: z.lazy(() => UserUpdateOneWithoutKolNestedInputSchema).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionUpdateManyWithoutKolNestedInputSchema).optional()
 }).strict();
 
 export const KOLUncheckedUpdateWithoutProjectsInputSchema: z.ZodType<Prisma.KOLUncheckedUpdateWithoutProjectsInput> = z.object({
@@ -10896,7 +11376,8 @@ export const KOLUncheckedUpdateWithoutProjectsInputSchema: z.ZodType<Prisma.KOLU
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   fetchedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   kolSnapshot: z.lazy(() => KOLSnapshotUncheckedUpdateManyWithoutKolNestedInputSchema).optional(),
-  user: z.lazy(() => UserUncheckedUpdateOneWithoutKolNestedInputSchema).optional()
+  user: z.lazy(() => UserUncheckedUpdateOneWithoutKolNestedInputSchema).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionUncheckedUpdateManyWithoutKolNestedInputSchema).optional()
 }).strict();
 
 export const ProjectUpsertWithoutKolsInputSchema: z.ZodType<Prisma.ProjectUpsertWithoutKolsInput> = z.object({
@@ -11047,6 +11528,34 @@ export const ProjectCreateOrConnectWithoutRewardPoolsInputSchema: z.ZodType<Pris
   create: z.union([ z.lazy(() => ProjectCreateWithoutRewardPoolsInputSchema),z.lazy(() => ProjectUncheckedCreateWithoutRewardPoolsInputSchema) ]),
 }).strict();
 
+export const RewardSubmissionCreateWithoutRewardPoolInputSchema: z.ZodType<Prisma.RewardSubmissionCreateWithoutRewardPoolInput> = z.object({
+  id: z.string().cuid().optional(),
+  contentUrl: z.string(),
+  notes: z.string().optional().nullable(),
+  status: z.lazy(() => SubmissionStatusSchema).optional(),
+  createdAt: z.coerce.date().optional(),
+  kol: z.lazy(() => KOLCreateNestedOneWithoutRewardSubmissionInputSchema)
+}).strict();
+
+export const RewardSubmissionUncheckedCreateWithoutRewardPoolInputSchema: z.ZodType<Prisma.RewardSubmissionUncheckedCreateWithoutRewardPoolInput> = z.object({
+  id: z.string().cuid().optional(),
+  contentUrl: z.string(),
+  notes: z.string().optional().nullable(),
+  status: z.lazy(() => SubmissionStatusSchema).optional(),
+  createdAt: z.coerce.date().optional(),
+  kolId: z.string()
+}).strict();
+
+export const RewardSubmissionCreateOrConnectWithoutRewardPoolInputSchema: z.ZodType<Prisma.RewardSubmissionCreateOrConnectWithoutRewardPoolInput> = z.object({
+  where: z.lazy(() => RewardSubmissionWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => RewardSubmissionCreateWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionUncheckedCreateWithoutRewardPoolInputSchema) ]),
+}).strict();
+
+export const RewardSubmissionCreateManyRewardPoolInputEnvelopeSchema: z.ZodType<Prisma.RewardSubmissionCreateManyRewardPoolInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => RewardSubmissionCreateManyRewardPoolInputSchema),z.lazy(() => RewardSubmissionCreateManyRewardPoolInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
 export const ProjectUpsertWithoutRewardPoolsInputSchema: z.ZodType<Prisma.ProjectUpsertWithoutRewardPoolsInput> = z.object({
   update: z.union([ z.lazy(() => ProjectUpdateWithoutRewardPoolsInputSchema),z.lazy(() => ProjectUncheckedUpdateWithoutRewardPoolsInputSchema) ]),
   create: z.union([ z.lazy(() => ProjectCreateWithoutRewardPoolsInputSchema),z.lazy(() => ProjectUncheckedCreateWithoutRewardPoolsInputSchema) ]),
@@ -11122,6 +11631,330 @@ export const ProjectUncheckedUpdateWithoutRewardPoolsInputSchema: z.ZodType<Pris
   narrativeLinks: z.lazy(() => ProjectToNarrativeUncheckedUpdateManyWithoutProjectNestedInputSchema).optional(),
   kols: z.lazy(() => KOLToProjectUncheckedUpdateManyWithoutProjectNestedInputSchema).optional(),
   adminUser: z.lazy(() => AdminUserUncheckedUpdateManyWithoutProjectNestedInputSchema).optional()
+}).strict();
+
+export const RewardSubmissionUpsertWithWhereUniqueWithoutRewardPoolInputSchema: z.ZodType<Prisma.RewardSubmissionUpsertWithWhereUniqueWithoutRewardPoolInput> = z.object({
+  where: z.lazy(() => RewardSubmissionWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => RewardSubmissionUpdateWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionUncheckedUpdateWithoutRewardPoolInputSchema) ]),
+  create: z.union([ z.lazy(() => RewardSubmissionCreateWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionUncheckedCreateWithoutRewardPoolInputSchema) ]),
+}).strict();
+
+export const RewardSubmissionUpdateWithWhereUniqueWithoutRewardPoolInputSchema: z.ZodType<Prisma.RewardSubmissionUpdateWithWhereUniqueWithoutRewardPoolInput> = z.object({
+  where: z.lazy(() => RewardSubmissionWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => RewardSubmissionUpdateWithoutRewardPoolInputSchema),z.lazy(() => RewardSubmissionUncheckedUpdateWithoutRewardPoolInputSchema) ]),
+}).strict();
+
+export const RewardSubmissionUpdateManyWithWhereWithoutRewardPoolInputSchema: z.ZodType<Prisma.RewardSubmissionUpdateManyWithWhereWithoutRewardPoolInput> = z.object({
+  where: z.lazy(() => RewardSubmissionScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => RewardSubmissionUpdateManyMutationInputSchema),z.lazy(() => RewardSubmissionUncheckedUpdateManyWithoutRewardPoolInputSchema) ]),
+}).strict();
+
+export const RewardPoolCreateWithoutRewardSubmissionInputSchema: z.ZodType<Prisma.RewardPoolCreateWithoutRewardSubmissionInput> = z.object({
+  id: z.string().cuid().optional(),
+  title: z.string(),
+  description: z.string(),
+  reward: z.string(),
+  rewardRate: z.number().optional().nullable(),
+  rewardUnit: z.string().optional().nullable(),
+  deadline: z.coerce.date(),
+  platforms: z.union([ z.lazy(() => RewardPoolCreateplatformsInputSchema),z.string().array() ]).optional(),
+  status: z.lazy(() => RewardPoolStatusSchema),
+  totalAmountUsd: z.number(),
+  paidOutUsd: z.number(),
+  campaignTargetViews: z.number().int(),
+  participantsCount: z.number().int(),
+  completedCount: z.number().int(),
+  requirements: z.union([ z.lazy(() => RewardPoolCreaterequirementsInputSchema),z.string().array() ]).optional(),
+  project: z.lazy(() => ProjectCreateNestedOneWithoutRewardPoolsInputSchema)
+}).strict();
+
+export const RewardPoolUncheckedCreateWithoutRewardSubmissionInputSchema: z.ZodType<Prisma.RewardPoolUncheckedCreateWithoutRewardSubmissionInput> = z.object({
+  id: z.string().cuid().optional(),
+  title: z.string(),
+  description: z.string(),
+  reward: z.string(),
+  rewardRate: z.number().optional().nullable(),
+  rewardUnit: z.string().optional().nullable(),
+  deadline: z.coerce.date(),
+  platforms: z.union([ z.lazy(() => RewardPoolCreateplatformsInputSchema),z.string().array() ]).optional(),
+  status: z.lazy(() => RewardPoolStatusSchema),
+  totalAmountUsd: z.number(),
+  paidOutUsd: z.number(),
+  campaignTargetViews: z.number().int(),
+  participantsCount: z.number().int(),
+  completedCount: z.number().int(),
+  requirements: z.union([ z.lazy(() => RewardPoolCreaterequirementsInputSchema),z.string().array() ]).optional(),
+  projectId: z.string()
+}).strict();
+
+export const RewardPoolCreateOrConnectWithoutRewardSubmissionInputSchema: z.ZodType<Prisma.RewardPoolCreateOrConnectWithoutRewardSubmissionInput> = z.object({
+  where: z.lazy(() => RewardPoolWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => RewardPoolCreateWithoutRewardSubmissionInputSchema),z.lazy(() => RewardPoolUncheckedCreateWithoutRewardSubmissionInputSchema) ]),
+}).strict();
+
+export const KOLCreateWithoutRewardSubmissionInputSchema: z.ZodType<Prisma.KOLCreateWithoutRewardSubmissionInput> = z.object({
+  id: z.string().optional(),
+  hidden: z.boolean().optional(),
+  isAlsoProject: z.boolean().optional(),
+  twitterId: z.string(),
+  twitterUsername: z.string(),
+  twitterDisplayName: z.string(),
+  twitterAvatarUrl: z.string(),
+  twitterDescription: z.string(),
+  twitterDescriptionLink: z.string().optional().nullable(),
+  twitterFollowersCount: z.number().int(),
+  twitterFollowingCount: z.number().int(),
+  twitterIsVerified: z.boolean(),
+  twitterGoldBadge: z.boolean().optional().nullable(),
+  twitterLang: z.string(),
+  twitterCreatedAt: z.coerce.date(),
+  kolScore: z.number().optional().nullable(),
+  kolScorePercentFromTotal: z.number().optional().nullable(),
+  smartFollowersCount: z.number().int().optional().nullable(),
+  threadsCount: z.number().int().optional().nullable(),
+  engagementRate: z.number().optional().nullable(),
+  smartEngagement: z.number().optional().nullable(),
+  avgViews: z.number().int().optional().nullable(),
+  avgLikes: z.number().int().optional().nullable(),
+  totalPosts: z.number().int().optional().nullable(),
+  totalViews: z.bigint().optional().nullable(),
+  totalInteractions: z.bigint().optional().nullable(),
+  totalOrganicPosts: z.number().int().optional().nullable(),
+  totalOrganicViews: z.bigint().optional().nullable(),
+  totalOrganicInteractions: z.bigint().optional().nullable(),
+  totalAccountPosts: z.number().int().optional().nullable(),
+  totalAccountViews: z.bigint().optional().nullable(),
+  totalAccountInteractions: z.bigint().optional().nullable(),
+  totalAccountComments: z.number().int().optional().nullable(),
+  totalAccountLikes: z.number().int().optional().nullable(),
+  totalAccountRetweets: z.number().int().optional().nullable(),
+  totalAccountReplies: z.number().int().optional().nullable(),
+  totalPostsChange: z.number().optional().nullable(),
+  totalInteractionsChange: z.number().optional().nullable(),
+  totalViewsChange: z.number().optional().nullable(),
+  followersChange: z.number().optional().nullable(),
+  smartEngagementChange: z.number().optional().nullable(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  fetchedAt: z.coerce.date().optional(),
+  projects: z.lazy(() => KOLToProjectCreateNestedManyWithoutKolInputSchema).optional(),
+  kolSnapshot: z.lazy(() => KOLSnapshotCreateNestedManyWithoutKolInputSchema).optional(),
+  user: z.lazy(() => UserCreateNestedOneWithoutKolInputSchema).optional()
+}).strict();
+
+export const KOLUncheckedCreateWithoutRewardSubmissionInputSchema: z.ZodType<Prisma.KOLUncheckedCreateWithoutRewardSubmissionInput> = z.object({
+  id: z.string().optional(),
+  hidden: z.boolean().optional(),
+  isAlsoProject: z.boolean().optional(),
+  twitterId: z.string(),
+  twitterUsername: z.string(),
+  twitterDisplayName: z.string(),
+  twitterAvatarUrl: z.string(),
+  twitterDescription: z.string(),
+  twitterDescriptionLink: z.string().optional().nullable(),
+  twitterFollowersCount: z.number().int(),
+  twitterFollowingCount: z.number().int(),
+  twitterIsVerified: z.boolean(),
+  twitterGoldBadge: z.boolean().optional().nullable(),
+  twitterLang: z.string(),
+  twitterCreatedAt: z.coerce.date(),
+  kolScore: z.number().optional().nullable(),
+  kolScorePercentFromTotal: z.number().optional().nullable(),
+  smartFollowersCount: z.number().int().optional().nullable(),
+  threadsCount: z.number().int().optional().nullable(),
+  engagementRate: z.number().optional().nullable(),
+  smartEngagement: z.number().optional().nullable(),
+  avgViews: z.number().int().optional().nullable(),
+  avgLikes: z.number().int().optional().nullable(),
+  totalPosts: z.number().int().optional().nullable(),
+  totalViews: z.bigint().optional().nullable(),
+  totalInteractions: z.bigint().optional().nullable(),
+  totalOrganicPosts: z.number().int().optional().nullable(),
+  totalOrganicViews: z.bigint().optional().nullable(),
+  totalOrganicInteractions: z.bigint().optional().nullable(),
+  totalAccountPosts: z.number().int().optional().nullable(),
+  totalAccountViews: z.bigint().optional().nullable(),
+  totalAccountInteractions: z.bigint().optional().nullable(),
+  totalAccountComments: z.number().int().optional().nullable(),
+  totalAccountLikes: z.number().int().optional().nullable(),
+  totalAccountRetweets: z.number().int().optional().nullable(),
+  totalAccountReplies: z.number().int().optional().nullable(),
+  totalPostsChange: z.number().optional().nullable(),
+  totalInteractionsChange: z.number().optional().nullable(),
+  totalViewsChange: z.number().optional().nullable(),
+  followersChange: z.number().optional().nullable(),
+  smartEngagementChange: z.number().optional().nullable(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  fetchedAt: z.coerce.date().optional(),
+  projects: z.lazy(() => KOLToProjectUncheckedCreateNestedManyWithoutKolInputSchema).optional(),
+  kolSnapshot: z.lazy(() => KOLSnapshotUncheckedCreateNestedManyWithoutKolInputSchema).optional(),
+  user: z.lazy(() => UserUncheckedCreateNestedOneWithoutKolInputSchema).optional()
+}).strict();
+
+export const KOLCreateOrConnectWithoutRewardSubmissionInputSchema: z.ZodType<Prisma.KOLCreateOrConnectWithoutRewardSubmissionInput> = z.object({
+  where: z.lazy(() => KOLWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => KOLCreateWithoutRewardSubmissionInputSchema),z.lazy(() => KOLUncheckedCreateWithoutRewardSubmissionInputSchema) ]),
+}).strict();
+
+export const RewardPoolUpsertWithoutRewardSubmissionInputSchema: z.ZodType<Prisma.RewardPoolUpsertWithoutRewardSubmissionInput> = z.object({
+  update: z.union([ z.lazy(() => RewardPoolUpdateWithoutRewardSubmissionInputSchema),z.lazy(() => RewardPoolUncheckedUpdateWithoutRewardSubmissionInputSchema) ]),
+  create: z.union([ z.lazy(() => RewardPoolCreateWithoutRewardSubmissionInputSchema),z.lazy(() => RewardPoolUncheckedCreateWithoutRewardSubmissionInputSchema) ]),
+  where: z.lazy(() => RewardPoolWhereInputSchema).optional()
+}).strict();
+
+export const RewardPoolUpdateToOneWithWhereWithoutRewardSubmissionInputSchema: z.ZodType<Prisma.RewardPoolUpdateToOneWithWhereWithoutRewardSubmissionInput> = z.object({
+  where: z.lazy(() => RewardPoolWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => RewardPoolUpdateWithoutRewardSubmissionInputSchema),z.lazy(() => RewardPoolUncheckedUpdateWithoutRewardSubmissionInputSchema) ]),
+}).strict();
+
+export const RewardPoolUpdateWithoutRewardSubmissionInputSchema: z.ZodType<Prisma.RewardPoolUpdateWithoutRewardSubmissionInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  reward: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  rewardRate: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  rewardUnit: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  deadline: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  platforms: z.union([ z.lazy(() => RewardPoolUpdateplatformsInputSchema),z.string().array() ]).optional(),
+  status: z.union([ z.lazy(() => RewardPoolStatusSchema),z.lazy(() => EnumRewardPoolStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  totalAmountUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  paidOutUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  campaignTargetViews: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  participantsCount: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  completedCount: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  requirements: z.union([ z.lazy(() => RewardPoolUpdaterequirementsInputSchema),z.string().array() ]).optional(),
+  project: z.lazy(() => ProjectUpdateOneRequiredWithoutRewardPoolsNestedInputSchema).optional()
+}).strict();
+
+export const RewardPoolUncheckedUpdateWithoutRewardSubmissionInputSchema: z.ZodType<Prisma.RewardPoolUncheckedUpdateWithoutRewardSubmissionInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  reward: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  rewardRate: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  rewardUnit: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  deadline: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  platforms: z.union([ z.lazy(() => RewardPoolUpdateplatformsInputSchema),z.string().array() ]).optional(),
+  status: z.union([ z.lazy(() => RewardPoolStatusSchema),z.lazy(() => EnumRewardPoolStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  totalAmountUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  paidOutUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
+  campaignTargetViews: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  participantsCount: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  completedCount: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  requirements: z.union([ z.lazy(() => RewardPoolUpdaterequirementsInputSchema),z.string().array() ]).optional(),
+  projectId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const KOLUpsertWithoutRewardSubmissionInputSchema: z.ZodType<Prisma.KOLUpsertWithoutRewardSubmissionInput> = z.object({
+  update: z.union([ z.lazy(() => KOLUpdateWithoutRewardSubmissionInputSchema),z.lazy(() => KOLUncheckedUpdateWithoutRewardSubmissionInputSchema) ]),
+  create: z.union([ z.lazy(() => KOLCreateWithoutRewardSubmissionInputSchema),z.lazy(() => KOLUncheckedCreateWithoutRewardSubmissionInputSchema) ]),
+  where: z.lazy(() => KOLWhereInputSchema).optional()
+}).strict();
+
+export const KOLUpdateToOneWithWhereWithoutRewardSubmissionInputSchema: z.ZodType<Prisma.KOLUpdateToOneWithWhereWithoutRewardSubmissionInput> = z.object({
+  where: z.lazy(() => KOLWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => KOLUpdateWithoutRewardSubmissionInputSchema),z.lazy(() => KOLUncheckedUpdateWithoutRewardSubmissionInputSchema) ]),
+}).strict();
+
+export const KOLUpdateWithoutRewardSubmissionInputSchema: z.ZodType<Prisma.KOLUpdateWithoutRewardSubmissionInput> = z.object({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  hidden: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  isAlsoProject: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterUsername: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterDisplayName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterAvatarUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterDescription: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterDescriptionLink: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterFollowersCount: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterFollowingCount: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterIsVerified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterGoldBadge: z.union([ z.boolean(),z.lazy(() => NullableBoolFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterLang: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterCreatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  kolScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  kolScorePercentFromTotal: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  smartFollowersCount: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  threadsCount: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  engagementRate: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  smartEngagement: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  avgViews: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  avgLikes: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalPosts: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalViews: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalInteractions: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalOrganicPosts: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalOrganicViews: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalOrganicInteractions: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountPosts: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountViews: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountInteractions: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountComments: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountLikes: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountRetweets: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountReplies: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalPostsChange: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalInteractionsChange: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalViewsChange: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  followersChange: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  smartEngagementChange: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  fetchedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  projects: z.lazy(() => KOLToProjectUpdateManyWithoutKolNestedInputSchema).optional(),
+  kolSnapshot: z.lazy(() => KOLSnapshotUpdateManyWithoutKolNestedInputSchema).optional(),
+  user: z.lazy(() => UserUpdateOneWithoutKolNestedInputSchema).optional()
+}).strict();
+
+export const KOLUncheckedUpdateWithoutRewardSubmissionInputSchema: z.ZodType<Prisma.KOLUncheckedUpdateWithoutRewardSubmissionInput> = z.object({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  hidden: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  isAlsoProject: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterUsername: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterDisplayName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterAvatarUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterDescription: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterDescriptionLink: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterFollowersCount: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterFollowingCount: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterIsVerified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterGoldBadge: z.union([ z.boolean(),z.lazy(() => NullableBoolFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  twitterLang: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  twitterCreatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  kolScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  kolScorePercentFromTotal: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  smartFollowersCount: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  threadsCount: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  engagementRate: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  smartEngagement: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  avgViews: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  avgLikes: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalPosts: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalViews: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalInteractions: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalOrganicPosts: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalOrganicViews: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalOrganicInteractions: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountPosts: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountViews: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountInteractions: z.union([ z.bigint(),z.lazy(() => NullableBigIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountComments: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountLikes: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountRetweets: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalAccountReplies: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalPostsChange: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalInteractionsChange: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  totalViewsChange: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  followersChange: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  smartEngagementChange: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  fetchedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  projects: z.lazy(() => KOLToProjectUncheckedUpdateManyWithoutKolNestedInputSchema).optional(),
+  kolSnapshot: z.lazy(() => KOLSnapshotUncheckedUpdateManyWithoutKolNestedInputSchema).optional(),
+  user: z.lazy(() => UserUncheckedUpdateOneWithoutKolNestedInputSchema).optional()
 }).strict();
 
 export const UserCreateManyReferredByInputSchema: z.ZodType<Prisma.UserCreateManyReferredByInput> = z.object({
@@ -11610,6 +12443,7 @@ export const RewardPoolUpdateWithoutProjectInputSchema: z.ZodType<Prisma.RewardP
   participantsCount: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   completedCount: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   requirements: z.union([ z.lazy(() => RewardPoolUpdaterequirementsInputSchema),z.string().array() ]).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionUpdateManyWithoutRewardPoolNestedInputSchema).optional()
 }).strict();
 
 export const RewardPoolUncheckedUpdateWithoutProjectInputSchema: z.ZodType<Prisma.RewardPoolUncheckedUpdateWithoutProjectInput> = z.object({
@@ -11628,6 +12462,7 @@ export const RewardPoolUncheckedUpdateWithoutProjectInputSchema: z.ZodType<Prism
   participantsCount: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   completedCount: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   requirements: z.union([ z.lazy(() => RewardPoolUpdaterequirementsInputSchema),z.string().array() ]).optional(),
+  rewardSubmission: z.lazy(() => RewardSubmissionUncheckedUpdateManyWithoutRewardPoolNestedInputSchema).optional()
 }).strict();
 
 export const RewardPoolUncheckedUpdateManyWithoutProjectInputSchema: z.ZodType<Prisma.RewardPoolUncheckedUpdateManyWithoutProjectInput> = z.object({
@@ -11764,6 +12599,15 @@ export const KOLSnapshotCreateManyKolInputSchema: z.ZodType<Prisma.KOLSnapshotCr
   fetchedDate: z.string()
 }).strict();
 
+export const RewardSubmissionCreateManyKolInputSchema: z.ZodType<Prisma.RewardSubmissionCreateManyKolInput> = z.object({
+  id: z.string().cuid().optional(),
+  contentUrl: z.string(),
+  notes: z.string().optional().nullable(),
+  status: z.lazy(() => SubmissionStatusSchema).optional(),
+  createdAt: z.coerce.date().optional(),
+  rewardPoolId: z.string()
+}).strict();
+
 export const KOLToProjectUpdateWithoutKolInputSchema: z.ZodType<Prisma.KOLToProjectUpdateWithoutKolInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   totalPosts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -11897,6 +12741,69 @@ export const KOLSnapshotUncheckedUpdateManyWithoutKolInputSchema: z.ZodType<Pris
   followersChange: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   smartEngagementChange: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   fetchedDate: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const RewardSubmissionUpdateWithoutKolInputSchema: z.ZodType<Prisma.RewardSubmissionUpdateWithoutKolInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  contentUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  status: z.union([ z.lazy(() => SubmissionStatusSchema),z.lazy(() => EnumSubmissionStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  rewardPool: z.lazy(() => RewardPoolUpdateOneRequiredWithoutRewardSubmissionNestedInputSchema).optional()
+}).strict();
+
+export const RewardSubmissionUncheckedUpdateWithoutKolInputSchema: z.ZodType<Prisma.RewardSubmissionUncheckedUpdateWithoutKolInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  contentUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  status: z.union([ z.lazy(() => SubmissionStatusSchema),z.lazy(() => EnumSubmissionStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  rewardPoolId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const RewardSubmissionUncheckedUpdateManyWithoutKolInputSchema: z.ZodType<Prisma.RewardSubmissionUncheckedUpdateManyWithoutKolInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  contentUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  status: z.union([ z.lazy(() => SubmissionStatusSchema),z.lazy(() => EnumSubmissionStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  rewardPoolId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const RewardSubmissionCreateManyRewardPoolInputSchema: z.ZodType<Prisma.RewardSubmissionCreateManyRewardPoolInput> = z.object({
+  id: z.string().cuid().optional(),
+  contentUrl: z.string(),
+  notes: z.string().optional().nullable(),
+  status: z.lazy(() => SubmissionStatusSchema).optional(),
+  createdAt: z.coerce.date().optional(),
+  kolId: z.string()
+}).strict();
+
+export const RewardSubmissionUpdateWithoutRewardPoolInputSchema: z.ZodType<Prisma.RewardSubmissionUpdateWithoutRewardPoolInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  contentUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  status: z.union([ z.lazy(() => SubmissionStatusSchema),z.lazy(() => EnumSubmissionStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  kol: z.lazy(() => KOLUpdateOneRequiredWithoutRewardSubmissionNestedInputSchema).optional()
+}).strict();
+
+export const RewardSubmissionUncheckedUpdateWithoutRewardPoolInputSchema: z.ZodType<Prisma.RewardSubmissionUncheckedUpdateWithoutRewardPoolInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  contentUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  status: z.union([ z.lazy(() => SubmissionStatusSchema),z.lazy(() => EnumSubmissionStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  kolId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const RewardSubmissionUncheckedUpdateManyWithoutRewardPoolInputSchema: z.ZodType<Prisma.RewardSubmissionUncheckedUpdateManyWithoutRewardPoolInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  contentUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  notes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  status: z.union([ z.lazy(() => SubmissionStatusSchema),z.lazy(() => EnumSubmissionStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  kolId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 /////////////////////////////////////////
@@ -12647,6 +13554,68 @@ export const RewardPoolFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.RewardPoolF
   where: RewardPoolWhereUniqueInputSchema,
 }).strict() ;
 
+export const RewardSubmissionFindFirstArgsSchema: z.ZodType<Prisma.RewardSubmissionFindFirstArgs> = z.object({
+  select: RewardSubmissionSelectSchema.optional(),
+  include: RewardSubmissionIncludeSchema.optional(),
+  where: RewardSubmissionWhereInputSchema.optional(),
+  orderBy: z.union([ RewardSubmissionOrderByWithRelationInputSchema.array(),RewardSubmissionOrderByWithRelationInputSchema ]).optional(),
+  cursor: RewardSubmissionWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ RewardSubmissionScalarFieldEnumSchema,RewardSubmissionScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const RewardSubmissionFindFirstOrThrowArgsSchema: z.ZodType<Prisma.RewardSubmissionFindFirstOrThrowArgs> = z.object({
+  select: RewardSubmissionSelectSchema.optional(),
+  include: RewardSubmissionIncludeSchema.optional(),
+  where: RewardSubmissionWhereInputSchema.optional(),
+  orderBy: z.union([ RewardSubmissionOrderByWithRelationInputSchema.array(),RewardSubmissionOrderByWithRelationInputSchema ]).optional(),
+  cursor: RewardSubmissionWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ RewardSubmissionScalarFieldEnumSchema,RewardSubmissionScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const RewardSubmissionFindManyArgsSchema: z.ZodType<Prisma.RewardSubmissionFindManyArgs> = z.object({
+  select: RewardSubmissionSelectSchema.optional(),
+  include: RewardSubmissionIncludeSchema.optional(),
+  where: RewardSubmissionWhereInputSchema.optional(),
+  orderBy: z.union([ RewardSubmissionOrderByWithRelationInputSchema.array(),RewardSubmissionOrderByWithRelationInputSchema ]).optional(),
+  cursor: RewardSubmissionWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ RewardSubmissionScalarFieldEnumSchema,RewardSubmissionScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const RewardSubmissionAggregateArgsSchema: z.ZodType<Prisma.RewardSubmissionAggregateArgs> = z.object({
+  where: RewardSubmissionWhereInputSchema.optional(),
+  orderBy: z.union([ RewardSubmissionOrderByWithRelationInputSchema.array(),RewardSubmissionOrderByWithRelationInputSchema ]).optional(),
+  cursor: RewardSubmissionWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const RewardSubmissionGroupByArgsSchema: z.ZodType<Prisma.RewardSubmissionGroupByArgs> = z.object({
+  where: RewardSubmissionWhereInputSchema.optional(),
+  orderBy: z.union([ RewardSubmissionOrderByWithAggregationInputSchema.array(),RewardSubmissionOrderByWithAggregationInputSchema ]).optional(),
+  by: RewardSubmissionScalarFieldEnumSchema.array(),
+  having: RewardSubmissionScalarWhereWithAggregatesInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const RewardSubmissionFindUniqueArgsSchema: z.ZodType<Prisma.RewardSubmissionFindUniqueArgs> = z.object({
+  select: RewardSubmissionSelectSchema.optional(),
+  include: RewardSubmissionIncludeSchema.optional(),
+  where: RewardSubmissionWhereUniqueInputSchema,
+}).strict() ;
+
+export const RewardSubmissionFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.RewardSubmissionFindUniqueOrThrowArgs> = z.object({
+  select: RewardSubmissionSelectSchema.optional(),
+  include: RewardSubmissionIncludeSchema.optional(),
+  where: RewardSubmissionWhereUniqueInputSchema,
+}).strict() ;
+
 export const LogFindFirstArgsSchema: z.ZodType<Prisma.LogFindFirstArgs> = z.object({
   select: LogSelectSchema.optional(),
   where: LogWhereInputSchema.optional(),
@@ -13254,6 +14223,52 @@ export const RewardPoolUpdateManyArgsSchema: z.ZodType<Prisma.RewardPoolUpdateMa
 
 export const RewardPoolDeleteManyArgsSchema: z.ZodType<Prisma.RewardPoolDeleteManyArgs> = z.object({
   where: RewardPoolWhereInputSchema.optional(),
+}).strict() ;
+
+export const RewardSubmissionCreateArgsSchema: z.ZodType<Prisma.RewardSubmissionCreateArgs> = z.object({
+  select: RewardSubmissionSelectSchema.optional(),
+  include: RewardSubmissionIncludeSchema.optional(),
+  data: z.union([ RewardSubmissionCreateInputSchema,RewardSubmissionUncheckedCreateInputSchema ]),
+}).strict() ;
+
+export const RewardSubmissionUpsertArgsSchema: z.ZodType<Prisma.RewardSubmissionUpsertArgs> = z.object({
+  select: RewardSubmissionSelectSchema.optional(),
+  include: RewardSubmissionIncludeSchema.optional(),
+  where: RewardSubmissionWhereUniqueInputSchema,
+  create: z.union([ RewardSubmissionCreateInputSchema,RewardSubmissionUncheckedCreateInputSchema ]),
+  update: z.union([ RewardSubmissionUpdateInputSchema,RewardSubmissionUncheckedUpdateInputSchema ]),
+}).strict() ;
+
+export const RewardSubmissionCreateManyArgsSchema: z.ZodType<Prisma.RewardSubmissionCreateManyArgs> = z.object({
+  data: z.union([ RewardSubmissionCreateManyInputSchema,RewardSubmissionCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const RewardSubmissionCreateManyAndReturnArgsSchema: z.ZodType<Prisma.RewardSubmissionCreateManyAndReturnArgs> = z.object({
+  data: z.union([ RewardSubmissionCreateManyInputSchema,RewardSubmissionCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const RewardSubmissionDeleteArgsSchema: z.ZodType<Prisma.RewardSubmissionDeleteArgs> = z.object({
+  select: RewardSubmissionSelectSchema.optional(),
+  include: RewardSubmissionIncludeSchema.optional(),
+  where: RewardSubmissionWhereUniqueInputSchema,
+}).strict() ;
+
+export const RewardSubmissionUpdateArgsSchema: z.ZodType<Prisma.RewardSubmissionUpdateArgs> = z.object({
+  select: RewardSubmissionSelectSchema.optional(),
+  include: RewardSubmissionIncludeSchema.optional(),
+  data: z.union([ RewardSubmissionUpdateInputSchema,RewardSubmissionUncheckedUpdateInputSchema ]),
+  where: RewardSubmissionWhereUniqueInputSchema,
+}).strict() ;
+
+export const RewardSubmissionUpdateManyArgsSchema: z.ZodType<Prisma.RewardSubmissionUpdateManyArgs> = z.object({
+  data: z.union([ RewardSubmissionUpdateManyMutationInputSchema,RewardSubmissionUncheckedUpdateManyInputSchema ]),
+  where: RewardSubmissionWhereInputSchema.optional(),
+}).strict() ;
+
+export const RewardSubmissionDeleteManyArgsSchema: z.ZodType<Prisma.RewardSubmissionDeleteManyArgs> = z.object({
+  where: RewardSubmissionWhereInputSchema.optional(),
 }).strict() ;
 
 export const LogCreateArgsSchema: z.ZodType<Prisma.LogCreateArgs> = z.object({

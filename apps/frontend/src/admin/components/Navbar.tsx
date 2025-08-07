@@ -1,73 +1,96 @@
 import { Layers } from "lucide-react";
-import React from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../../components/ProtectedRoute";
 
-interface NavbarProps {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
-}
+const Navbar: React.FC = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
-const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
   const handleLogout = () => {
     localStorage.removeItem("token");
-    location.href = "/admin/login";
+    navigate("/admin/login");
   };
 
   return (
-    <nav className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg">
+    <nav className="bg-gradient-to-r from-indigo-700 to-purple-700 text-white shadow">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <Layers className="h-8 w-8" />
-            </div>
-            <div className="ml-4 text-xl font-bold">Crypto Admin Panel</div>
+          {/* Лого */}
+          <div className="flex items-center gap-2">
+            <Layers className="h-7 w-7" />
+            <span className="text-xl font-semibold tracking-tight">
+              Crypto Admin Panel
+            </span>
           </div>
-          <div className="flex">
-            <button
-              onClick={() => setActiveTab("projects")}
-              className={`px-4 py-2 mx-1 rounded-md text-sm font-medium transition-colors duration-150 ease-in-out ${
-                activeTab === "projects"
-                  ? "bg-white text-indigo-600"
-                  : "text-white hover:bg-indigo-500"
-              }`}
+
+          {/* Навигация */}
+          <div className="flex items-center gap-3">
+            <NavLink
+              to="/admin/projects"
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${
+                  isActive ? "bg-white text-indigo-700" : "hover:bg-indigo-600"
+                }`
+              }
             >
               Projects
-            </button>
-            <button
-              onClick={() => setActiveTab("kols")}
-              className={`px-4 py-2 mx-1 rounded-md text-sm font-medium transition-colors duration-150 ease-in-out ${
-                activeTab === "kols"
-                  ? "bg-white text-indigo-600"
-                  : "text-white hover:bg-indigo-500"
-              }`}
-            >
-              KOLs
-            </button>
-            <button
-              onClick={() => setActiveTab("reward-pools")}
-              className={`px-4 py-2 mx-1 rounded-md text-sm font-medium transition-colors duration-150 ease-in-out ${
-                activeTab === "reward-pools"
-                  ? "bg-white text-indigo-600"
-                  : "text-white hover:bg-indigo-500"
-              }`}
+            </NavLink>
+
+            {user?.role === "admin" && (
+              <NavLink
+                to="/admin/kols"
+                className={({ isActive }) =>
+                  `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${
+                    isActive
+                      ? "bg-white text-indigo-700"
+                      : "hover:bg-indigo-600"
+                  }`
+                }
+              >
+                KOLs
+              </NavLink>
+            )}
+
+            <NavLink
+              to="/admin/reward-pools"
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${
+                  isActive ? "bg-white text-indigo-700" : "hover:bg-indigo-600"
+                }`
+              }
             >
               Reward Pools
-            </button>
-            <button
-              onClick={() => setActiveTab("users")}
-              className={`px-4 py-2 mx-1 rounded-md text-sm font-medium transition-colors duration-150 ease-in-out ${
-                activeTab === "users"
-                  ? "bg-white text-indigo-600"
-                  : "text-white hover:bg-indigo-500"
-              }`}
+            </NavLink>
+
+            <NavLink
+              to="/admin/reward-submissions"
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${
+                  isActive ? "bg-white text-indigo-700" : "hover:bg-indigo-600"
+                }`
+              }
             >
-              Users
-            </button>
+              Reward Submissions
+            </NavLink>
+
+            {user?.role === "admin" && (
+              <NavLink
+                to="/admin/users"
+                className={({ isActive }) =>
+                  `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${
+                    isActive
+                      ? "bg-white text-indigo-700"
+                      : "hover:bg-indigo-600"
+                  }`
+                }
+              >
+                Users
+              </NavLink>
+            )}
 
             <button
               onClick={handleLogout}
-              className={`px-4 py-2 mx-1 rounded-md text-sm font-medium transition-colors duration-150 ease-in-out text-red`}
-              style={{ color: "#ff5656" }}
+              className="px-3 py-2 rounded-md text-sm font-medium text-red-400 hover:text-red-500 transition-colors"
             >
               Log out
             </button>

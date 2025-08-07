@@ -165,3 +165,12 @@ export interface RewardPool {
   project: Project;
   projectId: string;
 }
+
+export interface RewardSumbission {
+  id: string;
+  kol: KOL;
+  contentUrl: string;
+  notes: string;
+  status: RewardSubmissionStatus;
+}
+export type RewardSubmissionStatus = "pending" | "approved" | "rejected";
