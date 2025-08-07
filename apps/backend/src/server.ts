@@ -10,7 +10,7 @@ import path from "path";
 import { authRoutes } from "./routes/auth";
 import { influencerRoutes } from "./routes/influencers";
 import narrativesRoutes from "./routes/narratives";
-import { projectRoutes, protokolsProjectRoutes } from "./routes/projects";
+import { protokolsProjectRoutes } from "./routes/projects";
 import rewardPoolRoutes from "./routes/rewardPool";
 import trackRoute from "./routes/track";
 import { usersRoutes } from "./routes/users";
@@ -30,10 +30,9 @@ app.use(cookieParser());
 const isDev = process.env.NODE_ENV !== "production";
 
 app.use("/api/auth", authRoutes);
+
 app.use("/api/influencers", influencerRoutes);
-app.use("/api/projects", projectRoutes);
-app.use("/api/p-projects", protokolsProjectRoutes);
-// app.use("/api/mentions", mentionRoutes);
+app.use("/api/projects", protokolsProjectRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/narratives", narrativesRoutes);
 app.use("/api/reward-pools", rewardPoolRoutes);

@@ -21,7 +21,7 @@ const fetchPaginatedProjects = async ({
   sortDirection: string;
 }) => {
   const res = await fetch(
-    `/api/p-projects/paginate?page=${page}&limit=${limit}&sortField=${sortField}&sortDirection=${sortDirection}`
+    `/api/projects/paginate?page=${page}&limit=${limit}&sortField=${sortField}&sortDirection=${sortDirection}`
   );
   if (!res.ok) throw new Error("Failed to fetch projects");
   return await res.json();
@@ -92,7 +92,7 @@ const ProjectsLeaderboard: React.FC = () => {
   // };
 
   useEffect(() => {
-    fetch("/api/p-projects/featured")
+    fetch("/api/projects/featured")
       .then((res) => res.json())
       .then(setFeaturedProjects)
       .catch(console.error);

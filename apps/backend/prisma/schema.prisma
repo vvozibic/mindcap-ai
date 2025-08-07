@@ -11,9 +11,11 @@ model AdminUser {
   id        Int      @id @default(autoincrement())
   username  String   @unique
   password  String
-  role      String   @default("ADMIN")
+  role      String   @default("ADMIN") // ADMIN или PROJECT
+  projectId String? // для PROJECT-менеджера
+  project   Project? @relation(fields: [projectId], references: [id])
   createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model User {
@@ -184,6 +186,7 @@ model Project {
   narrativeLinks  ProjectToNarrative[]
   rewardPools     RewardPool[]
   kols            KOLToProject[]
+  adminUser       AdminUser[]
 
   @@unique([twitterId])
   @@unique([twitterUsername])

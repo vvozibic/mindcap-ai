@@ -39,7 +39,7 @@ export function useProjectInfluencers(projectId: string | null | undefined) {
     setLoading(true);
     setError(null);
 
-    fetch(`/api/p-projects/${projectId}/influencers`)
+    fetch(`/api/projects/${projectId}/influencers`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to load influencers");
         return res.json();

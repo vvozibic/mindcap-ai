@@ -16,7 +16,7 @@ const RewardPoolAdmin: React.FC = () => {
   };
 
   const loadProjects = () => {
-    fetch("/api/p-projects/featured")
+    fetch("/api/projects/featured")
       .then((res) => res.json())
       .then(setAllProjects);
   };

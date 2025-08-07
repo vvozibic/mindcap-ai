@@ -7,7 +7,7 @@ import { KOL, Project, RewardPool } from "../types";
 import { daysBetween } from "../utils/daysBetween";
 
 const fetchProject = async ({ slug }: { slug: string }) => {
-  const res = await fetch(`/api/p-projects/slug/${slug}`);
+  const res = await fetch(`/api/projects/slug/${slug}`);
   if (!res.ok) throw new Error("Failed to fetch projects");
   return await res.json();
 };
@@ -23,7 +23,7 @@ export function useProjectInfluencers(projectId: string | null | undefined) {
     setLoading(true);
     setError(null);
 
-    fetch(`/api/p-projects/${projectId}/influencers`)
+    fetch(`/api/projects/${projectId}/influencers`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to load influencers");
         return res.json();
@@ -55,7 +55,7 @@ const ProjectPage = () => {
     setLoading(true);
     setError(null);
 
-    fetch(`/api/p-projects/slug/${slug}`)
+    fetch(`/api/projects/slug/${slug}`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to load influencers");
         return res.json();

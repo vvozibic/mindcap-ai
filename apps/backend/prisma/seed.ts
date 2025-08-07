@@ -4,22 +4,36 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  const hash = await bcrypt.hash("adminfi", 10);
+  const hash = await bcrypt.hash("", 10);
+  const hashProject = await bcrypt.hash("", 10);
 
-  const admin = await prisma.adminUser.upsert({
-    where: { username: "admin" },
-    update: {
-      password: hash,
-      role: "admin",
-    },
-    create: {
-      username: "admin",
-      password: hash,
-      role: "admin",
+  // const admin = await prisma.adminUser.upsert({
+  //   where: { username: "admin" },
+  //   update: {
+  //     password: hash,
+  //     role: "admin",
+  //   },
+  //   create: {
+  //     username: "admin",
+  //     password: hash,
+  //     role: "admin",
+  //   },
+  // });
+
+  // console.log(`✅ Admin created/updated: ${admin.username}`);
+
+  const adminProjectUser = await prisma.adminUser.create({
+    data: {
+      username: "0G_ADMIN",
+      password: hashProject,
+      role: "PROJECT",
+      project: {
+        connect: { id: "4d3105db-b451-4edc-bee3-2204a0cf4d22" },
+      },
     },
   });
 
-  console.log(`✅ Admin created/updated: ${admin.username}`);
+  console.log(`✅ Admin created/updated: ${adminProjectUser.username}`);
 
   // const solana = await prisma.project.upsert({
   //   where: { slug: "solana" },

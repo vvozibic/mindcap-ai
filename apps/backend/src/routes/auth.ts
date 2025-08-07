@@ -21,14 +21,28 @@ const authRoutes = express.Router();
 
 authRoutes.post("/admin/login", adminLogin);
 
-authRoutes.get("/admin/me", authenticateToken, (req, res) => {
+authRoutes.get("/admin/me", authenticateToken, async (req, res) => {
   //@ts-ignore
-  const user = req.user as { id: number; username: string; role: string };
+  const user = req.user as { userId: number };
 
-  res.json({
-    username: user.username,
-    role: user.role,
-  });
+  try {
+    const adminUser = await prisma.adminUser.findUnique({
+      where: { id: user.userId },
+      select: {
+        id: true,
+        username: true,
+        role: true,
+        projectId: true,
+      },
+    });
+
+    if (!adminUser) return res.status(404).json({ error: "User not found" });
+
+    res.json(adminUser);
+  } catch (error) {
+    console.error("Error in /admin/me:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 authRoutes.post("/login/email", loginWithEmail);

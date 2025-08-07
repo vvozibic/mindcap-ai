@@ -5,15 +5,17 @@ import { formatNumber } from "../../utils/formatNumber";
 import ProjectForm from "./ProjectForm";
 import { TableSkeleton } from "./TableSkeleton";
 
-interface ProjectsTableProps {}
+interface ProjectsTableProps {
+  projectId?: null | string;
+}
 
-const ProjectsTable: React.FC<ProjectsTableProps> = ({}) => {
+const ProjectsTable: React.FC<ProjectsTableProps> = ({ projectId }) => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/p-projects")
+    fetch("/api/projects")
       .then((res) => res.json())
       .then(setProjects)
       .catch(console.error);
@@ -30,18 +32,20 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({}) => {
   };
 
   const handleDelete = async (id: string) => {
-    await fetch(`/api/p-projects/${id}`, { method: "DELETE" });
+    await fetch(`/api/projects/${id}`, { method: "DELETE" });
     setProjects((prev) => prev.filter((p) => p.id !== id));
   };
 
   const handleSuccess = () => {
-    fetch("/api/p-projects")
+    fetch("/api/projects")
       .then((res) => res.json())
       .then(setProjects)
       .finally(() => setIsFormOpen(false));
   };
 
-  console.log(projects);
+  const filteredProjects = projectId
+    ? projects.filter((p) => p.id === projectId)
+    : projects;
 
   if (!projects?.length) {
     return <TableSkeleton />;
@@ -49,16 +53,20 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({}) => {
 
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
-      <div className="flex justify-between items-center p-4 border-b">
-        <h2 className="text-xl font-semibold text-gray-800">Crypto Projects</h2>
-        <button
-          onClick={handleAdd}
-          className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add Project
-        </button>
-      </div>
+      {!projectId ? (
+        <div className="flex justify-between items-center p-4 border-b">
+          <h2 className="text-xl font-semibold text-gray-800">
+            Crypto Projects
+          </h2>
+          <button
+            onClick={handleAdd}
+            className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Project
+          </button>
+        </div>
+      ) : null}
 
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
@@ -92,7 +100,7 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({}) => {
           </thead>
 
           <tbody className="bg-white divide-y divide-gray-200">
-            {projects.map((project) => (
+            {filteredProjects.map((project) => (
               <tr key={project.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {project.twitterUsername}

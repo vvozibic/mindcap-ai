@@ -63,7 +63,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   useEffect(() => {
     if (projectId) {
       setLoading(true);
-      fetch(`/api/p-projects/${projectId}`)
+      fetch(`/api/projects/${projectId}`)
         .then((res) => {
           if (!res.ok) throw new Error("Failed to fetch project");
           return res.json();
@@ -107,7 +107,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     e.preventDefault();
     setLoadingUpdate(true);
     const method = projectId ? "PUT" : "POST";
-    const url = projectId ? `/api/p-projects/${projectId}` : "/api/p-projects";
+    const url = projectId ? `/api/projects/${projectId}` : "/api/projects";
 
     const res = await fetch(url, {
       method,
