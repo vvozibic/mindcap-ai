@@ -42,70 +42,70 @@ async function main() {
   //   },
   // });
 
-  const influencers = [
-    {
-      name: "Alex Thompson",
-      username: "@cryptoalex",
-      avatarUrl: "/avatars/alex.png",
-      platform: "X (Twitter)",
-      followersCount: "120000",
-      smartFollowers: "85000",
-      expertise: "DeFi, Crypto",
-      mindshare: "98",
-      pow: "92",
-      poi: "95",
-      poe: "97",
-      moneyScore: "89",
-    },
-    {
-      name: "Sophia Chen",
-      username: "@sophiaconchain",
-      platform: "X (Twitter)",
-      followersCount: "105000",
-      smartFollowers: "78000",
-      expertise: "Web3 Marketing",
-      mindshare: "96",
-      pow: "94",
-      poi: "91",
-      poe: "93",
-      moneyScore: "92",
-    },
-    {
-      name: "Marcus Johnson",
-      username: "@mjcrypto",
-      platform: "X (Twitter)",
-      followersCount: "98000",
-      smartFollowers: "72000",
-      expertise: "Insight Provider",
-      mindshare: "94",
-      pow: "89",
-      poi: "96",
-      poe: "90",
-      moneyScore: "87",
-    },
-  ];
+  // const influencers = [
+  //   {
+  //     name: "Alex Thompson",
+  //     username: "@cryptoalex",
+  //     avatarUrl: "/avatars/alex.png",
+  //     platform: "X (Twitter)",
+  //     followersCount: "120000",
+  //     smartFollowers: "85000",
+  //     expertise: "DeFi, Crypto",
+  //     mindshare: "98",
+  //     pow: "92",
+  //     poi: "95",
+  //     poe: "97",
+  //     moneyScore: "89",
+  //   },
+  //   {
+  //     name: "Sophia Chen",
+  //     username: "@sophiaconchain",
+  //     platform: "X (Twitter)",
+  //     followersCount: "105000",
+  //     smartFollowers: "78000",
+  //     expertise: "Web3 Marketing",
+  //     mindshare: "96",
+  //     pow: "94",
+  //     poi: "91",
+  //     poe: "93",
+  //     moneyScore: "92",
+  //   },
+  //   {
+  //     name: "Marcus Johnson",
+  //     username: "@mjcrypto",
+  //     platform: "X (Twitter)",
+  //     followersCount: "98000",
+  //     smartFollowers: "72000",
+  //     expertise: "Insight Provider",
+  //     mindshare: "94",
+  //     pow: "89",
+  //     poi: "96",
+  //     poe: "90",
+  //     moneyScore: "87",
+  //   },
+  // ];
 
-  for (const data of influencers) {
-    const influencer = await prisma.influencer.upsert({
-      where: { username: data.username },
-      update: {},
-      create: data,
-    });
+  // for (const data of influencers) {
+  //   const influencer = await prisma.influencer.upsert({
+  //     where: { username: data.username },
+  //     update: {},
+  //     create: data,
+  //   });
 
-    // await prisma.mention.create({
-    //   data: {
-    //     projectId: solana.id,
-    //     influencerId: influencer.id,
-    //     mindshare: influencer.mindshare,
-    //     pow: influencer.pow,
-    //     poi: influencer.poi,
-    //     poe: influencer.poe,
-    //     smartFollowers: influencer.smartFollowers,
-    //   },
-    // });
-  }
+  //   // await prisma.mention.create({
+  //   //   data: {
+  //   //     projectId: solana.id,
+  //   //     influencerId: influencer.id,
+  //   //     mindshare: influencer.mindshare,
+  //   //     pow: influencer.pow,
+  //   //     poi: influencer.poi,
+  //   //     poe: influencer.poe,
+  //   //     smartFollowers: influencer.smartFollowers,
+  //   //   },
+  //   // });
+  // }
 
-  console.log("✅ Seeded Influencers");
+  // console.log("✅ Seeded Influencers");
 }
 
 main()

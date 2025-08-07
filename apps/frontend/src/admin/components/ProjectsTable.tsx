@@ -41,6 +41,8 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({}) => {
       .finally(() => setIsFormOpen(false));
   };
 
+  console.log(projects);
+
   if (!projects?.length) {
     return <TableSkeleton />;
   }
