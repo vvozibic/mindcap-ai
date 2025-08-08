@@ -44,7 +44,7 @@ const RewardPoolAdmin: React.FC<{ projectId?: null | string }> = ({
   };
 
   const filteredPools = projectId
-    ? pools.filter((p) => p.id === projectId)
+    ? pools.filter((p) => p.projectId === projectId)
     : pools;
 
   return (
