@@ -82,15 +82,6 @@ export const loginWithTwitter = async (req: Request, res: Response) => {
 
 export const getMe = async (req: Request, res: Response) => {
   try {
-    // const userInfo = await fetch(
-    //   "https://api.twitter.com/2/users/me?user.fields=id,name,username,profile_image_url",
-    //   {
-    //     // @ts-ignore
-    //     headers: { Authorization: `Bearer ${req.userToken}` },
-    //   }
-    // );
-    // const user = await userInfo.json();
-
     // @ts-ignore
     const username = req.twitterUser;
 
@@ -105,7 +96,7 @@ export const getMe = async (req: Request, res: Response) => {
               address: true,
               chain: true,
               rubyWalletScore: true,
-              rubyWalletScoreFetchedAt: true,
+              nomisWalletScore: true,
             },
           },
           kol: true,

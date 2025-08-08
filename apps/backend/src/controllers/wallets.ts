@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { sendAnalyticsEvent } from "../analytics";
 import { AnalyticsEvent } from "../analytics/types";
+import { fetchNomisWalletScore } from "../components/wallets/fetchNomisWalletScores";
 import { fetchRubyWalletScore } from "../components/wallets/fetchRubyWalletScores";
 
 const prisma = new PrismaClient();
@@ -47,6 +48,7 @@ export const addWallet = async (req: Request, res: Response) => {
     }
 
     await fetchRubyWalletScore(wallet);
+    await fetchNomisWalletScore(wallet);
 
     sendAnalyticsEvent(AnalyticsEvent.USER_ADD_WALLET, {
       username: user.username,

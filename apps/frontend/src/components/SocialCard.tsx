@@ -62,6 +62,13 @@ const SocialCard: React.FC<SocialCardProps> = ({
 
   const detailData = getKOLDetailData(kol);
 
+  const wallet = user?.wallets?.find(
+    (w) => w.address === (user?.primaryWallet?.address || "")
+  );
+  const rubyWalletScore = wallet?.rubyWalletScore || 0;
+  const nomisWalletScore = wallet?.nomisWalletScore || 0;
+  const walletScore = Number(rubyWalletScore + nomisWalletScore).toFixed(2);
+
   if (!user?.username && !loading) {
     return (
       <div className="bg-primary-800/70 relative z-10 rounded-lg shadow-lg p-8 max-w-2xl mx-auto backdrop-blur-sm  text-center border border-primary-700/20">
@@ -142,13 +149,7 @@ const SocialCard: React.FC<SocialCardProps> = ({
                   Wallet score
                 </span>
               </div>
-              <p className="text-3xl font-bold text-white">
-                {user?.wallets
-                  ?.find(
-                    (w) => w.address === (user?.primaryWallet?.address || "")
-                  )
-                  ?.rubyWalletScore?.toFixed(2)}
-              </p>
+              <p className="text-3xl font-bold text-white">{walletScore}</p>
             </div>
 
             {/* Completed Tasks */}

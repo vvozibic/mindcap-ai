@@ -108,6 +108,7 @@ export interface User {
   primaryWallet?: Wallet;
   wallets: Array<{
     rubyWalletScore: number;
+    nomisWalletScore: number;
     address: string;
   }>;
   platform?: "twitter";

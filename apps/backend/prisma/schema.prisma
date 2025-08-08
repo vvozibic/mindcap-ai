@@ -64,6 +64,10 @@ model Wallet {
   rubyWalletScore          Float?
   rubyWalletScoreFetchedAt DateTime?
 
+  // 🔹 NomisScore API
+  nomisWalletScore          Float?
+  nomisWalletScoreFetchedAt DateTime?
+
   user       User  @relation(fields: [userId], references: [id])
   primaryFor User? @relation("PrimaryWallet")
 

@@ -16,7 +16,7 @@ export const AdminUserScalarFieldEnumSchema = z.enum(['id','username','password'
 
 export const UserScalarFieldEnumSchema = z.enum(['id','createdAt','updatedAt','username','avatarUrl','platform','email','twitterHandle','referralCode','referredById','onboardingStep','completedTasks','earnedPoints','kolId','primaryWalletId']);
 
-export const WalletScalarFieldEnumSchema = z.enum(['id','address','chain','userId','verified','label','symbol','explorer','createdAt','rubyWalletScore','rubyWalletScoreFetchedAt']);
+export const WalletScalarFieldEnumSchema = z.enum(['id','address','chain','userId','verified','label','symbol','explorer','createdAt','rubyWalletScore','rubyWalletScoreFetchedAt','nomisWalletScore','nomisWalletScoreFetchedAt']);
 
 export const NarrativeScalarFieldEnumSchema = z.enum(['id','narrativeId','name','slug','description','projectCount','totalViews','totalPosts','totalMarketCapUsd','marketCapChange24h','marketCapChange7d','marketCapChange30d','marketCapChange90d','mindsharePercent','mindshareChange24h','mindshareChange7d','mindshareChange30d','mindshareChange90d','createdAt','updatedAt','fetchedAt']);
 
@@ -114,6 +114,8 @@ export const WalletSchema = z.object({
   createdAt: z.coerce.date(),
   rubyWalletScore: z.number().nullable(),
   rubyWalletScoreFetchedAt: z.coerce.date().nullable(),
+  nomisWalletScore: z.number().nullable(),
+  nomisWalletScoreFetchedAt: z.coerce.date().nullable(),
 })
 
 export type Wallet = z.infer<typeof WalletSchema>
@@ -521,6 +523,8 @@ export const WalletSelectSchema: z.ZodType<Prisma.WalletSelect> = z.object({
   createdAt: z.boolean().optional(),
   rubyWalletScore: z.boolean().optional(),
   rubyWalletScoreFetchedAt: z.boolean().optional(),
+  nomisWalletScore: z.boolean().optional(),
+  nomisWalletScoreFetchedAt: z.boolean().optional(),
   user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
   primaryFor: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
 }).strict()
@@ -1891,6 +1895,8 @@ export const WalletWhereInputSchema: z.ZodType<Prisma.WalletWhereInput> = z.obje
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   rubyWalletScore: z.union([ z.lazy(() => FloatNullableFilterSchema),z.number() ]).optional().nullable(),
   rubyWalletScoreFetchedAt: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
+  nomisWalletScore: z.union([ z.lazy(() => FloatNullableFilterSchema),z.number() ]).optional().nullable(),
+  nomisWalletScoreFetchedAt: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
   user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
   primaryFor: z.union([ z.lazy(() => UserNullableRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional().nullable(),
 }).strict();
@@ -1907,6 +1913,8 @@ export const WalletOrderByWithRelationInputSchema: z.ZodType<Prisma.WalletOrderB
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   rubyWalletScore: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   rubyWalletScoreFetchedAt: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  nomisWalletScore: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  nomisWalletScoreFetchedAt: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   user: z.lazy(() => UserOrderByWithRelationInputSchema).optional(),
   primaryFor: z.lazy(() => UserOrderByWithRelationInputSchema).optional()
 }).strict();
@@ -1938,6 +1946,8 @@ export const WalletWhereUniqueInputSchema: z.ZodType<Prisma.WalletWhereUniqueInp
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   rubyWalletScore: z.union([ z.lazy(() => FloatNullableFilterSchema),z.number() ]).optional().nullable(),
   rubyWalletScoreFetchedAt: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
+  nomisWalletScore: z.union([ z.lazy(() => FloatNullableFilterSchema),z.number() ]).optional().nullable(),
+  nomisWalletScoreFetchedAt: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
   user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
   primaryFor: z.union([ z.lazy(() => UserNullableRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional().nullable(),
 }).strict());
@@ -1954,6 +1964,8 @@ export const WalletOrderByWithAggregationInputSchema: z.ZodType<Prisma.WalletOrd
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   rubyWalletScore: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   rubyWalletScoreFetchedAt: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  nomisWalletScore: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  nomisWalletScoreFetchedAt: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   _count: z.lazy(() => WalletCountOrderByAggregateInputSchema).optional(),
   _avg: z.lazy(() => WalletAvgOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => WalletMaxOrderByAggregateInputSchema).optional(),
@@ -1976,6 +1988,8 @@ export const WalletScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Wallet
   createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
   rubyWalletScore: z.union([ z.lazy(() => FloatNullableWithAggregatesFilterSchema),z.number() ]).optional().nullable(),
   rubyWalletScoreFetchedAt: z.union([ z.lazy(() => DateTimeNullableWithAggregatesFilterSchema),z.coerce.date() ]).optional().nullable(),
+  nomisWalletScore: z.union([ z.lazy(() => FloatNullableWithAggregatesFilterSchema),z.number() ]).optional().nullable(),
+  nomisWalletScoreFetchedAt: z.union([ z.lazy(() => DateTimeNullableWithAggregatesFilterSchema),z.coerce.date() ]).optional().nullable(),
 }).strict();
 
 export const NarrativeWhereInputSchema: z.ZodType<Prisma.NarrativeWhereInput> = z.object({
@@ -3721,6 +3735,8 @@ export const WalletCreateInputSchema: z.ZodType<Prisma.WalletCreateInput> = z.ob
   createdAt: z.coerce.date().optional(),
   rubyWalletScore: z.number().optional().nullable(),
   rubyWalletScoreFetchedAt: z.coerce.date().optional().nullable(),
+  nomisWalletScore: z.number().optional().nullable(),
+  nomisWalletScoreFetchedAt: z.coerce.date().optional().nullable(),
   user: z.lazy(() => UserCreateNestedOneWithoutWalletsInputSchema),
   primaryFor: z.lazy(() => UserCreateNestedOneWithoutPrimaryWalletInputSchema).optional()
 }).strict();
@@ -3737,6 +3753,8 @@ export const WalletUncheckedCreateInputSchema: z.ZodType<Prisma.WalletUncheckedC
   createdAt: z.coerce.date().optional(),
   rubyWalletScore: z.number().optional().nullable(),
   rubyWalletScoreFetchedAt: z.coerce.date().optional().nullable(),
+  nomisWalletScore: z.number().optional().nullable(),
+  nomisWalletScoreFetchedAt: z.coerce.date().optional().nullable(),
   primaryFor: z.lazy(() => UserUncheckedCreateNestedOneWithoutPrimaryWalletInputSchema).optional()
 }).strict();
 
@@ -3750,6 +3768,8 @@ export const WalletUpdateInputSchema: z.ZodType<Prisma.WalletUpdateInput> = z.ob
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   rubyWalletScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   rubyWalletScoreFetchedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  nomisWalletScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  nomisWalletScoreFetchedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   user: z.lazy(() => UserUpdateOneRequiredWithoutWalletsNestedInputSchema).optional(),
   primaryFor: z.lazy(() => UserUpdateOneWithoutPrimaryWalletNestedInputSchema).optional()
 }).strict();
@@ -3766,6 +3786,8 @@ export const WalletUncheckedUpdateInputSchema: z.ZodType<Prisma.WalletUncheckedU
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   rubyWalletScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   rubyWalletScoreFetchedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  nomisWalletScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  nomisWalletScoreFetchedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   primaryFor: z.lazy(() => UserUncheckedUpdateOneWithoutPrimaryWalletNestedInputSchema).optional()
 }).strict();
 
@@ -3780,7 +3802,9 @@ export const WalletCreateManyInputSchema: z.ZodType<Prisma.WalletCreateManyInput
   explorer: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   rubyWalletScore: z.number().optional().nullable(),
-  rubyWalletScoreFetchedAt: z.coerce.date().optional().nullable()
+  rubyWalletScoreFetchedAt: z.coerce.date().optional().nullable(),
+  nomisWalletScore: z.number().optional().nullable(),
+  nomisWalletScoreFetchedAt: z.coerce.date().optional().nullable()
 }).strict();
 
 export const WalletUpdateManyMutationInputSchema: z.ZodType<Prisma.WalletUpdateManyMutationInput> = z.object({
@@ -3793,6 +3817,8 @@ export const WalletUpdateManyMutationInputSchema: z.ZodType<Prisma.WalletUpdateM
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   rubyWalletScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   rubyWalletScoreFetchedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  nomisWalletScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  nomisWalletScoreFetchedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const WalletUncheckedUpdateManyInputSchema: z.ZodType<Prisma.WalletUncheckedUpdateManyInput> = z.object({
@@ -3807,6 +3833,8 @@ export const WalletUncheckedUpdateManyInputSchema: z.ZodType<Prisma.WalletUnchec
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   rubyWalletScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   rubyWalletScoreFetchedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  nomisWalletScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  nomisWalletScoreFetchedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const NarrativeCreateInputSchema: z.ZodType<Prisma.NarrativeCreateInput> = z.object({
@@ -5838,13 +5866,16 @@ export const WalletCountOrderByAggregateInputSchema: z.ZodType<Prisma.WalletCoun
   explorer: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   rubyWalletScore: z.lazy(() => SortOrderSchema).optional(),
-  rubyWalletScoreFetchedAt: z.lazy(() => SortOrderSchema).optional()
+  rubyWalletScoreFetchedAt: z.lazy(() => SortOrderSchema).optional(),
+  nomisWalletScore: z.lazy(() => SortOrderSchema).optional(),
+  nomisWalletScoreFetchedAt: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const WalletAvgOrderByAggregateInputSchema: z.ZodType<Prisma.WalletAvgOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   userId: z.lazy(() => SortOrderSchema).optional(),
-  rubyWalletScore: z.lazy(() => SortOrderSchema).optional()
+  rubyWalletScore: z.lazy(() => SortOrderSchema).optional(),
+  nomisWalletScore: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const WalletMaxOrderByAggregateInputSchema: z.ZodType<Prisma.WalletMaxOrderByAggregateInput> = z.object({
@@ -5858,7 +5889,9 @@ export const WalletMaxOrderByAggregateInputSchema: z.ZodType<Prisma.WalletMaxOrd
   explorer: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   rubyWalletScore: z.lazy(() => SortOrderSchema).optional(),
-  rubyWalletScoreFetchedAt: z.lazy(() => SortOrderSchema).optional()
+  rubyWalletScoreFetchedAt: z.lazy(() => SortOrderSchema).optional(),
+  nomisWalletScore: z.lazy(() => SortOrderSchema).optional(),
+  nomisWalletScoreFetchedAt: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const WalletMinOrderByAggregateInputSchema: z.ZodType<Prisma.WalletMinOrderByAggregateInput> = z.object({
@@ -5872,13 +5905,16 @@ export const WalletMinOrderByAggregateInputSchema: z.ZodType<Prisma.WalletMinOrd
   explorer: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   rubyWalletScore: z.lazy(() => SortOrderSchema).optional(),
-  rubyWalletScoreFetchedAt: z.lazy(() => SortOrderSchema).optional()
+  rubyWalletScoreFetchedAt: z.lazy(() => SortOrderSchema).optional(),
+  nomisWalletScore: z.lazy(() => SortOrderSchema).optional(),
+  nomisWalletScoreFetchedAt: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const WalletSumOrderByAggregateInputSchema: z.ZodType<Prisma.WalletSumOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   userId: z.lazy(() => SortOrderSchema).optional(),
-  rubyWalletScore: z.lazy(() => SortOrderSchema).optional()
+  rubyWalletScore: z.lazy(() => SortOrderSchema).optional(),
+  nomisWalletScore: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const BoolWithAggregatesFilterSchema: z.ZodType<Prisma.BoolWithAggregatesFilter> = z.object({
@@ -8833,6 +8869,8 @@ export const WalletCreateWithoutUserInputSchema: z.ZodType<Prisma.WalletCreateWi
   createdAt: z.coerce.date().optional(),
   rubyWalletScore: z.number().optional().nullable(),
   rubyWalletScoreFetchedAt: z.coerce.date().optional().nullable(),
+  nomisWalletScore: z.number().optional().nullable(),
+  nomisWalletScoreFetchedAt: z.coerce.date().optional().nullable(),
   primaryFor: z.lazy(() => UserCreateNestedOneWithoutPrimaryWalletInputSchema).optional()
 }).strict();
 
@@ -8847,6 +8885,8 @@ export const WalletUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.Walle
   createdAt: z.coerce.date().optional(),
   rubyWalletScore: z.number().optional().nullable(),
   rubyWalletScoreFetchedAt: z.coerce.date().optional().nullable(),
+  nomisWalletScore: z.number().optional().nullable(),
+  nomisWalletScoreFetchedAt: z.coerce.date().optional().nullable(),
   primaryFor: z.lazy(() => UserUncheckedCreateNestedOneWithoutPrimaryWalletInputSchema).optional()
 }).strict();
 
@@ -8870,6 +8910,8 @@ export const WalletCreateWithoutPrimaryForInputSchema: z.ZodType<Prisma.WalletCr
   createdAt: z.coerce.date().optional(),
   rubyWalletScore: z.number().optional().nullable(),
   rubyWalletScoreFetchedAt: z.coerce.date().optional().nullable(),
+  nomisWalletScore: z.number().optional().nullable(),
+  nomisWalletScoreFetchedAt: z.coerce.date().optional().nullable(),
   user: z.lazy(() => UserCreateNestedOneWithoutWalletsInputSchema)
 }).strict();
 
@@ -8884,7 +8926,9 @@ export const WalletUncheckedCreateWithoutPrimaryForInputSchema: z.ZodType<Prisma
   explorer: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   rubyWalletScore: z.number().optional().nullable(),
-  rubyWalletScoreFetchedAt: z.coerce.date().optional().nullable()
+  rubyWalletScoreFetchedAt: z.coerce.date().optional().nullable(),
+  nomisWalletScore: z.number().optional().nullable(),
+  nomisWalletScoreFetchedAt: z.coerce.date().optional().nullable()
 }).strict();
 
 export const WalletCreateOrConnectWithoutPrimaryForInputSchema: z.ZodType<Prisma.WalletCreateOrConnectWithoutPrimaryForInput> = z.object({
@@ -9119,6 +9163,8 @@ export const WalletScalarWhereInputSchema: z.ZodType<Prisma.WalletScalarWhereInp
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   rubyWalletScore: z.union([ z.lazy(() => FloatNullableFilterSchema),z.number() ]).optional().nullable(),
   rubyWalletScoreFetchedAt: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
+  nomisWalletScore: z.union([ z.lazy(() => FloatNullableFilterSchema),z.number() ]).optional().nullable(),
+  nomisWalletScoreFetchedAt: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
 }).strict();
 
 export const WalletUpsertWithoutPrimaryForInputSchema: z.ZodType<Prisma.WalletUpsertWithoutPrimaryForInput> = z.object({
@@ -9142,6 +9188,8 @@ export const WalletUpdateWithoutPrimaryForInputSchema: z.ZodType<Prisma.WalletUp
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   rubyWalletScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   rubyWalletScoreFetchedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  nomisWalletScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  nomisWalletScoreFetchedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   user: z.lazy(() => UserUpdateOneRequiredWithoutWalletsNestedInputSchema).optional()
 }).strict();
 
@@ -9157,6 +9205,8 @@ export const WalletUncheckedUpdateWithoutPrimaryForInputSchema: z.ZodType<Prisma
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   rubyWalletScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   rubyWalletScoreFetchedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  nomisWalletScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  nomisWalletScoreFetchedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const UserCreateWithoutWalletsInputSchema: z.ZodType<Prisma.UserCreateWithoutWalletsInput> = z.object({
@@ -11984,7 +12034,9 @@ export const WalletCreateManyUserInputSchema: z.ZodType<Prisma.WalletCreateManyU
   explorer: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   rubyWalletScore: z.number().optional().nullable(),
-  rubyWalletScoreFetchedAt: z.coerce.date().optional().nullable()
+  rubyWalletScoreFetchedAt: z.coerce.date().optional().nullable(),
+  nomisWalletScore: z.number().optional().nullable(),
+  nomisWalletScoreFetchedAt: z.coerce.date().optional().nullable()
 }).strict();
 
 export const UserUpdateWithoutReferredByInputSchema: z.ZodType<Prisma.UserUpdateWithoutReferredByInput> = z.object({
@@ -12051,6 +12103,8 @@ export const WalletUpdateWithoutUserInputSchema: z.ZodType<Prisma.WalletUpdateWi
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   rubyWalletScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   rubyWalletScoreFetchedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  nomisWalletScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  nomisWalletScoreFetchedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   primaryFor: z.lazy(() => UserUpdateOneWithoutPrimaryWalletNestedInputSchema).optional()
 }).strict();
 
@@ -12065,6 +12119,8 @@ export const WalletUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.Walle
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   rubyWalletScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   rubyWalletScoreFetchedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  nomisWalletScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  nomisWalletScoreFetchedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   primaryFor: z.lazy(() => UserUncheckedUpdateOneWithoutPrimaryWalletNestedInputSchema).optional()
 }).strict();
 
@@ -12079,6 +12135,8 @@ export const WalletUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Prisma.W
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   rubyWalletScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   rubyWalletScoreFetchedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  nomisWalletScore: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  nomisWalletScoreFetchedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const ProjectToNarrativeCreateManyNarrativeInputSchema: z.ZodType<Prisma.ProjectToNarrativeCreateManyNarrativeInput> = z.object({
