@@ -67,7 +67,9 @@ const SocialCard: React.FC<SocialCardProps> = ({
   );
   const rubyWalletScore = wallet?.rubyWalletScore || 0;
   const nomisWalletScore = wallet?.nomisWalletScore || 0;
-  const walletScore = Number(rubyWalletScore + nomisWalletScore).toFixed(2);
+  const walletScore = Number(rubyWalletScore + nomisWalletScore * 100).toFixed(
+    2
+  );
 
   if (!user?.username && !loading) {
     return (
