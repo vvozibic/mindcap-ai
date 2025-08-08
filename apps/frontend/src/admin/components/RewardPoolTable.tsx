@@ -3,7 +3,9 @@ import React, { useEffect, useState } from "react";
 import { Project, RewardPool } from "../../types";
 import RewardPoolForm from "./RewardPoolForm";
 
-const RewardPoolAdmin: React.FC = () => {
+const RewardPoolAdmin: React.FC<{ projectId?: null | string }> = ({
+  projectId = null,
+}) => {
   const [pools, setPools] = useState<RewardPool[]>([]);
   const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -40,6 +42,10 @@ const RewardPoolAdmin: React.FC = () => {
     load();
     setIsFormOpen(false);
   };
+
+  const filteredPools = projectId
+    ? pools.filter((p) => p.id === projectId)
+    : pools;
 
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
@@ -84,7 +90,7 @@ const RewardPoolAdmin: React.FC = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {pools.map((pool) => (
+            {filteredPools.map((pool) => (
               <tr key={pool.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 text-sm font-medium text-gray-900">
                   {pool.title}

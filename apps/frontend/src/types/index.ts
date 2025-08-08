@@ -166,11 +166,12 @@ export interface RewardPool {
   projectId: string;
 }
 
-export interface RewardSumbission {
+export interface RewardSubmission {
   id: string;
   kol: KOL;
   contentUrl: string;
   notes: string;
   status: RewardSubmissionStatus;
+  rewardPool: RewardPool;
 }
 export type RewardSubmissionStatus = "pending" | "approved" | "rejected";

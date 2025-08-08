@@ -42,7 +42,10 @@ function App() {
                 path="/projects"
                 element={<ProjectsTable projectId={user.projectId} />}
               />
-              <Route path="/reward-pools" element={<RewardPoolTable />} />
+              <Route
+                path="/reward-pools"
+                element={<RewardPoolTable projectId={user.projectId} />}
+              />
               <Route
                 path="/reward-submissions"
                 element={<RewardSubmissions />}

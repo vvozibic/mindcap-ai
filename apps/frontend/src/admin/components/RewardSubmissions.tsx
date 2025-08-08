@@ -1,10 +1,14 @@
+import { Edit } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { RewardSumbission } from "../../types";
+import { RewardSubmission } from "../../types";
+import RewardSubmissionForm from "./RewardSubmissionForm";
 
-const RewardSubmissions: React.FC = () => {
-  const [submissions, setSubmissions] = useState<RewardSumbission[]>([]);
-  // const [isFormOpen, setIsFormOpen] = useState(false);
-  // const [currentId, setCurrentId] = useState<string | null>(null);
+const RewardSubmissions: React.FC<{ projectId?: null | string }> = ({
+  projectId = null,
+}) => {
+  const [submissions, setSubmissions] = useState<RewardSubmission[]>([]);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [currentId, setCurrentId] = useState<string | null>(null);
 
   const load = () => {
     fetch("/api/submissions")
@@ -16,10 +20,10 @@ const RewardSubmissions: React.FC = () => {
     load();
   }, []);
 
-  // const handleEdit = (id: string) => {
-  //   setCurrentId(id);
-  //   setIsFormOpen(true);
-  // };
+  const handleEdit = (id: string) => {
+    setCurrentId(id);
+    setIsFormOpen(true);
+  };
 
   const handleDelete = async (id: string) => {
     await fetch(`/api/submissions/${id}`, { method: "DELETE" });
@@ -30,6 +34,10 @@ const RewardSubmissions: React.FC = () => {
     load();
     // setIsFormOpen(false);
   };
+
+  const filteredSubmissions = projectId
+    ? submissions.filter((s) => s.rewardPool.projectId)
+    : submissions;
 
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
@@ -67,7 +75,7 @@ const RewardSubmissions: React.FC = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {submissions.map((submission) => (
+            {filteredSubmissions.map((submission) => (
               <tr key={submission.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 text-sm font-medium text-gray-900">
                   {submission.kol?.twitterUsername}
@@ -81,38 +89,31 @@ const RewardSubmissions: React.FC = () => {
                 <td className="px-6 py-4 text-sm text-gray-500 capitalize">
                   {submission.status}
                 </td>
-                {/* <td className="px-6 py-4 text-sm font-medium">
+                <td className="px-6 py-4 text-sm font-medium">
                   <button
                     onClick={() => handleEdit(submission.id)}
                     className="text-indigo-600 hover:text-indigo-900 mr-3"
                   >
                     <Edit className="h-5 w-5" />
                   </button>
-                  <button
-                    onClick={() => handleDelete(submission.id)}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    <Trash2 className="h-5 w-5" />
-                  </button>
-                </td> */}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* {isFormOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 h-full overflow-y-auto">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl h-full max-h-80h overflow-y-auto">
-            <RewardPoolForm
-              rewardPoolId={currentId}
+      {isFormOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-80h overflow-y-auto">
+            <RewardSubmissionForm
+              rewardSubmissionId={currentId}
               onSuccess={handleSuccess}
               onCancel={() => setIsFormOpen(false)}
-              allProjects={allProjects}
             />
           </div>
         </div>
-      )} */}
+      )}
     </div>
   );
 };
