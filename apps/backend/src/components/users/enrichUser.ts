@@ -6,6 +6,8 @@ import { PointEventType, POINTS } from "../points/constansts";
 
 const prisma = new PrismaClient();
 
+const EARLY_END = new Date("2025-08-25T23:59:59Z");
+
 export async function enrichUser(
   screenName: string,
   skipIfExists = true,
@@ -43,6 +45,33 @@ export async function enrichUser(
         platform: "twitter",
       },
     });
+
+    const now = new Date();
+
+    // x2 до 25.08
+    const multiplier = now <= EARLY_END ? 2 : 1;
+
+    await prisma.user.update({
+      where: { id: user?.id },
+      data: { baseMultiplier: multiplier },
+    });
+
+    // бейдж Early Believer, если период ранних
+    if (multiplier === 2) {
+      const badge = await prisma.badge.findUnique({
+        where: { slug: "EARLY_BELIEVER" },
+      });
+      if (badge) {
+        await prisma.userBadge.create({
+          data: {
+            userId: user?.id,
+            badgeId: badge.id,
+            priority: badge.defaultPriority,
+            expiresAt: EARLY_END,
+          },
+        });
+      }
+    }
 
     await awardPoints({
       userId: user.id,
