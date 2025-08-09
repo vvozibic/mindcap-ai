@@ -36,17 +36,86 @@ model User {
   referredBy   User?  @relation("UserReferrals", fields: [referredById], references: [id])
   referrals    User[] @relation("UserReferrals")
 
-  // Onboarding
-  onboardingStep Int @default(0) // 0 = start, 1 = follow, 2 = invite, 3 = wallet
-  completedTasks Int @default(0)
-  earnedPoints   Int @default(0)
+  // Points system
+  earnedPoints   Int   @default(0) // кэш текущих очков
+  baseMultiplier Float @default(1) // базовый множитель (например, 2.0 для early believer)
 
+  // Onboarding (не используется сейчас)
+  onboardingStep Int @default(0)
+  completedTasks Int @default(0)
+
+  // KOL
   kol   KOL?    @relation(fields: [kolId], references: [id])
   kolId String? @unique
 
   wallets         Wallet[]
   primaryWalletId Int?     @unique
   primaryWallet   Wallet?  @relation("PrimaryWallet", fields: [primaryWalletId], references: [id])
+
+  // Relations
+  pointEvents PointEvent[]
+  badges      UserBadge[]
+  multipliers MultiplierAssignment[]
+}
+
+enum BadgeSlug {
+  EARLY_BELIEVER
+  KAITO_YAPPER
+  TOP_REFERRER
+}
+
+model Badge {
+  id              Int         @id @default(autoincrement())
+  slug            BadgeSlug   @unique
+  label           String
+  description     String?
+  iconUrl         String?
+  defaultPriority Int         @default(100) // чем меньше, тем «главнее»
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @default(now())
+  users           UserBadge[]
+}
+
+model UserBadge {
+  id         Int       @id @default(autoincrement())
+  userId     Int
+  badgeId    Int
+  priority   Int // можно переопределить приоритет бейджа для конкретного пользователя
+  assignedAt DateTime  @default(now())
+  expiresAt  DateTime?
+
+  user  User  @relation(fields: [userId], references: [id])
+  badge Badge @relation(fields: [badgeId], references: [id])
+
+  @@unique([userId, badgeId])
+}
+
+model PointEvent {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  type            String // "REGISTER", "CONNECT_X", ...
+  basePoints      Int
+  effectivePoints Int
+  meta            Json?
+  idempotencyKey  String?
+  createdAt       DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, idempotencyKey])
+  @@index([userId, createdAt])
+}
+
+model MultiplierAssignment {
+  id         Int       @id @default(autoincrement())
+  userId     Int
+  multiplier Float // например, 1.5 = +50% очков
+  source     String // "achievement:streak_7d" / "campaign:taker"
+  startsAt   DateTime  @default(now())
+  endsAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id])
 }
 
 model Wallet {

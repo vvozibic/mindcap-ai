@@ -3,6 +3,22 @@ import { useRef } from "react";
 import { KOL, User } from "../types";
 import HoloButton from "./HoloButton";
 
+interface PointsBoostProps {
+  multiplier?: number;
+}
+
+export function PointsBoost({ multiplier }: PointsBoostProps) {
+  return (
+    <div className=" top-[10px] right-[10px] flex flex-col items-center text-green-400">
+      <div className="flex items-end gap-1 pt-6">
+        {/* <Zap className="w-4 h-4 text-green-400" /> */}
+        <span className="text-sm font-medium">Points Boost</span>
+        <span className="text-md font-semibold">x{multiplier?.toFixed(1)}</span>
+      </div>
+    </div>
+  );
+}
+
 export default function UserSocialCard({
   user,
   kol,
@@ -76,7 +92,7 @@ export default function UserSocialCard({
     <div className="flex flex-col">
       <div
         ref={cardRef}
-        className="w-[320px] rounded-2xl pt-8 pb-12 px-8 text-white bg-mindo-gradient
+        className="relative w-[320px] rounded-2xl pt-8 pb-6 px-8 text-white bg-mindo-gradient
       border border-[#16653480] text-center text-white shadow-lg"
       >
         {/* Top link */}
@@ -95,7 +111,7 @@ export default function UserSocialCard({
         <h2 className="text-xl font-bold">{kol?.twitterDisplayName}</h2>
         <p className="text-gray-400 text-sm mb-8">@{kol?.twitterUsername}</p>
 
-        <HoloButton />
+        <HoloButton badge={user?.badges?.[0]} />
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-y-4 mt-6 max-w-[70%] mx-auto">
@@ -118,6 +134,7 @@ export default function UserSocialCard({
             <p className="text-gray-400 text-xs">Engagement</p>
           </div>
         </div>
+        <PointsBoost multiplier={user?.baseMultiplier} />
       </div>
       <button
         onClick={handleSave}

@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import fs from "fs/promises";
 import { getProfile } from "../../external-api/protokols/methods/kols";
+import { awardPoints } from "../points/awardPonts";
+import { PointEventType, POINTS } from "../points/constansts";
 
 const prisma = new PrismaClient();
 
@@ -42,6 +44,14 @@ export async function enrichUser(
       },
     });
 
+    await awardPoints({
+      userId: user.id,
+      type: PointEventType.REGISTER,
+      basePoints: POINTS[PointEventType.REGISTER],
+      idempotencyKey: `register-${user.id}`,
+      createdAt: new Date(),
+    });
+
     if (
       referralCodeFrom &&
       !user.referredById &&
@@ -64,6 +74,15 @@ export async function enrichUser(
           data: {
             earnedPoints: { increment: 10 },
           },
+        });
+
+        await awardPoints({
+          userId: referrer.id,
+          type: PointEventType.REFERRAL_QUALIFIED,
+          basePoints: POINTS[PointEventType.REFERRAL_QUALIFIED],
+          idempotencyKey: `referral-${referrer.id}`, // один ключ на реферала
+          createdAt: new Date(),
+          meta: { refereeId: referrer.id },
         });
 
         console.log(`🎉 ${user.username} referred by ${referrer.username}`);

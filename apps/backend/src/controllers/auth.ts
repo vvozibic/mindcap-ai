@@ -99,6 +99,10 @@ export const getMe = async (req: Request, res: Response) => {
               nomisWalletScore: true,
             },
           },
+          badges: {
+            include: { badge: true },
+            orderBy: [{ priority: "asc" }],
+          },
           kol: true,
         },
       });

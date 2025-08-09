@@ -112,7 +112,22 @@ export interface User {
     address: string;
   }>;
   platform?: "twitter";
+  baseMultiplier: number;
   earnedPoints?: number;
+  badges: Badge[];
+}
+
+export interface Badge {
+  id: string;
+  badge: {
+    slug: string;
+    label: string;
+    description: string;
+    iconUrl: string;
+    defaultPriority: number;
+    createdAt: string;
+    updatedAt: string;
+  };
 }
 
 export interface Wallet {

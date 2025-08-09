@@ -2,6 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { sendAnalyticsEvent } from "../analytics";
 import { AnalyticsEvent } from "../analytics/types";
+import { awardPoints } from "../components/points/awardPonts";
+import { PointEventType, POINTS } from "../components/points/constansts";
 import { fetchNomisWalletScore } from "../components/wallets/fetchNomisWalletScores";
 import { fetchRubyWalletScore } from "../components/wallets/fetchRubyWalletScores";
 
@@ -46,6 +48,15 @@ export const addWallet = async (req: Request, res: Response) => {
         data: { primaryWalletId: wallet.id },
       });
     }
+
+    await awardPoints({
+      userId: user.id,
+      type: PointEventType.CONNECT_FIRST_WALLET,
+      basePoints: POINTS[PointEventType.CONNECT_FIRST_WALLET],
+      idempotencyKey: `first-wallet-${user.id}`,
+      createdAt: new Date(),
+      meta: { walletId: wallet.id, address: wallet.address },
+    });
 
     await fetchRubyWalletScore(wallet);
     await fetchNomisWalletScore(wallet);
