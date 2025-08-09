@@ -8,8 +8,6 @@ export default function HoloButton({
   badge?: Badge;
   onClick?: () => void;
 }) {
-  console.log(badge);
-
   return (
     <div
       onClick={onClick}
