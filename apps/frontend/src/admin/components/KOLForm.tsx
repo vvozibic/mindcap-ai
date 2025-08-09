@@ -1,16 +1,6 @@
 import { X } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import z from "zod";
 import { KOL } from "../../types";
-import { KOLSchema } from "../../zod";
-
-const partialKOLSchema = KOLSchema.omit({
-  createdAt: true,
-  updatedAt: true,
-  fetchedAt: true,
-});
-
-type KOLFormData = z.infer<typeof partialKOLSchema>;
 
 interface KOLFormProps {
   influencerId: string | null;
@@ -46,9 +36,7 @@ const KOLForm: React.FC<KOLFormProps> = ({
     smartFollowersCount: 0,
   });
 
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof KOLFormData, string>>
-  >({});
+  const [errors, setErrors] = useState<any>({});
 
   useEffect(() => {
     const fetchData = async () => {
