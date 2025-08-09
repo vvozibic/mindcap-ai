@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import { awardPoints } from "./awardPonts";
-import { PointEventType, POINTS } from "./constansts";
+import { awardPoints } from "./awardPoints";
+import { PointEventType, POINTS } from "./constants";
 const prisma = new PrismaClient();
 async function main() {
   const now = new Date();

@@ -2,8 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { sendAnalyticsEvent } from "../analytics";
 import { AnalyticsEvent } from "../analytics/types";
-import { awardPoints } from "../components/points/awardPonts";
-import { PointEventType, POINTS } from "../components/points/constansts";
+import { awardPoints } from "../components/points/awardPoints";
+import { PointEventType, POINTS } from "../components/points/constants";
 import { fetchNomisWalletScore } from "../components/wallets/fetchNomisWalletScores";
 import { fetchRubyWalletScore } from "../components/wallets/fetchRubyWalletScores";
 

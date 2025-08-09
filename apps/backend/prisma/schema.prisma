@@ -87,7 +87,7 @@ model UserBadge {
   user  User  @relation(fields: [userId], references: [id])
   badge Badge @relation(fields: [badgeId], references: [id])
 
-  @@unique([userId, badgeId])
+  @@unique([userId, badgeId], name: "userId_badgeId")
 }
 
 model PointEvent {
@@ -103,6 +103,7 @@ model PointEvent {
   user User @relation(fields: [userId], references: [id])
 
   @@unique([userId, idempotencyKey])
+  @@unique([userId, type, idempotencyKey], name: "uniq_user_type_key")
   @@index([userId, createdAt])
 }
 
