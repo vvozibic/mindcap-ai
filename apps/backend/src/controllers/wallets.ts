@@ -1,4 +1,3 @@
-import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { sendAnalyticsEvent } from "../analytics";
 import { AnalyticsEvent } from "../analytics/types";
@@ -7,7 +6,7 @@ import { PointEventType, POINTS } from "../components/points/constants";
 import { fetchNomisWalletScore } from "../components/wallets/fetchNomisWalletScores";
 import { fetchRubyWalletScore } from "../components/wallets/fetchRubyWalletScores";
 
-const prisma = new PrismaClient();
+import { prisma } from "../prisma";
 
 // ✅ Добавление кошелька (по username)
 export const addWallet = async (req: Request, res: Response) => {

@@ -1,6 +1,5 @@
 import express from "express";
 
-import { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
 import fetch from "node-fetch";
 import querystring from "querystring";
@@ -15,7 +14,7 @@ import {
 import { authenticateToken } from "../middleware/auth";
 import { authTwitter } from "../middleware/authTwitter";
 
-const prisma = new PrismaClient();
+import { prisma } from "../prisma";
 
 const authRoutes = express.Router();
 

@@ -1,11 +1,10 @@
-import { PrismaClient } from "@prisma/client";
 import { startTimer } from "../cron/utils";
 import { enrichKOLsFromProjects } from "./kols/enrichKOLsFromProjects";
 import { enrichKOLStats } from "./kols/enrichKOLStats";
 import { enrichNarratives } from "./narratives/enrichNarratives";
 import { enrichProjectsByNarratives } from "./projects/enrichProjectsByNarratives";
 
-const prisma = new PrismaClient();
+import { prisma } from "../prisma";
 
 async function enrichAll(concurrency = 6) {
   const end = startTimer("enrichAll");

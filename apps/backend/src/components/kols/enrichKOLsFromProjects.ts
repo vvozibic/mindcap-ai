@@ -1,9 +1,8 @@
-import { PrismaClient } from "@prisma/client";
 import pLimit from "p-limit";
 import { logToDb } from "../../external-api/protokols/client";
 import { getKOLsInProjects } from "../../external-api/protokols/methods/kols";
 
-const prisma = new PrismaClient();
+import { prisma } from "../../prisma";
 const limit = pLimit(5);
 
 const usernames = [

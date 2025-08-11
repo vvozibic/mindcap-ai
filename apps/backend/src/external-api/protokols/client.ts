@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../../prisma";
 
 type LOG_LEVEL = "SUCCESS" | "SKIP" | "ERROR" | "FATAL" | "FAIL" | "RETRY";
 

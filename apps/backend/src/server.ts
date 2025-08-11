@@ -1,5 +1,3 @@
-import "./utils/visits";
-
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -15,7 +13,6 @@ import rewardPoolRoutes from "./routes/rewardPool";
 import { rewardSumbissionsRoutes } from "./routes/rewardSubmissions";
 import trackRoute from "./routes/track";
 import { usersRoutes } from "./routes/users";
-import { queuePageVisit } from "./utils/visits";
 
 import "./cron/index"; // Import cron jobs to ensure they run
 import walletRoutes from "./routes/wallets";
@@ -101,22 +98,6 @@ if (!fs.existsSync(indexHtmlPath)) {
 }
 
 const PORT = Number(process.env.PORT) || 3001;
-
-app.use((req, res, next) => {
-  if (
-    req.method === "GET" &&
-    !req.path.startsWith("/api") &&
-    !req.path.includes(".") &&
-    req.headers.accept?.includes("text/html")
-  ) {
-    const ip =
-      req.headers["x-forwarded-for"]?.toString() ||
-      req.socket.remoteAddress ||
-      "unknown";
-    queuePageVisit(ip, req.path, req.headers["user-agent"]?.toString());
-  }
-  next();
-});
 
 console.log("process.env.PORT =", process.env.PORT);
 console.log("Resolved PORT =", PORT);

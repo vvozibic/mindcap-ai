@@ -1,7 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 
-const prisma = new PrismaClient();
+import { prisma } from "../prisma";
 
 export const getAllNarratives = async (_: Request, res: Response) => {
   const narratives = await prisma.narrative.findMany({

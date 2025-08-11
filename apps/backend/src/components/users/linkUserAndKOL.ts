@@ -1,7 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import { updateKOLByUsername } from "../kols/updateKOLByUsername";
 
-const prisma = new PrismaClient();
+import { prisma } from "../../prisma";
 
 export async function linkUserAndKOL(username: string) {
   if (!username) {

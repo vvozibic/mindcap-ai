@@ -1,11 +1,10 @@
-import { PrismaClient } from "@prisma/client";
 import { logToDb } from "../../external-api/protokols/client";
 import {
   getProfile,
   getProfileStats,
 } from "../../external-api/protokols/methods/kols";
 
-const prisma = new PrismaClient();
+import { prisma } from "../../prisma";
 
 export async function updateKOLByUsername(username: string) {
   try {

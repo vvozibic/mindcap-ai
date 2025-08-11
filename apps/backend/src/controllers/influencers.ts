@@ -1,10 +1,9 @@
-import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { updateKOLByUsername } from "../components/kols/updateKOLByUsername";
 import { getProfile } from "../external-api/protokols/methods/kols";
 import { sendJson } from "../utils/sendJson";
 
-const prisma = new PrismaClient();
+import { prisma } from "../prisma";
 
 // const recalculateMindshareForInfluencers = async () => {
 //   const kols = await prisma.kOL.findMany({

@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../prisma";
 import { updateKOLByUsername } from "../kols/updateKOLByUsername";
-const prisma = new PrismaClient();
 
 async function main() {
   const users = await prisma.user.findMany({

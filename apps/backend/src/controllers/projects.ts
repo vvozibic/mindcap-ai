@@ -1,9 +1,8 @@
-import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { sendJson } from "../utils/sendJson";
 // import { parseLinks, serializeLinks } from "../utils/links";
 
-const prisma = new PrismaClient();
+import { prisma } from "../prisma";
 
 export const getAllProjects = async (_: Request, res: Response) => {
   const projects = await prisma.project.findMany({

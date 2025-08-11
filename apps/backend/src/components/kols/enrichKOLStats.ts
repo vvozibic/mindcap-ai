@@ -1,9 +1,8 @@
-import { PrismaClient } from "@prisma/client";
 import pLimit from "p-limit";
 import { logToDb } from "../../external-api/protokols/client";
 import { getProfileStats } from "../../external-api/protokols/methods/kols";
 
-const prisma = new PrismaClient();
+import { prisma } from "../../prisma";
 const limit = pLimit(20);
 const fetchedDate = new Date().toISOString().split("T")[0];
 

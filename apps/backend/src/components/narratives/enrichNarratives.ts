@@ -9,14 +9,13 @@
 // WhaleInsider
 // CryptosR_Us
 
-import { PrismaClient } from "@prisma/client";
 import {
   getNarrativeDetails,
   getNarrativeList,
 } from "../../external-api/protokols";
 import { logToDb } from "../../external-api/protokols/client";
 
-const prisma = new PrismaClient();
+import { prisma } from "../../prisma";
 
 const fetchedDate = new Date().toISOString().split("T")[0];
 

@@ -1,8 +1,7 @@
-import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { sendJson } from "../utils/sendJson";
 
-const prisma = new PrismaClient();
+import { prisma } from "../prisma";
 
 export const createSubmission = async (req: Request, res: Response) => {
   const { rewardPoolId, kolId, contentUrl, notes } = req.body;

@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import { prisma } from "../../prisma";
 
 async function recalcAllEarnedPointsPrisma() {
   const sums = await prisma.pointEvent.groupBy({

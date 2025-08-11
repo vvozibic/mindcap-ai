@@ -1,9 +1,8 @@
-import { PrismaClient } from "@prisma/client";
 import pLimit from "p-limit";
 import { getProjectsInNarrative } from "../../external-api/protokols";
 import { logToDb } from "../../external-api/protokols/client";
 
-const prisma = new PrismaClient();
+import { prisma } from "../../prisma";
 const limit = pLimit(5);
 
 const fetchedDate = new Date().toISOString().split("T")[0];

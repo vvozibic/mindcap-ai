@@ -1,10 +1,9 @@
-import { PrismaClient } from "@prisma/client";
 import fs from "fs/promises";
 import { getProfile } from "../../external-api/protokols/methods/kols";
 import { awardPoints } from "../points/awardPoints"; // если файл реально так называется — ок
 import { PointEventType, POINTS } from "../points/constants"; // см. заметку про нейминг
 
-const prisma = new PrismaClient();
+import { prisma } from "../../prisma";
 
 const EARLY_END = new Date("2025-08-25T23:59:59Z");
 
