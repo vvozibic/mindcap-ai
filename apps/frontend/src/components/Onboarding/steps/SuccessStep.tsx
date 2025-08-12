@@ -64,7 +64,7 @@ export default function SuccessStep({
         Copy Referral Link
       </button>
 
-      <a className="block" href="/social-card">
+      <a className="block" href="/kol/social-card">
         <button className="onboarding-additional w-full">
           <TrendingUp className="w-5 h-5" /> View Dashboard
         </button>

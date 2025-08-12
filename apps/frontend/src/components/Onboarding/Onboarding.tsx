@@ -55,7 +55,7 @@ const Onboarding: React.FC = () => {
   useReferralTracker();
 
   if (user?.username && step === "home")
-    window.location.replace("/social-card");
+    window.location.replace("/kol/social-card");
 
   const steps: Record<Step, JSX.Element> = {
     home: (

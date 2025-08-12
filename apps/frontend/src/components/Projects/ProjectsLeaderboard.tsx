@@ -68,9 +68,9 @@ const ProjectsLeaderboard: React.FC = () => {
     console.log(tab);
 
     if (tab === "pools") {
-      navigate(`/beta/projects/${project.twitterUsername}?tab=pools`);
+      navigate(`/projects/${project.twitterUsername}?tab=pools`);
     } else {
-      navigate(`/beta/projects/${project.twitterUsername}`);
+      navigate(`/projects/${project.twitterUsername}`);
     }
   };
 

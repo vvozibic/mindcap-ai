@@ -12,9 +12,9 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Onboarding />} />
+        <Route path="/kol" element={<Onboarding />} />
         <Route
-          path="/social-card"
+          path="/kol/social-card"
           element={
             <div className="relative">
               <div className="fixed top-[-100px] z-[0] h-[150vh] w-screen bg-[radial-gradient(ellipse_100%_70%_at_50%_-10%,#00ff9936,transparent)]" />
@@ -29,7 +29,7 @@ function App() {
           }
         />
         <Route
-          path="/beta/*"
+          path="/*"
           element={
             <ClientLayout
               user={user}

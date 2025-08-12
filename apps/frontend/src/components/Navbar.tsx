@@ -35,7 +35,7 @@ const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <Link to="/beta" className="flex items-center">
+            <Link to="/" className="flex items-center">
               <div className="w-[100px]">
                 <Logo />
               </div>
@@ -45,9 +45,9 @@ const Navbar: React.FC<NavbarProps> = ({
           <div className="hidden lg:block">
             <div className="ml-10 flex items-baseline space-x-4">
               <Link
-                to="/beta"
+                to="/"
                 className={`px-3 py-2 rounded-md text-sm font-medium ${
-                  isActive("/beta")
+                  isActive("/")
                     ? "bg-primary-700/70 text-white"
                     : "text-gray-300 hover:bg-primary-600/50 hover:text-white"
                 }`}
@@ -55,9 +55,9 @@ const Navbar: React.FC<NavbarProps> = ({
                 Mindo AI Leaderboard
               </Link>
               <Link
-                to="/beta/projects"
+                to="/projects"
                 className={`px-3 py-2 rounded-md text-sm font-medium ${
-                  isActive("/beta/projects")
+                  isActive("/projects")
                     ? "bg-primary-700/70 text-white"
                     : "text-gray-300 hover:bg-primary-600/50 hover:text-white"
                 }`}
@@ -65,9 +65,9 @@ const Navbar: React.FC<NavbarProps> = ({
                 Projects
               </Link>
               <Link
-                to="/beta/social-card"
+                to="/social-card"
                 className={`px-3 py-2 rounded-md text-sm font-medium ${
-                  isActive("/beta/social-card")
+                  isActive("/social-card")
                     ? "bg-primary-700/70 text-white"
                     : "text-gray-300 hover:bg-primary-600/50 hover:text-white"
                 }`}
@@ -101,7 +101,7 @@ const Navbar: React.FC<NavbarProps> = ({
             ) : user?.username ? (
               <div className="flex items-center space-x-4">
                 <Link
-                  to="/beta/social-card"
+                  to="/social-card"
                   className={`px-3 py-2 rounded-md text-sm font-medium`}
                 >
                   <span className="text-sm">{user.username}</span>
@@ -146,9 +146,9 @@ const Navbar: React.FC<NavbarProps> = ({
         <div className="lg:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <Link
-              to="/beta"
+              to="/"
               className={`block px-3 py-2 rounded-md text-base font-medium ${
-                isActive("/beta")
+                isActive("/")
                   ? "text-accent-500"
                   : "text-gray-300 hover:bg-primary-600/40 hover:text-white"
               }`}
@@ -157,9 +157,9 @@ const Navbar: React.FC<NavbarProps> = ({
               Mindo AI Leaderboard
             </Link>
             <Link
-              to="/beta/projects"
+              to="/projects"
               className={`block px-3 py-2 rounded-md text-base font-medium ${
-                isActive("/beta/projects")
+                isActive("/projects")
                   ? "text-accent-500"
                   : "text-gray-300 hover:bg-primary-600/40 hover:text-white"
               }`}
@@ -168,9 +168,9 @@ const Navbar: React.FC<NavbarProps> = ({
               Projects
             </Link>
             <Link
-              to="/beta/social-card"
+              to="/social-card"
               className={`block px-3 py-2 rounded-md text-base font-medium ${
-                isActive("/beta/social-card")
+                isActive("/social-card")
                   ? "text-accent-500"
                   : "text-gray-300 hover:bg-primary-600/40 hover:text-white"
               }`}
@@ -200,9 +200,9 @@ const Navbar: React.FC<NavbarProps> = ({
             {user?.username ? (
               <div className="flex items-center px-5 justify-between">
                 <Link
-                  to="/beta/social-card"
+                  to="/social-card"
                   className={`block rounded-md text-base font-medium ${
-                    isActive("/beta/social-card")
+                    isActive("/social-card")
                       ? "bg-primary-700 text-white"
                       : "text-gray-300 hover:bg-primary-600 hover:text-white"
                   }`}

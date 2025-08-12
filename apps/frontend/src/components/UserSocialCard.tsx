@@ -88,6 +88,13 @@ export default function UserSocialCard({
       });
   };
 
+  const wallet = user?.wallets?.find(
+    (w) => w.address === (user?.primaryWallet?.address || "")
+  );
+  const rubyWalletScore = wallet?.rubyWalletScore || 0;
+  const nomisWalletScore = wallet?.nomisWalletScore || 0;
+  const walletScore = Number(rubyWalletScore + nomisWalletScore * 100);
+
   return (
     <div className="flex flex-col">
       <div
@@ -95,6 +102,9 @@ export default function UserSocialCard({
         className="relative w-[320px] rounded-2xl pt-8 pb-6 px-8 text-white bg-mindo-gradient
       border border-[#16653480] text-center text-white shadow-lg"
       >
+        <div className="absolute top-5 right-5 text-sm text-green-400">
+          #{user?.id}
+        </div>
         {/* Top link */}
         <p className="text-xs text-gray-400 mb-12">
           Social Card on <span className="text-green-400">mindoshare.ai</span>
@@ -124,8 +134,10 @@ export default function UserSocialCard({
             <p className="text-gray-400 text-xs">KOL Score</p>
           </div>
           <div>
-            <p className="text-2xl font-bold">{kol?.totalAccountPosts}</p>
-            <p className="text-gray-400 text-xs">Impressions</p>
+            <p className="text-2xl font-bold">
+              {walletScore ? walletScore?.toFixed(2) : "–"}
+            </p>
+            <p className="text-gray-400 text-xs">Wallet Score</p>
           </div>
           <div>
             <p className="text-2xl font-bold">

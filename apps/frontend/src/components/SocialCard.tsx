@@ -67,9 +67,7 @@ const SocialCard: React.FC<SocialCardProps> = ({
   );
   const rubyWalletScore = wallet?.rubyWalletScore || 0;
   const nomisWalletScore = wallet?.nomisWalletScore || 0;
-  const walletScore = Number(rubyWalletScore + nomisWalletScore * 100).toFixed(
-    2
-  );
+  const walletScore = Number(rubyWalletScore + nomisWalletScore * 100);
 
   if (!user?.username && !loading) {
     return (
@@ -151,7 +149,9 @@ const SocialCard: React.FC<SocialCardProps> = ({
                   Wallet score
                 </span>
               </div>
-              <p className="text-3xl font-bold text-white">{walletScore}</p>
+              <p className="text-3xl font-bold text-white">
+                {walletScore ? walletScore?.toFixed(2) : "–"}
+              </p>
             </div>
 
             {/* Completed Tasks */}
