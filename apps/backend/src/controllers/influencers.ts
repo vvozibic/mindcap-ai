@@ -82,6 +82,7 @@ const allowedSortFields = {
   smartFollowersCount: `k."smartFollowersCount"`,
   twitterFollowersCount: `k."twitterFollowersCount"`,
   totalAccountPosts: `k."totalAccountPosts"`,
+  earnedPoints: `COALESCE(u."earnedPoints", 0)`,
 } as const;
 
 type SortField = keyof typeof allowedSortFields;
@@ -155,6 +156,8 @@ export const getPaginatedInfluencers = async (req: Request, res: Response) => {
     k."followersChange",
     k."smartEngagementChange",
     
+    COALESCE(u."earnedPoints", 0) AS "earnedPoints",
+
     SUM(kp."mindoMetric") AS "mindoMetric",
     SUM(kp."proofOfWork") AS "proofOfWork",
     SUM(kp."qualityScore") AS "qualityScore",
@@ -162,8 +165,9 @@ export const getPaginatedInfluencers = async (req: Request, res: Response) => {
     SUM(kp."totalComments") AS "totalComments"
     FROM "KOL" k
     JOIN "KOLToProject" kp ON kp."kolId" = k.id
+    LEFT JOIN "User" u ON u."kolId" = k.id
     WHERE k."kolScore" > 0 AND k."hidden" = false AND k."isAlsoProject" = false AND kp."mindoMetric" > 0
-    GROUP BY k.id
+    GROUP BY k.id, u."earnedPoints"
     ORDER BY ${sortExpr} ${sortDirection}
     LIMIT $1 OFFSET $2
   `,

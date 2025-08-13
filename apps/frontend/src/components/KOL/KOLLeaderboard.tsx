@@ -23,6 +23,7 @@ interface KOLLeaderboardProps {}
 
 type SortField =
   | "mindoMetric"
+  | "earnedPoints"
   | "smartFollowersCount"
   | "twitterFollowersCount"
   | "engagementRate"
@@ -105,6 +106,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
 
   const tooltips = {
     mindoMetric: "Overall mindo score based on AI",
+    earnedPoints: "Points from social card",
     engagementRate: "Engagement rate",
     postingFrequency: "Posts by day",
     smartFollowersCount:
@@ -179,6 +181,31 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                       {tooltipVisible === "mindoMetric" && (
                         <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 border-primary-700/40 text-white rounded shadow-lg">
                           {tooltips.mindoMetric}
+                        </div>
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSort("earnedPoints")}
+                  >
+                    <div className="flex items-center relative">
+                      Points
+                      {sortField === "earnedPoints" &&
+                        (sortDirection === "asc" ? (
+                          <ArrowUp className="h-4 w-4 ml-1" />
+                        ) : (
+                          <ArrowDown className="h-4 w-4 ml-1" />
+                        ))}
+                      <Info
+                        className="h-4 w-4 ml-1 text-gray-500 cursor-help"
+                        onMouseEnter={() => showTooltip("earnedPoints")}
+                        onMouseLeave={hideTooltip}
+                      />
+                      {tooltipVisible === "earnedPoints" && (
+                        <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 border-primary-700/40 text-white rounded shadow-lg">
+                          {tooltips.earnedPoints}
                         </div>
                       )}
                     </div>
@@ -360,6 +387,11 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-200 font-medium">
                         {`${formatNumber(Number(kol.mindoMetric?.toFixed(2)) || 0)}`}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-200 font-medium">
+                        {`${formatNumber(Number(kol?.earnedPoints) || 0)}`}
                       </div>
                     </td>
 

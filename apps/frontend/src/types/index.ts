@@ -84,6 +84,8 @@ export interface KOL {
   proofOfWork: number;
   qualityScore: number;
 
+  earnedPoints?: number; // From user
+
   projects: any;
 
   fetchedAt: string; // ISO string
