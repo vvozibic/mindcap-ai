@@ -2,6 +2,7 @@ import React from "react";
 import HeroBlock from "../components/HeroBlock";
 import KOLLeaderboard from "../components/KOL/KOLLeaderboard";
 import NarrativesTreemap from "../components/Narratives";
+import { BrandsGrid } from "../components/TrustedBy";
 
 interface HomePageProps {}
 
@@ -9,6 +10,7 @@ const HomePage: React.FC<HomePageProps> = () => {
   return (
     <>
       <HeroBlock />
+      <BrandsGrid />
 
       <div className="max-w-7xl mx-auto mt-8 relative z-10">
         <NarrativesTreemap />
