@@ -122,9 +122,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
         }`}
       >
         <div className="p-6 border-b border-primary-700/30 bg-[radial-gradient(ellipse_60%_80%_at_50%_-10%,rgba(0,255,174,0.08),transparent)] backdrop-blur-sm">
-          <h2 className="text-2xl font-bold text-accent-500/75">
-            Mindo AI Leaderboard
-          </h2>
+          <h2 className="text-2xl font-bold text-accent-500/75">Leaderboard</h2>
           <p className="text-gray-300 mt-2">
             Ranking the most influential voices in Web3 based on attention
             metrics

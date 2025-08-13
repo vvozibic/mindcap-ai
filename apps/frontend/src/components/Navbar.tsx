@@ -34,11 +34,13 @@ const Navbar: React.FC<NavbarProps> = ({
     <nav className="bg-primary-900/40 lg:bg-transparent text-white relative z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center">
-              <div className="w-[100px]">
-                <Logo />
-              </div>
+          <div className="flex flex-row items-center">
+            <Link to="/" className="block w-full">
+              <Logo />
+            </Link>
+
+            <Link to="https://x.com/MindoAI" target="_blank" className="block">
+              <XLogo className="w-6 h-6" />
             </Link>
           </div>
 
@@ -52,7 +54,7 @@ const Navbar: React.FC<NavbarProps> = ({
                     : "text-gray-300 hover:bg-primary-600/50 hover:text-white"
                 }`}
               >
-                Mindo AI Leaderboard
+                Leaderboard
               </Link>
               <Link
                 to="/projects"
@@ -154,7 +156,7 @@ const Navbar: React.FC<NavbarProps> = ({
               }`}
               onClick={() => setIsMenuOpen(false)}
             >
-              Mindo AI Leaderboard
+              Leaderboard
             </Link>
             <Link
               to="/projects"
