@@ -55,7 +55,6 @@ const SocialCard: React.FC<SocialCardProps> = ({
   };
 
   const handleWalletSelect = (walletName: string) => {
-    console.log(`Connecting to ${walletName}`);
     // Handle wallet connection logic here
     setShowWalletModal(false);
   };

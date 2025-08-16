@@ -17,7 +17,7 @@ interface BrandsGridProps extends React.HTMLAttributes<HTMLDivElement> {
 const defaultBrands = [
   {
     name: "Avalance",
-    logo: "/images/trusted-by/avax.jpeg",
+    logo: "/images/trusted-by/avax.svg",
   },
   {
     name: "OG labs",
@@ -25,19 +25,19 @@ const defaultBrands = [
   },
   {
     name: "Aethir",
-    logo: "/images/trusted-by/aethir.jpeg",
+    logo: "/images/trusted-by/aethir.svg",
   },
   {
     name: "Moonveil",
-    logo: "/images/trusted-by/moonveil.webp",
+    logo: "/images/trusted-by/moonveil.svg",
   },
   {
     name: "Taker Protocol",
-    logo: "/images/trusted-by/taker.png",
+    logo: "/images/trusted-by/taker.svg",
   },
   {
     name: "Overlay Protocol",
-    logo: "/images/trusted-by/overlay.png",
+    logo: "/images/trusted-by/overlay.svg",
   },
   {
     name: "CoralApp",
@@ -45,11 +45,11 @@ const defaultBrands = [
   },
   {
     name: "OpenAI",
-    logo: "/images/trusted-by/gpt.png",
+    logo: "/images/trusted-by/gpt.svg",
   },
   {
     name: "Microsoft",
-    logo: "/images/trusted-by/microsoft.png",
+    logo: "/images/trusted-by/microsoft.svg",
   },
 ];
 
@@ -65,24 +65,25 @@ export const BrandsGrid = React.forwardRef<HTMLDivElement, BrandsGridProps>(
     ref
   ) => {
     return (
-      <div ref={ref} className={classNames("py-24", className)} {...props}>
-        <div className="max-w-screen-xl mx-auto px-4 lg:px-8">
+      <div ref={ref} className={classNames("pb-24", className)} {...props}>
+        <div className="max-w-screen-xxl  mx-auto px-4 lg:px-8">
           {title && (
-            <p className=" mx-auto text-pretty text-center font-medium mb-6 text-foreground md:text-lg">
+            <p className=" mx-auto text-pretty text-[#99A6A2] text-center font-medium mb-6 text-foreground md:text-lg">
               {title}
             </p>
           )}
 
-          <div className="max-w-5xl mx-auto flex flex-row flex-wrap align-center justify-center items-center md:grid-cols-3 lg:grid-cols-9">
+          <div className=" mx-auto flex flex-row flex-wrap  gap-4 align-center justify-center items-center md:grid-cols-3 lg:grid-cols-9">
             {brands.map((brand) => (
               <div
                 key={brand.name}
-                className="flex items-center justify-center p-4"
+                className="flex items-center justify-center px-8 py-8 bg-[#ffffff10] rounded-md"
               >
-                <div className="relative h-[68px] w-full flex ">
+                <div className="relative h-[50px] max-w-[90px] w-full flex ">
                   <img
                     src={brand.logo}
                     alt={`${brand.name} logo`}
+                    he
                     className="object-contain grayscale"
                   />
                 </div>

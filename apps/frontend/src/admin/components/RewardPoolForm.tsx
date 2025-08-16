@@ -119,8 +119,6 @@ const RewardPoolForm: React.FC<RewardPoolFormProps> = ({
     }
   };
 
-  console.log(formData);
-
   return (
     <div>
       <div className="flex justify-between items-center mb-4">

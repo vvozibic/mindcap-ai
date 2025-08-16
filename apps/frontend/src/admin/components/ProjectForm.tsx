@@ -226,7 +226,6 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
                       );
                       if (!res.ok) throw new Error("not found");
                       const { data } = await res.json();
-                      console.log("data", data);
 
                       const filtered = Object.keys(defaultProject).reduce(
                         (acc, key) => {
@@ -239,7 +238,6 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
                         },
                         {} as Partial<Project>
                       );
-                      console.log("filtered", filtered);
 
                       setFormData((prev) => ({ ...prev, ...filtered }));
                     } catch (err) {

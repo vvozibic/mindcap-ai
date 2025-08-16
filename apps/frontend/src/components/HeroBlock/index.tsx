@@ -1,5 +1,4 @@
 import { Award, Bot, Link2, TrendingUp, Users } from "lucide-react";
-import RadialOrbitalTimeline from "./radial-orbital-timeline";
 
 const timelineData = [
   {
@@ -66,9 +65,9 @@ const timelineData = [
 
 export function RadialOrbitalTimelineDemo() {
   return (
-    <div className="min-h-[45vh] lg:min-h-[75vh] bg-black overflow-hidden">
+    <div className="min-h-[40vh] lg:min-h-[50vh] bg-black overflow-hidden">
       <div className="container mx-auto px-6 py-8 lg:py-0">
-        <div className="grid lg:grid-cols-2 gap-0 items-center min-h-[45vh] lg:min-h-[75vh]">
+        <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[45vh] lg:min-h-[75vh]">
           {/* Left Content */}
           <div className="space-y-8">
             <div className="space-y-6">
@@ -88,8 +87,8 @@ export function RadialOrbitalTimelineDemo() {
           </div>
 
           {/* Right Content - Orbital Timeline */}
-          <div className="relative h-[600px] lg:h-[700px] hidden lg:block">
-            <RadialOrbitalTimeline timelineData={timelineData} />
+          <div className="relative ">
+            <img src="/images/hero.png" alt="hero" />
           </div>
         </div>
       </div>

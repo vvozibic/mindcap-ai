@@ -59,8 +59,6 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
     setIsDetailOverlayOpen(false);
   };
 
-  console.log(topKOLs);
-
   if (!project)
     return (
       <div>

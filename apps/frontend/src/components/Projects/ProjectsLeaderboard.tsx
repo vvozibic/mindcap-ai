@@ -43,8 +43,6 @@ const ProjectsLeaderboard: React.FC = () => {
   const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
   const navigate = useNavigate();
 
-  console.log(activeOverlayTab);
-
   const {
     data: projects,
     total,
@@ -65,8 +63,6 @@ const ProjectsLeaderboard: React.FC = () => {
   );
 
   const handleProjectClick = (project: Project, tab?: "overview" | "pools") => {
-    console.log(tab);
-
     if (tab === "pools") {
       navigate(`/projects/${project.twitterUsername}?tab=pools`);
     } else {
