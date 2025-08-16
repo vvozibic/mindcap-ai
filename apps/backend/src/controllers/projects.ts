@@ -300,140 +300,147 @@ export const getProtokolsProjectBySlug = async (
 };
 
 export const allowedSortFields = {
-  mindoMetric: `SUM(kp."mindoMetric")`,
-  proofOfWork: `SUM(kp."proofOfWork")`,
-  qualityScore: `SUM(kp."qualityScore")`,
-  totalPosts: `SUM(kp."totalPosts")`,
-  totalComments: `SUM(kp."totalComments")`,
+  mindoMetric: `"mindoMetric"`,
+  proofOfWork: `"proofOfWork"`,
+  qualityScore: `"qualityScore"`,
+  followers: `k."twitterFollowersCount"`,
+  smartFollowersCount: `k."smartFollowersCount"`,
   kolScore: `k."kolScore"`,
   engagementRate: `k."engagementRate"`,
-  smartFollowersCount: `k."smartFollowersCount"`,
-  twitterFollowersCount: `k."twitterFollowersCount"`,
-  tweetsCountNumeric: `k."tweetsCountNumeric"`,
+  walletScore: `"walletScore"`,
+  earnedPoints: `"earnedPoints"`,
+  postingFrequencyRaw: `"postingFrequencyRaw"`,
 } as const;
 
 export type SortField = keyof typeof allowedSortFields;
 
 export function getSortSql(sortField: string, sortDirection: string): string {
-  const direction = sortDirection === "asc" ? "ASC" : "DESC";
+  const dir = sortDirection === "asc" ? "ASC" : "DESC";
   const expr = allowedSortFields[sortField as SortField];
   if (!expr) throw new Error(`Invalid sortField: ${sortField}`);
-  return `${expr} ${direction}`;
+  return `${expr} ${dir}`;
 }
 
 export const getInfluencersByProject = async (req: Request, res: Response) => {
   const { projectId } = req.params;
-  const limit = parseInt(req.query.limit as string) || 100;
-  const page = parseInt(req.query.page as string) || 1;
+  const limit = Math.min(
+    parseInt(String(req.query.limit ?? "100"), 10) || 100,
+    100
+  );
+  const page = Math.max(parseInt(String(req.query.page ?? "1"), 10) || 1, 1);
   const skip = (page - 1) * limit;
+
   const sortField = (req.query.sortField as string) || "mindoMetric";
   const sortDirection = req.query.sortDirection === "asc" ? "asc" : "desc";
 
-  if (!projectId) {
+  if (!projectId)
     return res.status(400).json({ error: "Missing projectId in params" });
-  }
-
-  if (!allowedSortFields[sortField as keyof typeof allowedSortFields]) {
-    return res.status(400).json({ error: `Invalid sortField: ${sortField}` });
-  }
 
   const orderByClause = getSortSql(sortField, sortDirection);
 
-  const data = await prisma.$queryRawUnsafe<any[]>(
-    `
-    SELECT
-    k.id,
-    k."hidden",
-    k."twitterId",
-    k."twitterUsername",
-    k."twitterDisplayName",
-    k."twitterAvatarUrl",
-    k."twitterDescription",
-    k."twitterDescriptionLink",
-    k."twitterFollowersCount",
-    k."twitterFollowingCount",
-    k."twitterIsVerified",
-    k."twitterGoldBadge",
-    k."twitterLang",
-    k."twitterCreatedAt",
+  try {
+    const data = await prisma.$queryRawUnsafe<any[]>(
+      `
+      WITH agg AS (
+        SELECT
+          kp."kolId",
+          SUM(kp."mindoMetric")  AS "mindoMetric",
+          SUM(kp."proofOfWork")  AS "proofOfWork",
+          SUM(kp."qualityScore") AS "qualityScore"
+        FROM "KOLToProject" kp
+        WHERE kp."projectId" = $1
+          AND kp."mindoMetric" > 0
+        GROUP BY kp."kolId"
+      )
+      SELECT
+        k.id,
+        k."twitterDisplayName",
+        k."twitterUsername",
+        k."twitterAvatarUrl",
+        k."twitterFollowersCount"              AS "followers",
+        k."smartFollowersCount",
+        k."kolScore",
+        k."engagementRate",
 
-    -- main metrics
-    k."kolScore",
-    k."kolScorePercentFromTotal",
-    k."smartFollowersCount",
-    k."threadsCount",
-    k."engagementRate",
-    k."smartEngagement",
+        a."mindoMetric",
+        a."proofOfWork",
+        a."qualityScore",
 
-    -- average
-    k."avgViews",
-    k."avgLikes",
+        COALESCE(u."earnedPoints", 0)          AS "earnedPoints",
+        COALESCE(w."rubyWalletScore", 0)
+          + COALESCE(w."nomisWalletScore", 0) * 100
+                                              AS "walletScore",
 
-    -- total
-    k."totalPosts",
-    k."totalViews",
-    k."totalInteractions",
+        -- mindshare %
+        k."kolScorePercentFromTotal"           AS "mindsharePercent",
+        TO_CHAR(COALESCE(k."kolScorePercentFromTotal", 0), 'FM999990D00')
+                                              AS "mindsharePercentText",
 
-    -- total organic
-    k."totalOrganicPosts",
-    k."totalOrganicViews",
-    k."totalOrganicInteractions",
+        -- posting frequency (posts/day)
+        GREATEST(CEIL(DATE_PART('day', NOW() - k."twitterCreatedAt")), 1)
+                                              AS "accountAgeDays",
 
-    -- total account
-    k."totalAccountPosts",
-    k."totalAccountViews",
-    k."totalAccountInteractions",
-    k."totalAccountComments",
-    k."totalAccountLikes",
-    k."totalAccountRetweets",
-    k."totalAccountReplies",
+        (COALESCE(k."totalPosts", 0)::float
+          / GREATEST(DATE_PART('day', NOW() - k."twitterCreatedAt"), 1))
+                                              AS "postingFrequencyRaw",
 
-    -- change metrics
-    k."totalPostsChange",
-    k."totalInteractionsChange",
-    k."totalViewsChange",
-    k."followersChange",
-    k."smartEngagementChange",
-    SUM(kp."mindoMetric")   AS "mindoMetric",
-    SUM(kp."proofOfWork")   AS "proofOfWork",
-    SUM(kp."qualityScore")  AS "qualityScore",
-    SUM(kp."totalPosts")    AS "totalPosts",
-    SUM(kp."totalComments") AS "totalComments"
-    FROM "KOL" k
-    JOIN "KOLToProject" kp ON kp."kolId" = k.id
-    WHERE k."hidden" = false
-      AND kp."projectId" = $1
-    GROUP BY k.id
-    ORDER BY ${orderByClause}
-    LIMIT $2 OFFSET $3
-  `,
-    projectId,
-    limit,
-    skip
-  );
+        CASE
+          WHEN (COALESCE(k."totalPosts", 0)::float
+                / GREATEST(DATE_PART('day', NOW() - k."twitterCreatedAt"), 1)) > 0
+           AND (COALESCE(k."totalPosts", 0)::float
+                / GREATEST(DATE_PART('day', NOW() - k."twitterCreatedAt"), 1)) < 1
+            THEN 1
+          ELSE ROUND(
+            COALESCE(k."totalPosts", 0)::float
+            / GREATEST(DATE_PART('day', NOW() - k."twitterCreatedAt"), 1)
+          )::int
+        END                                   AS "postingFrequency"
 
-  const totalResult = await prisma.$queryRawUnsafe<{ count: number }[]>(
-    `
-    SELECT COUNT(*)::int AS count
-    FROM (
-      SELECT k.id
       FROM "KOL" k
-      JOIN "KOLToProject" kp ON kp."kolId" = k.id
-      WHERE k."kolScore" > 0 AND k."hidden" = false AND kp."projectId" = $1
-      GROUP BY k.id
-    ) sub
-  `,
-    projectId
-  );
+      JOIN agg a                ON a."kolId" = k.id
+      LEFT JOIN "User"   u      ON u."kolId" = k.id
+      LEFT JOIN "Wallet" w      ON w.id = u."primaryWalletId"
+      WHERE k."hidden" = false
+        AND k."isAlsoProject" = false
+        AND k."kolScore" > 0
+      ORDER BY ${orderByClause}, k.id ${sortDirection}
+      LIMIT $2 OFFSET $3
+      `,
+      projectId, // text/uuid
+      limit,
+      skip
+    );
 
-  const total = totalResult[0]?.count || 0;
+    // total — по тем же условиям (на конкретный проект)
+    const totalResult = await prisma.$queryRawUnsafe<{ count: number }[]>(
+      `
+      SELECT COUNT(*)::int AS count
+      FROM (
+        SELECT k.id
+        FROM "KOL" k
+        JOIN "KOLToProject" kp
+          ON kp."kolId" = k.id
+         AND kp."projectId" = $1
+         AND kp."mindoMetric" > 0
+        WHERE k."hidden" = false
+          AND k."isAlsoProject" = false
+          AND k."kolScore" > 0
+        GROUP BY k.id
+      ) sub
+      `,
+      projectId
+    );
 
-  sendJson(res, {
-    data,
-    total,
-    page,
-    limit,
-  });
+    sendJson(res, {
+      data,
+      total: totalResult[0]?.count ?? 0,
+      page,
+      limit,
+    });
+  } catch (e: any) {
+    console.error(e);
+    res.status(500).json({ error: "Internal error" });
+  }
 };
 
 export const createProtokolsProject = async (req: Request, res: Response) => {

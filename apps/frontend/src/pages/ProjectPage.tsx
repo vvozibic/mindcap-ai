@@ -4,7 +4,6 @@ import ProjectDetails from "../components/Projects/ProjectDetails";
 import { Skeleton } from "../components/Skeleton";
 import { TableSkeleton } from "../components/TableSkeleton";
 import { KOL, Project, RewardPool } from "../types";
-import { daysBetween } from "../utils/daysBetween";
 
 const fetchProject = async ({ slug }: { slug: string }) => {
   const res = await fetch(`/api/projects/slug/${slug}`);
@@ -84,27 +83,6 @@ const ProjectPage = () => {
     );
 
   const projectPools = project.rewardPools || [];
-
-  const topKOLs = influencers
-    .map((i) => {
-      const realPostingFrequency = Number(
-        (i?.totalPosts || 0) / daysBetween(i.twitterCreatedAt, new Date())
-      );
-
-      const postingFrequency =
-        realPostingFrequency > 0 && realPostingFrequency < 1
-          ? "1"
-          : Math.round(realPostingFrequency)?.toFixed(0);
-
-      return {
-        ...i,
-        // mindshare: i?.kolScorePercentFromTotal?.toFixed(2),
-        postingFrequency: postingFrequency,
-      };
-    })
-    .sort((a, b) => {
-      return b.mindoMetric - a.mindoMetric;
-    });
 
   const handlePoolSelect = (pool: RewardPool) => {
     setSelectedPool(pool);
@@ -201,7 +179,7 @@ const ProjectPage = () => {
           setActiveTab={setActiveOverlayTab}
           projectPools={projectPools}
           project={project}
-          topKOLs={topKOLs}
+          topKOLs={influencers}
           selectedPool={selectedPool}
           handleBackToList={handleBackToList}
           handlePoolSelect={handlePoolSelect}

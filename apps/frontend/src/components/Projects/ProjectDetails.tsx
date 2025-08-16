@@ -59,6 +59,8 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
     setIsDetailOverlayOpen(false);
   };
 
+  console.log(topKOLs);
+
   if (!project)
     return (
       <div>
@@ -377,6 +379,12 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                             Mindo score
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
+                            Points
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
+                            Wallet score
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
                             Smart Followers
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
@@ -442,12 +450,22 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                                 Number(kol?.mindoMetric?.toFixed(2)) || 0
                               )}
                             </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-200 font-medium">
+                                {`${formatNumber(Number(kol?.earnedPoints) || 0)}`}
+                              </div>
+                            </td>
+
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-200 font-medium">
+                                {`${Number(kol?.walletScore?.toFixed(2)) ? formatNumber(Number(kol?.walletScore?.toFixed(2))) : "–"}`}
+                              </div>
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                               {kol.smartFollowersCount?.toLocaleString() || "0"}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                              {kol.twitterFollowersCount?.toLocaleString() ||
-                                "0"}
+                              {kol.followers?.toLocaleString() || "0"}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                               {kol.kolScore?.toLocaleString() || "0"}
@@ -822,8 +840,7 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
       <InfluencerDetailOverlay
         isOpen={isDetailOverlayOpen}
         onClose={closeDetailOverlay}
-        kol={selectedKOL}
-        allKOLs={topKOLs.filter((k) => k && k.id)}
+        kolId={selectedKOL?.id}
       />
     </>
   );

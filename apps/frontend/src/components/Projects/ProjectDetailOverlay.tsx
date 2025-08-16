@@ -2,7 +2,6 @@ import { Dialog, Transition } from "@headlessui/react";
 import { X } from "lucide-react";
 import React, { Fragment, useEffect, useState } from "react";
 import { KOL, Project, RewardPool } from "../../types";
-import { daysBetween } from "../../utils/daysBetween";
 import ProjectDetails from "./ProjectDetails";
 
 interface ProjectDetailOverlayProps {
@@ -73,25 +72,6 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
   if (!project) return null;
 
   const projectPools = project?.rewardPools || [];
-
-  const topKOLs = influencers.map((i) => {
-    const realPostingFrequency = Number(
-      (i?.totalPosts || 0) / daysBetween(i.twitterCreatedAt, new Date())
-    );
-
-    console.log(i.twitterDisplayName, realPostingFrequency);
-
-    const postingFrequency =
-      realPostingFrequency > 0 && realPostingFrequency < 1
-        ? 1
-        : Math.round(realPostingFrequency)?.toFixed(0);
-
-    return {
-      ...i,
-      mindshare: i?.kolScorePercentFromTotal?.toFixed(2),
-      postingFrequency: postingFrequency,
-    };
-  });
 
   const handlePoolSelect = (pool: RewardPool) => {
     setSelectedPool(pool);
@@ -203,7 +183,7 @@ const ProjectDetailOverlay: React.FC<ProjectDetailOverlayProps> = ({
                   setActiveTab={setActiveTab}
                   projectPools={projectPools}
                   project={project}
-                  topKOLs={topKOLs}
+                  topKOLs={influencers}
                   selectedPool={selectedPool}
                   handleBackToList={handleBackToList}
                   handlePoolSelect={handlePoolSelect}
