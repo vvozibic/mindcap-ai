@@ -104,10 +104,11 @@ export interface User {
   updatedAt?: string; // ISO string
   isAuthenticated?: boolean;
   referralCode?: string;
+  referredById?: number;
   referrals?: User[];
   onboardingStep?: number;
   completedTasks?: number;
-  primaryWallet?: Wallet;
+  primaryWalletId?: string;
   wallets: Array<{
     rubyWalletScore: number;
     nomisWalletScore: number;

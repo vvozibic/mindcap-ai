@@ -487,9 +487,12 @@ model RewardPool {
   reward              String
   rewardRate          Float?
   rewardUnit          String?
-  deadline            DateTime
+  deadline            DateTime?
+  startDate           DateTime?
+  endDate             DateTime?
   platforms           String[]
   status              RewardPoolStatus
+  type                RewardPoolType   @default(task)
   totalAmountUsd      Float
   paidOutUsd          Float
   campaignTargetViews Int
@@ -506,6 +509,11 @@ enum RewardPoolStatus {
   active
   upcoming
   closed
+}
+
+enum RewardPoolType {
+  task
+  campaign
 }
 
 model RewardSubmission {

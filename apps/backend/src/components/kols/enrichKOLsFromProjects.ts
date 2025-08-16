@@ -16,12 +16,10 @@ const usernames = [
 
 export async function enrichKOLsFromProjects() {
   const projects = await prisma.project.findMany({
-    // where: {
-    //   twitterUsername: {
-    //     in: usernames,
-    //   },
-    //   kols: {},
-    // },
+    where: {
+      featured: true,
+      kols: {},
+    },
     orderBy: {
       coinMarketCap: "desc",
     },

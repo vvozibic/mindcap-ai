@@ -86,7 +86,7 @@ export const KOLSnapshotScalarFieldEnumSchema = z.enum(['id','kolId','kolScore',
 
 export const KOLToProjectScalarFieldEnumSchema = z.enum(['id','kolId','projectId','totalPosts','totalViews','totalInteractions','totalComments','qualityScore','proofOfWork','mindoMetric','createdAt','updatedAt','fetchedAt']);
 
-export const RewardPoolScalarFieldEnumSchema = z.enum(['id','title','description','reward','rewardRate','rewardUnit','deadline','platforms','status','totalAmountUsd','paidOutUsd','campaignTargetViews','participantsCount','completedCount','requirements','projectId']);
+export const RewardPoolScalarFieldEnumSchema = z.enum(['id','title','description','reward','rewardRate','rewardUnit','deadline','startDate','endDate','platforms','status','type','totalAmountUsd','paidOutUsd','campaignTargetViews','participantsCount','completedCount','requirements','projectId']);
 
 export const RewardSubmissionScalarFieldEnumSchema = z.enum(['id','contentUrl','notes','status','createdAt','rewardPoolId','kolId']);
 
@@ -109,6 +109,10 @@ export type BadgeSlugType = `${z.infer<typeof BadgeSlugSchema>}`
 export const RewardPoolStatusSchema = z.enum(['active','upcoming','closed']);
 
 export type RewardPoolStatusType = `${z.infer<typeof RewardPoolStatusSchema>}`
+
+export const RewardPoolTypeSchema = z.enum(['task','campaign']);
+
+export type RewardPoolTypeType = `${z.infer<typeof RewardPoolTypeSchema>}`
 
 export const SubmissionStatusSchema = z.enum(['pending','approved','rejected']);
 
@@ -498,13 +502,16 @@ export type KOLToProject = z.infer<typeof KOLToProjectSchema>
 
 export const RewardPoolSchema = z.object({
   status: RewardPoolStatusSchema,
+  type: RewardPoolTypeSchema,
   id: z.string().cuid(),
   title: z.string(),
   description: z.string(),
   reward: z.string(),
   rewardRate: z.number().nullable(),
   rewardUnit: z.string().nullable(),
-  deadline: z.coerce.date(),
+  deadline: z.coerce.date().nullable(),
+  startDate: z.coerce.date().nullable(),
+  endDate: z.coerce.date().nullable(),
   platforms: z.string().array(),
   totalAmountUsd: z.number(),
   paidOutUsd: z.number(),
@@ -1164,8 +1171,11 @@ export const RewardPoolSelectSchema: z.ZodType<Prisma.RewardPoolSelect> = z.obje
   rewardRate: z.boolean().optional(),
   rewardUnit: z.boolean().optional(),
   deadline: z.boolean().optional(),
+  startDate: z.boolean().optional(),
+  endDate: z.boolean().optional(),
   platforms: z.boolean().optional(),
   status: z.boolean().optional(),
+  type: z.boolean().optional(),
   totalAmountUsd: z.boolean().optional(),
   paidOutUsd: z.boolean().optional(),
   campaignTargetViews: z.boolean().optional(),
@@ -2327,18 +2337,35 @@ export const PointEventOrderByWithRelationInputSchema: z.ZodType<Prisma.PointEve
 export const PointEventWhereUniqueInputSchema: z.ZodType<Prisma.PointEventWhereUniqueInput> = z.union([
   z.object({
     id: z.number().int(),
-    userId_idempotencyKey: z.lazy(() => PointEventUserIdIdempotencyKeyCompoundUniqueInputSchema)
+    userId_idempotencyKey: z.lazy(() => PointEventUserIdIdempotencyKeyCompoundUniqueInputSchema),
+    uniq_user_type_key: z.lazy(() => PointEventUniq_user_type_keyCompoundUniqueInputSchema)
+  }),
+  z.object({
+    id: z.number().int(),
+    userId_idempotencyKey: z.lazy(() => PointEventUserIdIdempotencyKeyCompoundUniqueInputSchema),
+  }),
+  z.object({
+    id: z.number().int(),
+    uniq_user_type_key: z.lazy(() => PointEventUniq_user_type_keyCompoundUniqueInputSchema),
   }),
   z.object({
     id: z.number().int(),
   }),
   z.object({
     userId_idempotencyKey: z.lazy(() => PointEventUserIdIdempotencyKeyCompoundUniqueInputSchema),
+    uniq_user_type_key: z.lazy(() => PointEventUniq_user_type_keyCompoundUniqueInputSchema),
+  }),
+  z.object({
+    userId_idempotencyKey: z.lazy(() => PointEventUserIdIdempotencyKeyCompoundUniqueInputSchema),
+  }),
+  z.object({
+    uniq_user_type_key: z.lazy(() => PointEventUniq_user_type_keyCompoundUniqueInputSchema),
   }),
 ])
 .and(z.object({
   id: z.number().int().optional(),
   userId_idempotencyKey: z.lazy(() => PointEventUserIdIdempotencyKeyCompoundUniqueInputSchema).optional(),
+  uniq_user_type_key: z.lazy(() => PointEventUniq_user_type_keyCompoundUniqueInputSchema).optional(),
   AND: z.union([ z.lazy(() => PointEventWhereInputSchema),z.lazy(() => PointEventWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => PointEventWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => PointEventWhereInputSchema),z.lazy(() => PointEventWhereInputSchema).array() ]).optional(),
@@ -3869,9 +3896,12 @@ export const RewardPoolWhereInputSchema: z.ZodType<Prisma.RewardPoolWhereInput> 
   reward: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   rewardRate: z.union([ z.lazy(() => FloatNullableFilterSchema),z.number() ]).optional().nullable(),
   rewardUnit: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
-  deadline: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  deadline: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
+  startDate: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
+  endDate: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
   platforms: z.lazy(() => StringNullableListFilterSchema).optional(),
   status: z.union([ z.lazy(() => EnumRewardPoolStatusFilterSchema),z.lazy(() => RewardPoolStatusSchema) ]).optional(),
+  type: z.union([ z.lazy(() => EnumRewardPoolTypeFilterSchema),z.lazy(() => RewardPoolTypeSchema) ]).optional(),
   totalAmountUsd: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
   paidOutUsd: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
   campaignTargetViews: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
@@ -3890,9 +3920,12 @@ export const RewardPoolOrderByWithRelationInputSchema: z.ZodType<Prisma.RewardPo
   reward: z.lazy(() => SortOrderSchema).optional(),
   rewardRate: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   rewardUnit: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
-  deadline: z.lazy(() => SortOrderSchema).optional(),
+  deadline: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  startDate: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  endDate: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   platforms: z.lazy(() => SortOrderSchema).optional(),
   status: z.lazy(() => SortOrderSchema).optional(),
+  type: z.lazy(() => SortOrderSchema).optional(),
   totalAmountUsd: z.lazy(() => SortOrderSchema).optional(),
   paidOutUsd: z.lazy(() => SortOrderSchema).optional(),
   campaignTargetViews: z.lazy(() => SortOrderSchema).optional(),
@@ -3917,9 +3950,12 @@ export const RewardPoolWhereUniqueInputSchema: z.ZodType<Prisma.RewardPoolWhereU
   reward: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   rewardRate: z.union([ z.lazy(() => FloatNullableFilterSchema),z.number() ]).optional().nullable(),
   rewardUnit: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
-  deadline: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  deadline: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
+  startDate: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
+  endDate: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
   platforms: z.lazy(() => StringNullableListFilterSchema).optional(),
   status: z.union([ z.lazy(() => EnumRewardPoolStatusFilterSchema),z.lazy(() => RewardPoolStatusSchema) ]).optional(),
+  type: z.union([ z.lazy(() => EnumRewardPoolTypeFilterSchema),z.lazy(() => RewardPoolTypeSchema) ]).optional(),
   totalAmountUsd: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
   paidOutUsd: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
   campaignTargetViews: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
@@ -3938,9 +3974,12 @@ export const RewardPoolOrderByWithAggregationInputSchema: z.ZodType<Prisma.Rewar
   reward: z.lazy(() => SortOrderSchema).optional(),
   rewardRate: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   rewardUnit: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
-  deadline: z.lazy(() => SortOrderSchema).optional(),
+  deadline: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  startDate: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  endDate: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   platforms: z.lazy(() => SortOrderSchema).optional(),
   status: z.lazy(() => SortOrderSchema).optional(),
+  type: z.lazy(() => SortOrderSchema).optional(),
   totalAmountUsd: z.lazy(() => SortOrderSchema).optional(),
   paidOutUsd: z.lazy(() => SortOrderSchema).optional(),
   campaignTargetViews: z.lazy(() => SortOrderSchema).optional(),
@@ -3965,9 +4004,12 @@ export const RewardPoolScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Re
   reward: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   rewardRate: z.union([ z.lazy(() => FloatNullableWithAggregatesFilterSchema),z.number() ]).optional().nullable(),
   rewardUnit: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
-  deadline: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
+  deadline: z.union([ z.lazy(() => DateTimeNullableWithAggregatesFilterSchema),z.coerce.date() ]).optional().nullable(),
+  startDate: z.union([ z.lazy(() => DateTimeNullableWithAggregatesFilterSchema),z.coerce.date() ]).optional().nullable(),
+  endDate: z.union([ z.lazy(() => DateTimeNullableWithAggregatesFilterSchema),z.coerce.date() ]).optional().nullable(),
   platforms: z.lazy(() => StringNullableListFilterSchema).optional(),
   status: z.union([ z.lazy(() => EnumRewardPoolStatusWithAggregatesFilterSchema),z.lazy(() => RewardPoolStatusSchema) ]).optional(),
+  type: z.union([ z.lazy(() => EnumRewardPoolTypeWithAggregatesFilterSchema),z.lazy(() => RewardPoolTypeSchema) ]).optional(),
   totalAmountUsd: z.union([ z.lazy(() => FloatWithAggregatesFilterSchema),z.number() ]).optional(),
   paidOutUsd: z.union([ z.lazy(() => FloatWithAggregatesFilterSchema),z.number() ]).optional(),
   campaignTargetViews: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
@@ -6136,9 +6178,12 @@ export const RewardPoolCreateInputSchema: z.ZodType<Prisma.RewardPoolCreateInput
   reward: z.string(),
   rewardRate: z.number().optional().nullable(),
   rewardUnit: z.string().optional().nullable(),
-  deadline: z.coerce.date(),
+  deadline: z.coerce.date().optional().nullable(),
+  startDate: z.coerce.date().optional().nullable(),
+  endDate: z.coerce.date().optional().nullable(),
   platforms: z.union([ z.lazy(() => RewardPoolCreateplatformsInputSchema),z.string().array() ]).optional(),
   status: z.lazy(() => RewardPoolStatusSchema),
+  type: z.lazy(() => RewardPoolTypeSchema).optional(),
   totalAmountUsd: z.number(),
   paidOutUsd: z.number(),
   campaignTargetViews: z.number().int(),
@@ -6156,9 +6201,12 @@ export const RewardPoolUncheckedCreateInputSchema: z.ZodType<Prisma.RewardPoolUn
   reward: z.string(),
   rewardRate: z.number().optional().nullable(),
   rewardUnit: z.string().optional().nullable(),
-  deadline: z.coerce.date(),
+  deadline: z.coerce.date().optional().nullable(),
+  startDate: z.coerce.date().optional().nullable(),
+  endDate: z.coerce.date().optional().nullable(),
   platforms: z.union([ z.lazy(() => RewardPoolCreateplatformsInputSchema),z.string().array() ]).optional(),
   status: z.lazy(() => RewardPoolStatusSchema),
+  type: z.lazy(() => RewardPoolTypeSchema).optional(),
   totalAmountUsd: z.number(),
   paidOutUsd: z.number(),
   campaignTargetViews: z.number().int(),
@@ -6176,9 +6224,12 @@ export const RewardPoolUpdateInputSchema: z.ZodType<Prisma.RewardPoolUpdateInput
   reward: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rewardRate: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   rewardUnit: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  deadline: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  deadline: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  startDate: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  endDate: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   platforms: z.union([ z.lazy(() => RewardPoolUpdateplatformsInputSchema),z.string().array() ]).optional(),
   status: z.union([ z.lazy(() => RewardPoolStatusSchema),z.lazy(() => EnumRewardPoolStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  type: z.union([ z.lazy(() => RewardPoolTypeSchema),z.lazy(() => EnumRewardPoolTypeFieldUpdateOperationsInputSchema) ]).optional(),
   totalAmountUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   paidOutUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   campaignTargetViews: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -6196,9 +6247,12 @@ export const RewardPoolUncheckedUpdateInputSchema: z.ZodType<Prisma.RewardPoolUn
   reward: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rewardRate: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   rewardUnit: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  deadline: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  deadline: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  startDate: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  endDate: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   platforms: z.union([ z.lazy(() => RewardPoolUpdateplatformsInputSchema),z.string().array() ]).optional(),
   status: z.union([ z.lazy(() => RewardPoolStatusSchema),z.lazy(() => EnumRewardPoolStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  type: z.union([ z.lazy(() => RewardPoolTypeSchema),z.lazy(() => EnumRewardPoolTypeFieldUpdateOperationsInputSchema) ]).optional(),
   totalAmountUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   paidOutUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   campaignTargetViews: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -6216,9 +6270,12 @@ export const RewardPoolCreateManyInputSchema: z.ZodType<Prisma.RewardPoolCreateM
   reward: z.string(),
   rewardRate: z.number().optional().nullable(),
   rewardUnit: z.string().optional().nullable(),
-  deadline: z.coerce.date(),
+  deadline: z.coerce.date().optional().nullable(),
+  startDate: z.coerce.date().optional().nullable(),
+  endDate: z.coerce.date().optional().nullable(),
   platforms: z.union([ z.lazy(() => RewardPoolCreateplatformsInputSchema),z.string().array() ]).optional(),
   status: z.lazy(() => RewardPoolStatusSchema),
+  type: z.lazy(() => RewardPoolTypeSchema).optional(),
   totalAmountUsd: z.number(),
   paidOutUsd: z.number(),
   campaignTargetViews: z.number().int(),
@@ -6235,9 +6292,12 @@ export const RewardPoolUpdateManyMutationInputSchema: z.ZodType<Prisma.RewardPoo
   reward: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rewardRate: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   rewardUnit: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  deadline: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  deadline: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  startDate: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  endDate: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   platforms: z.union([ z.lazy(() => RewardPoolUpdateplatformsInputSchema),z.string().array() ]).optional(),
   status: z.union([ z.lazy(() => RewardPoolStatusSchema),z.lazy(() => EnumRewardPoolStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  type: z.union([ z.lazy(() => RewardPoolTypeSchema),z.lazy(() => EnumRewardPoolTypeFieldUpdateOperationsInputSchema) ]).optional(),
   totalAmountUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   paidOutUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   campaignTargetViews: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -6253,9 +6313,12 @@ export const RewardPoolUncheckedUpdateManyInputSchema: z.ZodType<Prisma.RewardPo
   reward: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rewardRate: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   rewardUnit: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  deadline: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  deadline: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  startDate: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  endDate: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   platforms: z.union([ z.lazy(() => RewardPoolUpdateplatformsInputSchema),z.string().array() ]).optional(),
   status: z.union([ z.lazy(() => RewardPoolStatusSchema),z.lazy(() => EnumRewardPoolStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  type: z.union([ z.lazy(() => RewardPoolTypeSchema),z.lazy(() => EnumRewardPoolTypeFieldUpdateOperationsInputSchema) ]).optional(),
   totalAmountUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   paidOutUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   campaignTargetViews: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -6910,6 +6973,12 @@ export const JsonNullableFilterSchema: z.ZodType<Prisma.JsonNullableFilter> = z.
 
 export const PointEventUserIdIdempotencyKeyCompoundUniqueInputSchema: z.ZodType<Prisma.PointEventUserIdIdempotencyKeyCompoundUniqueInput> = z.object({
   userId: z.number(),
+  idempotencyKey: z.string()
+}).strict();
+
+export const PointEventUniq_user_type_keyCompoundUniqueInputSchema: z.ZodType<Prisma.PointEventUniq_user_type_keyCompoundUniqueInput> = z.object({
+  userId: z.number(),
+  type: z.string(),
   idempotencyKey: z.string()
 }).strict();
 
@@ -8181,6 +8250,13 @@ export const EnumRewardPoolStatusFilterSchema: z.ZodType<Prisma.EnumRewardPoolSt
   not: z.union([ z.lazy(() => RewardPoolStatusSchema),z.lazy(() => NestedEnumRewardPoolStatusFilterSchema) ]).optional(),
 }).strict();
 
+export const EnumRewardPoolTypeFilterSchema: z.ZodType<Prisma.EnumRewardPoolTypeFilter> = z.object({
+  equals: z.lazy(() => RewardPoolTypeSchema).optional(),
+  in: z.lazy(() => RewardPoolTypeSchema).array().optional(),
+  notIn: z.lazy(() => RewardPoolTypeSchema).array().optional(),
+  not: z.union([ z.lazy(() => RewardPoolTypeSchema),z.lazy(() => NestedEnumRewardPoolTypeFilterSchema) ]).optional(),
+}).strict();
+
 export const RewardPoolCountOrderByAggregateInputSchema: z.ZodType<Prisma.RewardPoolCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   title: z.lazy(() => SortOrderSchema).optional(),
@@ -8189,8 +8265,11 @@ export const RewardPoolCountOrderByAggregateInputSchema: z.ZodType<Prisma.Reward
   rewardRate: z.lazy(() => SortOrderSchema).optional(),
   rewardUnit: z.lazy(() => SortOrderSchema).optional(),
   deadline: z.lazy(() => SortOrderSchema).optional(),
+  startDate: z.lazy(() => SortOrderSchema).optional(),
+  endDate: z.lazy(() => SortOrderSchema).optional(),
   platforms: z.lazy(() => SortOrderSchema).optional(),
   status: z.lazy(() => SortOrderSchema).optional(),
+  type: z.lazy(() => SortOrderSchema).optional(),
   totalAmountUsd: z.lazy(() => SortOrderSchema).optional(),
   paidOutUsd: z.lazy(() => SortOrderSchema).optional(),
   campaignTargetViews: z.lazy(() => SortOrderSchema).optional(),
@@ -8217,7 +8296,10 @@ export const RewardPoolMaxOrderByAggregateInputSchema: z.ZodType<Prisma.RewardPo
   rewardRate: z.lazy(() => SortOrderSchema).optional(),
   rewardUnit: z.lazy(() => SortOrderSchema).optional(),
   deadline: z.lazy(() => SortOrderSchema).optional(),
+  startDate: z.lazy(() => SortOrderSchema).optional(),
+  endDate: z.lazy(() => SortOrderSchema).optional(),
   status: z.lazy(() => SortOrderSchema).optional(),
+  type: z.lazy(() => SortOrderSchema).optional(),
   totalAmountUsd: z.lazy(() => SortOrderSchema).optional(),
   paidOutUsd: z.lazy(() => SortOrderSchema).optional(),
   campaignTargetViews: z.lazy(() => SortOrderSchema).optional(),
@@ -8234,7 +8316,10 @@ export const RewardPoolMinOrderByAggregateInputSchema: z.ZodType<Prisma.RewardPo
   rewardRate: z.lazy(() => SortOrderSchema).optional(),
   rewardUnit: z.lazy(() => SortOrderSchema).optional(),
   deadline: z.lazy(() => SortOrderSchema).optional(),
+  startDate: z.lazy(() => SortOrderSchema).optional(),
+  endDate: z.lazy(() => SortOrderSchema).optional(),
   status: z.lazy(() => SortOrderSchema).optional(),
+  type: z.lazy(() => SortOrderSchema).optional(),
   totalAmountUsd: z.lazy(() => SortOrderSchema).optional(),
   paidOutUsd: z.lazy(() => SortOrderSchema).optional(),
   campaignTargetViews: z.lazy(() => SortOrderSchema).optional(),
@@ -8260,6 +8345,16 @@ export const EnumRewardPoolStatusWithAggregatesFilterSchema: z.ZodType<Prisma.En
   _count: z.lazy(() => NestedIntFilterSchema).optional(),
   _min: z.lazy(() => NestedEnumRewardPoolStatusFilterSchema).optional(),
   _max: z.lazy(() => NestedEnumRewardPoolStatusFilterSchema).optional()
+}).strict();
+
+export const EnumRewardPoolTypeWithAggregatesFilterSchema: z.ZodType<Prisma.EnumRewardPoolTypeWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => RewardPoolTypeSchema).optional(),
+  in: z.lazy(() => RewardPoolTypeSchema).array().optional(),
+  notIn: z.lazy(() => RewardPoolTypeSchema).array().optional(),
+  not: z.union([ z.lazy(() => RewardPoolTypeSchema),z.lazy(() => NestedEnumRewardPoolTypeWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumRewardPoolTypeFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumRewardPoolTypeFilterSchema).optional()
 }).strict();
 
 export const EnumSubmissionStatusFilterSchema: z.ZodType<Prisma.EnumSubmissionStatusFilter> = z.object({
@@ -9477,6 +9572,10 @@ export const EnumRewardPoolStatusFieldUpdateOperationsInputSchema: z.ZodType<Pri
   set: z.lazy(() => RewardPoolStatusSchema).optional()
 }).strict();
 
+export const EnumRewardPoolTypeFieldUpdateOperationsInputSchema: z.ZodType<Prisma.EnumRewardPoolTypeFieldUpdateOperationsInput> = z.object({
+  set: z.lazy(() => RewardPoolTypeSchema).optional()
+}).strict();
+
 export const RewardPoolUpdaterequirementsInputSchema: z.ZodType<Prisma.RewardPoolUpdaterequirementsInput> = z.object({
   set: z.string().array().optional(),
   push: z.union([ z.string(),z.string().array() ]).optional(),
@@ -9890,6 +9989,13 @@ export const NestedEnumRewardPoolStatusFilterSchema: z.ZodType<Prisma.NestedEnum
   not: z.union([ z.lazy(() => RewardPoolStatusSchema),z.lazy(() => NestedEnumRewardPoolStatusFilterSchema) ]).optional(),
 }).strict();
 
+export const NestedEnumRewardPoolTypeFilterSchema: z.ZodType<Prisma.NestedEnumRewardPoolTypeFilter> = z.object({
+  equals: z.lazy(() => RewardPoolTypeSchema).optional(),
+  in: z.lazy(() => RewardPoolTypeSchema).array().optional(),
+  notIn: z.lazy(() => RewardPoolTypeSchema).array().optional(),
+  not: z.union([ z.lazy(() => RewardPoolTypeSchema),z.lazy(() => NestedEnumRewardPoolTypeFilterSchema) ]).optional(),
+}).strict();
+
 export const NestedEnumRewardPoolStatusWithAggregatesFilterSchema: z.ZodType<Prisma.NestedEnumRewardPoolStatusWithAggregatesFilter> = z.object({
   equals: z.lazy(() => RewardPoolStatusSchema).optional(),
   in: z.lazy(() => RewardPoolStatusSchema).array().optional(),
@@ -9898,6 +10004,16 @@ export const NestedEnumRewardPoolStatusWithAggregatesFilterSchema: z.ZodType<Pri
   _count: z.lazy(() => NestedIntFilterSchema).optional(),
   _min: z.lazy(() => NestedEnumRewardPoolStatusFilterSchema).optional(),
   _max: z.lazy(() => NestedEnumRewardPoolStatusFilterSchema).optional()
+}).strict();
+
+export const NestedEnumRewardPoolTypeWithAggregatesFilterSchema: z.ZodType<Prisma.NestedEnumRewardPoolTypeWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => RewardPoolTypeSchema).optional(),
+  in: z.lazy(() => RewardPoolTypeSchema).array().optional(),
+  notIn: z.lazy(() => RewardPoolTypeSchema).array().optional(),
+  not: z.union([ z.lazy(() => RewardPoolTypeSchema),z.lazy(() => NestedEnumRewardPoolTypeWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumRewardPoolTypeFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumRewardPoolTypeFilterSchema).optional()
 }).strict();
 
 export const NestedEnumSubmissionStatusFilterSchema: z.ZodType<Prisma.NestedEnumSubmissionStatusFilter> = z.object({
@@ -11868,9 +11984,12 @@ export const RewardPoolCreateWithoutProjectInputSchema: z.ZodType<Prisma.RewardP
   reward: z.string(),
   rewardRate: z.number().optional().nullable(),
   rewardUnit: z.string().optional().nullable(),
-  deadline: z.coerce.date(),
+  deadline: z.coerce.date().optional().nullable(),
+  startDate: z.coerce.date().optional().nullable(),
+  endDate: z.coerce.date().optional().nullable(),
   platforms: z.union([ z.lazy(() => RewardPoolCreateplatformsInputSchema),z.string().array() ]).optional(),
   status: z.lazy(() => RewardPoolStatusSchema),
+  type: z.lazy(() => RewardPoolTypeSchema).optional(),
   totalAmountUsd: z.number(),
   paidOutUsd: z.number(),
   campaignTargetViews: z.number().int(),
@@ -11887,9 +12006,12 @@ export const RewardPoolUncheckedCreateWithoutProjectInputSchema: z.ZodType<Prism
   reward: z.string(),
   rewardRate: z.number().optional().nullable(),
   rewardUnit: z.string().optional().nullable(),
-  deadline: z.coerce.date(),
+  deadline: z.coerce.date().optional().nullable(),
+  startDate: z.coerce.date().optional().nullable(),
+  endDate: z.coerce.date().optional().nullable(),
   platforms: z.union([ z.lazy(() => RewardPoolCreateplatformsInputSchema),z.string().array() ]).optional(),
   status: z.lazy(() => RewardPoolStatusSchema),
+  type: z.lazy(() => RewardPoolTypeSchema).optional(),
   totalAmountUsd: z.number(),
   paidOutUsd: z.number(),
   campaignTargetViews: z.number().int(),
@@ -12034,9 +12156,12 @@ export const RewardPoolScalarWhereInputSchema: z.ZodType<Prisma.RewardPoolScalar
   reward: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   rewardRate: z.union([ z.lazy(() => FloatNullableFilterSchema),z.number() ]).optional().nullable(),
   rewardUnit: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
-  deadline: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  deadline: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
+  startDate: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
+  endDate: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
   platforms: z.lazy(() => StringNullableListFilterSchema).optional(),
   status: z.union([ z.lazy(() => EnumRewardPoolStatusFilterSchema),z.lazy(() => RewardPoolStatusSchema) ]).optional(),
+  type: z.union([ z.lazy(() => EnumRewardPoolTypeFilterSchema),z.lazy(() => RewardPoolTypeSchema) ]).optional(),
   totalAmountUsd: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
   paidOutUsd: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
   campaignTargetViews: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
@@ -13764,9 +13889,12 @@ export const RewardPoolCreateWithoutRewardSubmissionInputSchema: z.ZodType<Prism
   reward: z.string(),
   rewardRate: z.number().optional().nullable(),
   rewardUnit: z.string().optional().nullable(),
-  deadline: z.coerce.date(),
+  deadline: z.coerce.date().optional().nullable(),
+  startDate: z.coerce.date().optional().nullable(),
+  endDate: z.coerce.date().optional().nullable(),
   platforms: z.union([ z.lazy(() => RewardPoolCreateplatformsInputSchema),z.string().array() ]).optional(),
   status: z.lazy(() => RewardPoolStatusSchema),
+  type: z.lazy(() => RewardPoolTypeSchema).optional(),
   totalAmountUsd: z.number(),
   paidOutUsd: z.number(),
   campaignTargetViews: z.number().int(),
@@ -13783,9 +13911,12 @@ export const RewardPoolUncheckedCreateWithoutRewardSubmissionInputSchema: z.ZodT
   reward: z.string(),
   rewardRate: z.number().optional().nullable(),
   rewardUnit: z.string().optional().nullable(),
-  deadline: z.coerce.date(),
+  deadline: z.coerce.date().optional().nullable(),
+  startDate: z.coerce.date().optional().nullable(),
+  endDate: z.coerce.date().optional().nullable(),
   platforms: z.union([ z.lazy(() => RewardPoolCreateplatformsInputSchema),z.string().array() ]).optional(),
   status: z.lazy(() => RewardPoolStatusSchema),
+  type: z.lazy(() => RewardPoolTypeSchema).optional(),
   totalAmountUsd: z.number(),
   paidOutUsd: z.number(),
   campaignTargetViews: z.number().int(),
@@ -13923,9 +14054,12 @@ export const RewardPoolUpdateWithoutRewardSubmissionInputSchema: z.ZodType<Prism
   reward: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rewardRate: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   rewardUnit: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  deadline: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  deadline: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  startDate: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  endDate: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   platforms: z.union([ z.lazy(() => RewardPoolUpdateplatformsInputSchema),z.string().array() ]).optional(),
   status: z.union([ z.lazy(() => RewardPoolStatusSchema),z.lazy(() => EnumRewardPoolStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  type: z.union([ z.lazy(() => RewardPoolTypeSchema),z.lazy(() => EnumRewardPoolTypeFieldUpdateOperationsInputSchema) ]).optional(),
   totalAmountUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   paidOutUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   campaignTargetViews: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -13942,9 +14076,12 @@ export const RewardPoolUncheckedUpdateWithoutRewardSubmissionInputSchema: z.ZodT
   reward: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rewardRate: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   rewardUnit: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  deadline: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  deadline: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  startDate: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  endDate: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   platforms: z.union([ z.lazy(() => RewardPoolUpdateplatformsInputSchema),z.string().array() ]).optional(),
   status: z.union([ z.lazy(() => RewardPoolStatusSchema),z.lazy(() => EnumRewardPoolStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  type: z.union([ z.lazy(() => RewardPoolTypeSchema),z.lazy(() => EnumRewardPoolTypeFieldUpdateOperationsInputSchema) ]).optional(),
   totalAmountUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   paidOutUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   campaignTargetViews: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -14570,9 +14707,12 @@ export const RewardPoolCreateManyProjectInputSchema: z.ZodType<Prisma.RewardPool
   reward: z.string(),
   rewardRate: z.number().optional().nullable(),
   rewardUnit: z.string().optional().nullable(),
-  deadline: z.coerce.date(),
+  deadline: z.coerce.date().optional().nullable(),
+  startDate: z.coerce.date().optional().nullable(),
+  endDate: z.coerce.date().optional().nullable(),
   platforms: z.union([ z.lazy(() => RewardPoolCreateplatformsInputSchema),z.string().array() ]).optional(),
   status: z.lazy(() => RewardPoolStatusSchema),
+  type: z.lazy(() => RewardPoolTypeSchema).optional(),
   totalAmountUsd: z.number(),
   paidOutUsd: z.number(),
   campaignTargetViews: z.number().int(),
@@ -14696,9 +14836,12 @@ export const RewardPoolUpdateWithoutProjectInputSchema: z.ZodType<Prisma.RewardP
   reward: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rewardRate: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   rewardUnit: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  deadline: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  deadline: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  startDate: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  endDate: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   platforms: z.union([ z.lazy(() => RewardPoolUpdateplatformsInputSchema),z.string().array() ]).optional(),
   status: z.union([ z.lazy(() => RewardPoolStatusSchema),z.lazy(() => EnumRewardPoolStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  type: z.union([ z.lazy(() => RewardPoolTypeSchema),z.lazy(() => EnumRewardPoolTypeFieldUpdateOperationsInputSchema) ]).optional(),
   totalAmountUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   paidOutUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   campaignTargetViews: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -14715,9 +14858,12 @@ export const RewardPoolUncheckedUpdateWithoutProjectInputSchema: z.ZodType<Prism
   reward: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rewardRate: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   rewardUnit: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  deadline: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  deadline: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  startDate: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  endDate: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   platforms: z.union([ z.lazy(() => RewardPoolUpdateplatformsInputSchema),z.string().array() ]).optional(),
   status: z.union([ z.lazy(() => RewardPoolStatusSchema),z.lazy(() => EnumRewardPoolStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  type: z.union([ z.lazy(() => RewardPoolTypeSchema),z.lazy(() => EnumRewardPoolTypeFieldUpdateOperationsInputSchema) ]).optional(),
   totalAmountUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   paidOutUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   campaignTargetViews: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -14734,9 +14880,12 @@ export const RewardPoolUncheckedUpdateManyWithoutProjectInputSchema: z.ZodType<P
   reward: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rewardRate: z.union([ z.number(),z.lazy(() => NullableFloatFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   rewardUnit: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  deadline: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  deadline: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  startDate: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  endDate: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   platforms: z.union([ z.lazy(() => RewardPoolUpdateplatformsInputSchema),z.string().array() ]).optional(),
   status: z.union([ z.lazy(() => RewardPoolStatusSchema),z.lazy(() => EnumRewardPoolStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  type: z.union([ z.lazy(() => RewardPoolTypeSchema),z.lazy(() => EnumRewardPoolTypeFieldUpdateOperationsInputSchema) ]).optional(),
   totalAmountUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   paidOutUsd: z.union([ z.number(),z.lazy(() => FloatFieldUpdateOperationsInputSchema) ]).optional(),
   campaignTargetViews: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
