@@ -35,7 +35,8 @@ export interface Project {
 
   narrativeLinks: Narrative[];
 }
-export interface KOL {
+
+export type BaseKOL = {
   id: string;
 
   twitterId: string;
@@ -50,20 +51,30 @@ export interface KOL {
   twitterGoldBadge: boolean | null;
   twitterCreatedAt: string; // ISO string
 
+  kolScore: number | null;
+  walletScore: number;
+  earnedPoints: number;
+};
+
+export type KOLSummary = BaseKOL & {
+  mindoMetric: number;
+  followers: number;
+  totalPosts: number | null;
+  smartFollowersCount: number | null;
+  engagementRate: number | null;
+
   // Frontend specific
   kolScorePercentFromTotal?: number;
   postingFrequency?: string;
+};
 
-  kolScore: number | null;
-  smartFollowersCount: number | null;
+export type KOL = KOLSummary & {
   followersChange: number | null;
   smartEngagement: number | null;
   smartEngagementChange: number | null;
-  engagementRate: number | null;
   avgViews: number | null;
   avgLikes: number | null;
   threadsCount: number | null;
-  totalPosts: number | null;
   totalViews: number | null;
   totalInteractions: number | null;
   totalOrganicPosts: number | null;
@@ -80,18 +91,73 @@ export interface KOL {
   totalViewsChange: number | null;
   totalInteractionsChange: number | null;
 
-  mindoMetric: number;
   proofOfWork: number;
   qualityScore: number;
-
-  earnedPoints?: number; // From user
 
   projects: any;
 
   fetchedAt: string; // ISO string
   createdAt: string;
   updatedAt: string;
-}
+};
+// export interface KOL {
+//   id: string;
+
+//   twitterId: string;
+//   twitterUsername: string;
+//   twitterDisplayName: string;
+//   twitterAvatarUrl: string | null;
+//   twitterDescription: string | null;
+//   twitterFollowersCount: number;
+//   twitterFollowingCount: number;
+//   twitterIsVerified: boolean;
+//   twitterLang: string;
+//   twitterGoldBadge: boolean | null;
+//   twitterCreatedAt: string; // ISO string
+
+//   // Frontend specific
+//   kolScorePercentFromTotal?: number;
+//   postingFrequency?: string;
+
+//   kolScore: number | null;
+//   smartFollowersCount: number | null;
+//   followersChange: number | null;
+//   smartEngagement: number | null;
+//   smartEngagementChange: number | null;
+//   engagementRate: number | null;
+//   avgViews: number | null;
+//   avgLikes: number | null;
+//   threadsCount: number | null;
+//   totalPosts: number | null;
+//   totalViews: number | null;
+//   totalInteractions: number | null;
+//   totalOrganicPosts: number | null;
+//   totalOrganicViews: number | null;
+//   totalOrganicInteractions: number | null;
+//   totalAccountPosts: number | null;
+//   totalAccountViews: number | null;
+//   totalAccountInteractions: number | null;
+//   totalAccountComments: number | null;
+//   totalAccountLikes: number | null;
+//   totalAccountRetweets: number | null;
+//   totalAccountReplies: number | null;
+//   totalPostsChange: number | null;
+//   totalViewsChange: number | null;
+//   totalInteractionsChange: number | null;
+
+//   mindoMetric: number;
+//   proofOfWork: number;
+//   qualityScore: number;
+
+//   earnedPoints?: number; // From user
+//   walletScore?: number; // From user wallet
+
+//   projects: any;
+
+//   fetchedAt: string; // ISO string
+//   createdAt: string;
+//   updatedAt: string;
+// }
 
 export interface User {
   id?: string;

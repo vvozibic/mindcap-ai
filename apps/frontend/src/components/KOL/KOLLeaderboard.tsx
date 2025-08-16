@@ -1,6 +1,6 @@
 import { ArrowDown, ArrowUp, Info } from "lucide-react";
 import React, { useState } from "react";
-import { KOL } from "../../types";
+import { KOLSummary } from "../../types";
 import { daysBetween } from "../../utils/daysBetween";
 import { formatNumber } from "../../utils/formatNumber";
 import Pagination from "../Pagination";
@@ -10,22 +10,12 @@ import KOLDetailOverlay from "./KOLDetailOverlay";
 
 interface KOLLeaderboardProps {}
 
-// "mindoMetric", // из KOLToProject
-//   "proofOfWork",
-//   "qualityScore",
-//   "totalPosts",
-//   "totalComments",
-//   "kolScore", // из KOL
-//   "engagementRate",
-//   "smartFollowersCount",
-//   "twitterFollowersCount",
-//   "tweetsCountNumeric",
-
 type SortField =
   | "mindoMetric"
   | "earnedPoints"
+  | "walletScore"
   | "smartFollowersCount"
-  | "twitterFollowersCount"
+  | "followers"
   | "engagementRate"
   | "kolScore";
 // | "postingFrequency"
@@ -50,7 +40,7 @@ const fetchKOLs = async ({
 
 const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
   const [tooltipVisible, setTooltipVisible] = useState<string | null>(null);
-  const [selectedKOL, setSelectedKOL] = useState<KOL | null>(null);
+  const [selectedKOL, setSelectedKOL] = useState<KOLSummary | null>(null);
   const [isDetailOverlayOpen, setIsDetailOverlayOpen] = useState(false);
 
   const {
@@ -64,7 +54,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
     loading,
     setSortField,
     setSortDirection,
-  } = usePaginatedData<KOL>(fetchKOLs, 1, 20, "mindoMetric", "desc");
+  } = usePaginatedData<KOLSummary>(fetchKOLs, 1, 20, "mindoMetric", "desc");
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
@@ -82,7 +72,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
 
     const postingFrequency =
       realPostingFrequency > 0 && realPostingFrequency < 1
-        ? 1
+        ? "1"
         : Math.round(realPostingFrequency)?.toFixed(0);
 
     return {
@@ -95,7 +85,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
   const showTooltip = (id: string) => setTooltipVisible(id);
   const hideTooltip = () => setTooltipVisible(null);
 
-  const handleKOLClick = (kol: KOL) => {
+  const handleKOLClick = (kol: KOLSummary) => {
     setSelectedKOL(kol);
     setIsDetailOverlayOpen(true);
   };
@@ -107,11 +97,12 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
   const tooltips = {
     mindoMetric: "Overall mindo score based on AI",
     earnedPoints: "Points from social card",
+    walletScore: "Wallet score by AI",
     engagementRate: "Engagement rate",
     postingFrequency: "Posts by day",
     smartFollowersCount:
       "Weighted followercount based on quality and engagement",
-    twitterFollowersCount: "Raw follower count",
+    followers: "Raw follower count",
     moneyScore: "Financial reputation score",
   };
 
@@ -131,7 +122,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
           </p>
         </div>
 
-        {Boolean(!kolsWithAdditionalFields.length) ? (
+        {Boolean(!kols.length) ? (
           <TableSkeleton />
         ) : (
           <div className="overflow-x-auto">
@@ -141,11 +132,11 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                   <th
                     scope="col"
                     className="pt-3 pr-0 pb-3 pl-6 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
-                    onClick={() => handleSort("twitterFollowersCount")}
+                    onClick={() => handleSort("followers")}
                   >
                     <div className="flex items-center">
                       Rank
-                      {sortField === "twitterFollowersCount" &&
+                      {sortField === "followers" &&
                         (sortDirection === "asc" ? (
                           <ArrowUp className="h-4 w-4 ml-1" />
                         ) : (
@@ -213,6 +204,31 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSort("walletScore")}
+                  >
+                    <div className="flex items-center relative">
+                      Wallet score
+                      {sortField === "walletScore" &&
+                        (sortDirection === "asc" ? (
+                          <ArrowUp className="h-4 w-4 ml-1" />
+                        ) : (
+                          <ArrowDown className="h-4 w-4 ml-1" />
+                        ))}
+                      <Info
+                        className="h-4 w-4 ml-1 text-gray-500 cursor-help"
+                        onMouseEnter={() => showTooltip("walletScore")}
+                        onMouseLeave={hideTooltip}
+                      />
+                      {tooltipVisible === "walletScore" && (
+                        <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 border-primary-700/40 text-white rounded shadow-lg">
+                          {tooltips.walletScore}
+                        </div>
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
                     onClick={() => handleSort("smartFollowersCount")}
                   >
                     <div className="flex items-center relative">
@@ -238,11 +254,11 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
-                    onClick={() => handleSort("twitterFollowersCount")}
+                    onClick={() => handleSort("followers")}
                   >
                     <div className="flex items-center relative">
                       Followers
-                      {sortField === "twitterFollowersCount" &&
+                      {sortField === "followers" &&
                         (sortDirection === "asc" ? (
                           <ArrowUp className="h-4 w-4 ml-1" />
                         ) : (
@@ -250,14 +266,12 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                         ))}
                       <Info
                         className="h-4 w-4 ml-1 text-gray-500 cursor-help"
-                        onMouseEnter={() =>
-                          showTooltip("twitterFollowersCount")
-                        }
+                        onMouseEnter={() => showTooltip("followers")}
                         onMouseLeave={hideTooltip}
                       />
-                      {tooltipVisible === "twitterFollowersCount" && (
+                      {tooltipVisible === "followers" && (
                         <div className="absolute top-6 left-0 z-10 w-48 p-2 text-xs bg-primary-600 border-primary-700/40 text-white rounded shadow-lg">
-                          {tooltips.twitterFollowersCount}
+                          {tooltips.followers}
                         </div>
                       )}
                     </div>
@@ -340,7 +354,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                 </tr>
               </thead>
               <tbody className="bg-primary-800/50 backdrop-blur-sm divide-y divide-primary-700/30">
-                {kolsWithAdditionalFields.map((kol, index) => (
+                {kols.map((kol, index) => (
                   <tr
                     key={kol.id}
                     className={`group cursor-pointer transition-colors duration-200 hover:bg-primary-900/35 hover:ring-1 hover:ring-accent-500/20 ${
@@ -396,13 +410,19 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
                     </td>
 
                     <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-200 font-medium">
+                        {`${Number(kol?.walletScore?.toFixed(2)) ? formatNumber(Number(kol?.walletScore?.toFixed(2))) : "–"}`}
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-200">
                         {kol.smartFollowersCount?.toLocaleString()}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-200">
-                        {kol.twitterFollowersCount?.toLocaleString()}
+                        {kol.followers?.toLocaleString()}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -445,8 +465,7 @@ const KOLLeaderboard: React.FC<KOLLeaderboardProps> = () => {
         <KOLDetailOverlay
           isOpen={isDetailOverlayOpen}
           onClose={closeDetailOverlay}
-          kol={selectedKOL}
-          allKOLs={kols.filter((k) => k && k.id)}
+          kolId={selectedKOL?.id}
         />
       )}
     </>

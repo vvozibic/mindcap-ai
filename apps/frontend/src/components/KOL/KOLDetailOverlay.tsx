@@ -1,22 +1,51 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { X } from "lucide-react";
 import React, { Fragment } from "react";
-import { KOL } from "../../types";
+import { useKol } from "../../hooks/useKOL";
+import { Skeleton } from "../Skeleton";
 import KOLDetails from "./KOLDetails";
 
 interface KOLDetailOverlayProps {
   isOpen: boolean;
   onClose: () => void;
-  kol: KOL | null;
-  allKOLs: KOL[];
+  kolId?: string;
 }
 
 const KOLDetailOverlay: React.FC<KOLDetailOverlayProps> = ({
   isOpen,
   onClose,
-  kol,
+  kolId,
 }) => {
-  if (!kol) return null;
+  const { data, loading, error } = useKol(kolId);
+
+  if (!kolId) return null;
+
+  if (loading)
+    return (
+      <Transition appear show={isOpen} as={Fragment}>
+        <Dialog
+          as="div"
+          className="relative z-20 min-w-[320px] min-h-[500px]"
+          onClose={onClose}
+        >
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-75" />
+          </Transition.Child>
+
+          <Skeleton height="100px" />
+        </Dialog>
+      </Transition>
+    );
+
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -44,7 +73,7 @@ const KOLDetailOverlay: React.FC<KOLDetailOverlayProps> = ({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="relative">
+              <Dialog.Panel className="relative max-w-[80vw]">
                 <div className="absolute top-0 right-0 pt-4 pr-4 z-10">
                   <button
                     type="button"
@@ -56,7 +85,7 @@ const KOLDetailOverlay: React.FC<KOLDetailOverlayProps> = ({
                   </button>
                 </div>
 
-                <KOLDetails kol={kol} />
+                <KOLDetails kol={data} />
               </Dialog.Panel>
             </Transition.Child>
           </div>

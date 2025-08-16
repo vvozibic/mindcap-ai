@@ -6,6 +6,7 @@ import {
   getInfluencerById,
   getInfluencerByUsername,
   getInfluencers,
+  getKolById,
   getPaginatedInfluencers,
   searchProtokolsByUsername,
   updateInfluencer,
@@ -18,6 +19,7 @@ router.get("/", getInfluencers);
 router.get("/search-protokols/:twitterUsername", searchProtokolsByUsername);
 router.get("/paginate", getPaginatedInfluencers);
 router.get("/:id", getInfluencerById);
+router.get("/kol/:id", getKolById);
 router.get("/user/:username", getInfluencerByUsername);
 router.post("/", createInfluencer);
 router.put("/:id", updateInfluencer);
