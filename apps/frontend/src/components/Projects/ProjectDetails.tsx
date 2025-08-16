@@ -106,7 +106,11 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
             >
               Project Pools
               <span className="ml-2 bg-primary-600 text-accent-500 py-0.5 px-2 rounded-full text-xs">
-                {projectPools.filter((p) => p.status === "active").length}
+                {
+                  projectPools.filter(
+                    (p) => p.status === "active" || p.status === "upcoming"
+                  ).length
+                }
               </span>
             </button>
           )}
@@ -169,23 +173,25 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                 </div> */}
               </div>
 
-              <div className="flex items-center">
-                <div className="mt-3">
-                  <h6 className="text-xs font-medium text-gray-400">
-                    Narratives
-                  </h6>
-                  <div className="flex gap-2 mt-2">
-                    {project?.narrativeLinks?.map((link, idx) => (
-                      <span
-                        key={idx}
-                        className="bg-primary-600 text-gray-100 text-xs px-2 py-0.5 rounded-full"
-                      >
-                        {link.narrative.name}
-                      </span>
-                    ))}
+              {Boolean(project?.narrativeLinks?.length) && (
+                <div className="flex items-center">
+                  <div className="mt-3">
+                    <h6 className="text-xs font-medium text-gray-400">
+                      Narratives
+                    </h6>
+                    <div className="flex gap-2 mt-2">
+                      {project?.narrativeLinks?.map((link, idx) => (
+                        <span
+                          key={idx}
+                          className="bg-primary-600 text-gray-100 text-xs px-2 py-0.5 rounded-full"
+                        >
+                          {link.narrative.name}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* <h5 className="text-md font-medium text-gray-300 mb-3">
@@ -262,10 +268,9 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                       </h5>
                       <p className="text-3xl font-bold text-white">
                         {" "}
-                        {project.rewardPools?.reduce(
-                          (acc, pool) => acc + pool.totalAmountUsd,
-                          0
-                        )}
+                        {project.rewardPools
+                          ?.reduce((acc, pool) => acc + pool.totalAmountUsd, 0)
+                          ?.toLocaleString()}
                       </p>
                     </div>
                   </div>
@@ -284,7 +289,11 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                     </h6>
                     <div className="space-y-3">
                       {projectPools
-                        .filter((pool) => pool.status === "active")
+                        .filter(
+                          (pool) =>
+                            pool.status === "active" ||
+                            pool.status === "upcoming"
+                        )
                         .map((pool) => (
                           <div
                             key={pool.id}
@@ -298,15 +307,17 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                                 {pool.reward}
                               </p>
                             </div>
-                            <button
-                              onClick={() => {
-                                setActiveTab("pools");
-                                setSelectedPool(pool);
-                              }}
-                              className="bg-accent-500 hover:bg-accent-600 text-primary-900 text-xs px-3 py-1 rounded"
-                            >
-                              View Details
-                            </button>
+                            {pool.type === "task" && (
+                              <button
+                                onClick={() => {
+                                  setActiveTab("pools");
+                                  setSelectedPool(pool);
+                                }}
+                                className="bg-accent-500 hover:bg-accent-600 text-primary-900 text-xs px-3 py-1 rounded"
+                              >
+                                View Details
+                              </button>
+                            )}
                           </div>
                         ))}
                     </div>
@@ -680,10 +691,9 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                   <p className="text-sm text-gray-400">Total Reward Pool</p>
                   <p className="text-2xl font-bold text-white">
                     $
-                    {project.rewardPools?.reduce(
-                      (acc, pool) => acc + pool.totalAmountUsd,
-                      0
-                    )}
+                    {project.rewardPools
+                      ?.reduce((acc, pool) => acc + pool.totalAmountUsd, 0)
+                      ?.toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -692,8 +702,13 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                 {projectPools.map((pool) => (
                   <div
                     key={pool.id}
-                    className="bg-primary-700 rounded-lg p-5 border border-primary-700 hover:border-accent-500 transition-colors cursor-pointer"
-                    onClick={() => handlePoolSelect(pool)}
+                    className={`
+                      ${pool.type === "campaign" ? "border-accent-500 cursor-default" : "border-primary-700 cursor-pointer"}
+                      bg-primary-700 rounded-lg p-5 border hover:border-accent-500 transition-colors 
+                      `}
+                    onClick={() =>
+                      pool.type === "task" ? handlePoolSelect(pool) : () => {}
+                    }
                   >
                     <div className="flex justify-between items-start">
                       <h4 className="text-lg font-medium text-white">
@@ -721,16 +736,19 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                     </p>
 
                     <div className="mt-4 flex items-center justify-between">
+                      {pool.type === "task" ? (
+                        <div>
+                          <p className="text-xs text-gray-400">Reward</p>
+                          <p className="text-lg font-bold text-white">
+                            {pool.reward}
+                          </p>
+                        </div>
+                      ) : null}
                       <div>
-                        <p className="text-xs text-gray-400">Reward</p>
-                        <p className="text-lg font-bold text-white">
-                          {pool.reward}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-400">Deadline</p>
+                        <p className="text-xs text-gray-400">Dates</p>
                         <p className="text-sm text-gray-300">
-                          {new Date(pool.deadline).toLocaleDateString()}
+                          {new Date(pool.startDate).toLocaleDateString()} -{" "}
+                          {new Date(pool.endDate).toLocaleDateString()}
                         </p>
                       </div>
                       <div>
@@ -757,7 +775,11 @@ const ProjectDetails: React.FC<ProjectDetailOverlayProps> = ({
                       <div className="flex justify-between text-xs text-gray-400 mb-1">
                         <span>Pool Progress</span>
                         <span>
-                          ${pool.totalAmountUsd - pool.paidOutUsd} remaining
+                          $
+                          {(
+                            pool.totalAmountUsd - pool.paidOutUsd
+                          )?.toLocaleString()}{" "}
+                          remaining
                         </span>
                       </div>
                       <div className="w-full bg-primary-800 rounded-full h-2">

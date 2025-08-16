@@ -484,7 +484,7 @@ model RewardPool {
   id                  String           @id @default(cuid())
   title               String
   description         String
-  reward              String
+  reward              String?
   rewardRate          Float?
   rewardUnit          String?
   deadline            DateTime?
@@ -493,11 +493,11 @@ model RewardPool {
   platforms           String[]
   status              RewardPoolStatus
   type                RewardPoolType   @default(task)
-  totalAmountUsd      Float
-  paidOutUsd          Float
-  campaignTargetViews Int
-  participantsCount   Int
-  completedCount      Int
+  totalAmountUsd      Float?
+  paidOutUsd          Float?
+  campaignTargetViews Int?
+  participantsCount   Int?
+  completedCount      Int?
   requirements        String[]
   project             Project          @relation(fields: [projectId], references: [id])
   projectId           String

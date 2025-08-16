@@ -159,13 +159,16 @@ export type Narrative = {
 };
 
 export type RewardPoolStatus = "active" | "upcoming" | "closed";
+export type RewardPoolType = "task" | "campaign";
 
 export interface RewardPool {
   id: string;
   title: string;
   description: string;
-  deadline: string; // ISO string
+  startDate: string; // ISO string
+  endDate: string; // ISO string
   status: RewardPoolStatus;
+  type: RewardPoolType;
   platforms: string[];
 
   reward: string; // "$2/1K views"

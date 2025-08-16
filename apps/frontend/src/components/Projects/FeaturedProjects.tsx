@@ -131,7 +131,7 @@ export const FeaturedProjects = ({
                           Total Reward pool
                         </p>
                         <p className="text-accent-500 font-semibold text-left">
-                          $ {totalRewardPercent?.toFixed(2)}
+                          $ {totalRewardPercent?.toLocaleString()}
                         </p>
                       </div>
                       <button

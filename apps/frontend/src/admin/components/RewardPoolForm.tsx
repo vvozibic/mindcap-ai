@@ -13,9 +13,11 @@ const defaultPool: Partial<RewardPool> = {
   title: "",
   description: "",
   reward: "",
-  deadline: new Date().toISOString().slice(0, 10),
+  startDate: new Date().toISOString().slice(0, 10),
+  endDate: new Date().toISOString().slice(0, 10),
   platforms: [],
   status: "active",
+  type: "task",
   totalAmountUsd: 0,
   paidOutUsd: 0,
   rewardRate: 0,
@@ -23,6 +25,7 @@ const defaultPool: Partial<RewardPool> = {
   campaignTargetViews: 0,
   participantsCount: 0,
   completedCount: 0,
+  projectId: "",
   requirements: [],
 };
 
@@ -50,7 +53,14 @@ const RewardPoolForm: React.FC<RewardPoolFormProps> = ({
             acc[key as keyof RewardPool] = data[key as keyof RewardPool];
             return acc;
           }, {} as Partial<RewardPool>);
-          setFormData(filtered);
+
+          setFormData({
+            ...filtered,
+            startDate: filtered.startDate
+              ? filtered.startDate.split("T")[0]
+              : "",
+            endDate: filtered.endDate ? filtered.endDate.split("T")[0] : "",
+          });
           setLoading(false);
         })
         .catch((err) => {
@@ -91,7 +101,8 @@ const RewardPoolForm: React.FC<RewardPoolFormProps> = ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          deadline: new Date(formData.deadline || "").toISOString(),
+          startDate: new Date(formData.startDate || "").toISOString(),
+          endDate: new Date(formData.endDate || "").toISOString(),
         }),
       });
 
@@ -107,6 +118,8 @@ const RewardPoolForm: React.FC<RewardPoolFormProps> = ({
       setLoadingUpdate(false);
     }
   };
+
+  console.log(formData);
 
   return (
     <div>
@@ -136,7 +149,7 @@ const RewardPoolForm: React.FC<RewardPoolFormProps> = ({
       >
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Title
+            Title *
           </label>
           <input
             name="title"
@@ -148,7 +161,7 @@ const RewardPoolForm: React.FC<RewardPoolFormProps> = ({
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Description
+            Description *
           </label>
           <textarea
             name="description"
@@ -160,7 +173,64 @@ const RewardPoolForm: React.FC<RewardPoolFormProps> = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Reward
+            Status
+          </label>
+          <select
+            name="status"
+            value={formData.status || "active"}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md  text-gray-900"
+          >
+            <option value="active">Active</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Type
+          </label>
+          <select
+            name="type"
+            value={formData.type || "active"}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md  text-gray-900"
+          >
+            <option value="task">Task</option>
+            <option value="campaign">Campaign</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Start Date
+          </label>
+          <input
+            type="date"
+            name="startDate"
+            value={formData.startDate || ""}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md  text-gray-900"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            End Date
+          </label>
+          <input
+            type="date"
+            name="endDate"
+            value={formData.endDate || ""}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md  text-gray-900"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Reward by task
           </label>
           <input
             name="reward"
@@ -172,7 +242,7 @@ const RewardPoolForm: React.FC<RewardPoolFormProps> = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Total USD
+            Total Reward Pool *
           </label>
           <input
             type="number"
@@ -185,7 +255,7 @@ const RewardPoolForm: React.FC<RewardPoolFormProps> = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Paid Out USD
+            Paid Out USD (task)
           </label>
           <input
             type="number"
@@ -223,7 +293,7 @@ const RewardPoolForm: React.FC<RewardPoolFormProps> = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Target Views
+            Target Views (task)
           </label>
           <input
             type="number"
@@ -236,7 +306,7 @@ const RewardPoolForm: React.FC<RewardPoolFormProps> = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Participants Count
+            Participants Count (task)
           </label>
           <input
             type="number"
@@ -249,7 +319,7 @@ const RewardPoolForm: React.FC<RewardPoolFormProps> = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Completed Participants Count
+            Completed Participants Count (task)
           </label>
           <input
             type="number"
@@ -262,7 +332,7 @@ const RewardPoolForm: React.FC<RewardPoolFormProps> = ({
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Requirements
+            Requirements *
           </label>
           <textarea
             name="requirements"
@@ -278,35 +348,6 @@ const RewardPoolForm: React.FC<RewardPoolFormProps> = ({
               }))
             }
           />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Deadline
-          </label>
-          <input
-            type="date"
-            name="deadline"
-            value={formData.deadline || ""}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border rounded-md  text-gray-900"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Status
-          </label>
-          <select
-            name="status"
-            value={formData.status || "active"}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border rounded-md  text-gray-900"
-          >
-            <option value="active">Active</option>
-            <option value="upcoming">Upcoming</option>
-            <option value="closed">Closed</option>
-          </select>
         </div>
 
         <div className="md:col-span-2">
