@@ -1,43 +1,8 @@
+import { KOLDetail } from "../../hooks/useKOL";
 import { KOL } from "../../types";
 import { daysBetween } from "../../utils/daysBetween";
 
-export interface KOLDetailData {
-  biography: string;
-  followers: number;
-  following: number;
-  isBusinessAccount: boolean;
-  accountStatus: "Active" | "Inactive" | "Suspended";
-  syncStatus: "Idle" | "Syncing" | "Failed";
-  lastSync: string | null;
-  nextSync: string | null;
-  lastUpdated: string;
-  totalPosts: number;
-  engagement: number;
-  engagementTrend: "up" | "down" | "neutral";
-  averageLikes: number;
-  averageLikesTrend: "up" | "down" | "neutral";
-  postingFrequency: string;
-  likes: number;
-  views: number;
-  kolScore?: number;
-  mindshare?: number;
-  mindoMetric?: number | null;
-  proofOfWork: number | null;
-  qualityScore: number | null;
-  comments: number;
-  retwets: number;
-  smartFollowersPercent: number;
-  smartFollowers: number;
-  profileUrl: string;
-  twitterRegisterDate: string;
-  aiGeneratedContent: number;
-  avgCommentsPerPost: string;
-  avgRetweetsPerPost: string;
-  avgEngagementPerPost: string;
-  engagementRate: number;
-}
-
-export const getKOLDetailData = (kol: KOL | null): KOLDetailData | null => {
+export const getKOLDetailData = (kol: KOL | null): KOLDetail | null => {
   if (!kol) return null;
 
   const totalPosts = kol.totalPosts || 0;
@@ -92,6 +57,7 @@ export const getKOLDetailData = (kol: KOL | null): KOLDetailData | null => {
     avgEngagementPerPost: Number(
       (kol?.engagementRate || 0) / totalPosts
     )?.toFixed(4),
+    earnedPoints: kol?.earnedPoints,
     engagementRate: kol?.engagementRate || 0,
     twitterRegisterDate: new Date(kol.twitterCreatedAt).toLocaleDateString(),
     profileUrl: `https://x.com/${kol?.twitterUsername}`,

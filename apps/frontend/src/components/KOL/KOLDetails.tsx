@@ -252,6 +252,16 @@ const KOLDetails: React.FC<KOLDetailOverlayProps> = ({ kol }) => {
                 </div>
               </div>
             )}
+            {Boolean(detailData?.earnedPoints) && (
+              <div className="ml-8">
+                <h5 className="text-sm font-medium text-gray-300">Points</h5>
+                <div className="flex items-baseline">
+                  <p className="text-xl font-bold text-gray-200">
+                    {detailData?.earnedPoints?.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           <h5 className="text-md font-medium text-gray-300 mb-3">
