@@ -29,7 +29,7 @@ const KOLDetails: React.FC<KOLDetailOverlayProps> = ({ kol }) => {
   if (!kol) return null;
 
   return (
-    <div className="w-full transform overflow-hidden rounded-2xl bg-primary-800 min-w-[600px] min-h-[400px] p-6 text-left align-middle shadow-xl transition-all border border-primary-700">
+    <div className="w-full transform overflow-hidden rounded-2xl bg-primary-800 p-6 text-left align-middle shadow-xl transition-all border border-primary-700">
       <div className="flex items-center mb-6 pb-4 border-b border-primary-700">
         <img
           src={kol?.twitterAvatarUrl || "/default-avatar.png"}
